@@ -7,7 +7,7 @@ blueWins <- df |> select('blueWins')
 # Odrzucamy jako cechę 'gameId' jako nieistotną i blueWins jako zbyteczna do wstępnej analizy
 # oraz odrzucamy dragons i heralds jako że cecha eliteMonsters jest ich liniową kombinacją
 df <- df |>
-  select(!c('blueWins', 'gameId', ends_with('EliteMonsters'), ends_with('Deaths')))
+  select(!c('blueWins', 'gameId', ends_with('EliteMonsters')))
 
 df <- df %>% mutate(across(everything(), ~ (.x - min(.x)) / (max(.x) - min(.x))))
 glimpse(df)

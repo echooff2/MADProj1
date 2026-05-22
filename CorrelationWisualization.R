@@ -61,7 +61,7 @@ draw_graphs <- function(df, name='WykresKorelacji', extension='.png'){
   
   count <- count + 1
   df <- df |>
-    select(!read_correlated(M))
+    select(!all_of(sub("Kills$", "Deaths", read_correlated(M))))
   M <- cor(df, method = "pearson")
   draw_graph(M, paste0(name, toString(count), extension))
   return(df)
