@@ -1,4 +1,3 @@
-setwd("C:\\Users\\rysio\\Desktop\\Informatyka\\R\\MetodyAnalizyDanych\\Projekt2-Klasyfikacja")
 df <- read.csv("lol.csv", header = T)
 
 library(dplyr)
