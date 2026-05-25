@@ -7,9 +7,15 @@ prep_data <- function(df) {
   df <- df |>
     select(!c("blueWins", "gameId", ends_with("EliteMonsters")))
 
-  if (!exists("draw_graphs")) {
+  if (!exists("read_correlated")) {
     source("CorrelationWisualization.R")
   }
+  count <- 1
+  m <- cor(df, method = "pearson")
+
+  count <- count + 1
+  df <- df |>
+    select(!all_of(sub("Kills$", "Deaths", read_correlated(m))))
 
   # Odrzucamy cechy związane z exp i gold, jako że wynikają z pozostałych zmiennych
   df <- df |>

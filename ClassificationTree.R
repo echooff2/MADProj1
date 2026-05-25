@@ -7,7 +7,7 @@ if (!exists("prep_data")) {
 }
 
 df$blueWins <- as.factor(df$blueWins)
-data <- prep_data(df)
+df <- prep_data(df)
 
 library(tree)
 tree(df)
