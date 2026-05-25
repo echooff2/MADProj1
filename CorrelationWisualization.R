@@ -14,7 +14,7 @@ draw_graph <- function(M,filename){
   # Rysujemy wykres
   my_colors <- colorRampPalette(c("#B2182B", "#F7F7F7", "#2166AC"))(200)
   
-  png(paste0('./Plots/',filename), width = 1500, height = 1500, res = 150, type = "cairo", bg="white")
+  png(paste0('./Plots/corrmatrixes/',filename), width = 1500, height = 1500, res = 150, type = "cairo", bg="white")
   
   # Rysujemy GÓRĘ (kwadraty z liczbami)
   corrplot(M_ord, 
@@ -60,8 +60,11 @@ draw_graphs <- function(df, name='WykresKorelacji', extension='.png'){
   draw_graph(M, paste0(name, toString(count), extension))
   
   count <- count + 1
+  to_drop <- read_correlated(M)
+  to_drop <- unique(sub("Kills", "Deaths", to_drop))
   df <- df |>
-    select(!all_of(sub("Kills$", "Deaths", read_correlated(M))))
+    select(!to_drop)
+  
   M <- cor(df, method = "pearson")
   draw_graph(M, paste0(name, toString(count), extension))
   return(df)
