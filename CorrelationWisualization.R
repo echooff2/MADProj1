@@ -59,12 +59,10 @@ delete_correlated_draw_corr_matrixes <- function(df, to_draw_graphs = T, name='W
   M <- cor(df, method = "pearson")
   if(to_draw_graphs)
     draw_corr_matrix(M, paste0(name, toString(count), extension))
-  
   count <- count + 1
-  to_drop <- read_correlated(M)
-  to_drop <- unique(sub("Kills", "Deaths", to_drop))
   df <- df |>
-    select(!to_drop)
+    select(!unique(gsub("redKills", "blueDeaths", 
+                        gsub("blueKills", "redDeaths", read_correlated(M)))))
   
   M <- cor(df, method = "pearson")
   if(to_draw_graphs)

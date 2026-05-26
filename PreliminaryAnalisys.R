@@ -52,7 +52,7 @@ delete_outliers <- function(df){
   return(df)
 }
 
-do_preliminary_analisys <- function(to_draw_graphs = F, to_scale = T, my_path = ""){
+do_preliminary_analisys <- function(to_draw_graphs = c(F, F), to_scale = T, my_path = ""){
   if( my_path != "")
     setwd(my_path)
   
@@ -76,7 +76,7 @@ do_preliminary_analisys <- function(to_draw_graphs = F, to_scale = T, my_path = 
     source('CorrelationWisualization.R')
   }
   
-  df <- delete_correlated_draw_corr_matrixes(df, to_draw_graphs)
+  df <- delete_correlated_draw_corr_matrixes(df, to_draw_graphs[2])
   
   # Odrzucamy: 
   # eliteMonsters jako że ta cecha jest liniową kombinacją cech dragons i heralds
@@ -92,7 +92,7 @@ do_preliminary_analisys <- function(to_draw_graphs = F, to_scale = T, my_path = 
     ) %>%
     select(-blueKills, -blueAssists, -redKills, -redAssists)
   
-  if(to_draw_graphs)
+  if(to_draw_graphs[2])
     draw_corr_matrix(cor(df), 'WykresZ_KA.png')
   
   df <- cbind(df, blueWins)
@@ -103,11 +103,12 @@ do_preliminary_analisys <- function(to_draw_graphs = F, to_scale = T, my_path = 
   
   print(colnames(df))
   
-  if(to_draw_graphs)
+  if(to_draw_graphs[1])
     draw_historgrams(df)
   if(to_scale)
     scale(df)
   return(df)
 }
 
-do_preliminary_analisys(T)
+# histograms, corr_matrixes
+do_preliminary_analisys(c(F, T))
