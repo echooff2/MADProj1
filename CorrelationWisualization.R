@@ -1,6 +1,6 @@
 library(corrplot)
 
-draw_graph <- function(M,filename){
+draw_corr_matrix <- function(M,filename){
   # Porządkujemy macierz (ważne: zrób to przed definiowaniem kolorów!)
   # corrplot domyślnie robi hclust wewnątrz, ale lepiej mieć posortowaną macierz M
   ord <- corrMatOrder(M, order = "hclust")
@@ -54,10 +54,11 @@ read_correlated <- function(M){
   return(unique(coll_names))
 }
 
-draw_graphs <- function(df, name='WykresKorelacji', extension='.png'){
+delete_correlated_draw_corr_matrixes <- function(df, to_draw_graphs = T, name='WykresKorelacji', extension='.png'){
   count <- 1
   M <- cor(df, method = "pearson")
-  draw_graph(M, paste0(name, toString(count), extension))
+  if(to_draw_graphs)
+    draw_corr_matrix(M, paste0(name, toString(count), extension))
   
   count <- count + 1
   to_drop <- read_correlated(M)
@@ -66,6 +67,7 @@ draw_graphs <- function(df, name='WykresKorelacji', extension='.png'){
     select(!to_drop)
   
   M <- cor(df, method = "pearson")
-  draw_graph(M, paste0(name, toString(count), extension))
+  if(to_draw_graphs)
+    draw_corr_matrix(M, paste0(name, toString(count), extension))
   return(df)
 }

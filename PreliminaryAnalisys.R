@@ -1,12 +1,10 @@
-# setwd("C:\\Users\\rysio\\Desktop\\Informatyka\\R\\MetodyAnalizyDanych\\Projekt2-Klasyfikacja")
-
 draw_historgram <- function(df, feature, name){
-  p <- ggplot(df.frame(feature), aes(x=feature)) +
+  p <- ggplot(data.frame(feature), aes(x=feature)) +
     geom_histogram(aes(y = ..density..), colour = 1, fill = "white") +
     geom_density(color = "darkgrey", lwd = 1.5, fill="gray", alpha = 0.5) +
     ggtitle(name) +
     theme(plot.title = element_text(size=15, hjust=0.5))
-  ggsave(paste0("plots\\histograms\\hist_", name, ".png"))
+  ggsave(paste0("Plots/histograms/hist_", name, ".png"))
 }
 
 draw_historgrams <- function(df){
@@ -54,7 +52,7 @@ delete_outliers <- function(df){
   return(df)
 }
 
-do_preliminary_analisys <- function(to_scale = T, my_path = ""){
+do_preliminary_analisys <- function(to_draw_graphs = F, to_scale = T, my_path = ""){
   if( my_path != "")
     setwd(my_path)
   
@@ -72,18 +70,20 @@ do_preliminary_analisys <- function(to_scale = T, my_path = ""){
   describe(df)[, c("mean", "median", "min", "max", "sd", "skew")]
   
   library(caret)
-  delete_quasi_const(df)
+  df <- delete_quasi_const(df)
   
-  # Odrzucamy dragons i heralds jako że cecha eliteMonsters jest ich liniową kombinacją
-  df <- df |>
-    select(!c(ends_with('EliteMonsters')))
-  
-  
-  if(!exists('draw_graphs')){
+  if(!exists('draw_corr_matrix')){
     source('CorrelationWisualization.R')
   }
   
-  df <- draw_graphs(df)
+  df <- delete_correlated_draw_corr_matrixes(df, to_draw_graphs)
+  
+  # Odrzucamy: 
+  # eliteMonsters jako że ta cecha jest liniową kombinacją cech dragons i heralds
+  # goldPerMin jako że goldDiff jest różnicą wartości goldPerMin pomiędzy 2 drużynami
+  # totalExperience analogicznie do goldPerMin
+  df <- df |>
+    select(!c(ends_with('EliteMonsters'), ends_with('GoldPerMin'), ends_with('TotalExperience')))
   
   df <- df %>%
     mutate(
@@ -92,7 +92,8 @@ do_preliminary_analisys <- function(to_scale = T, my_path = ""){
     ) %>%
     select(-blueKills, -blueAssists, -redKills, -redAssists)
   
-  draw_graph(cor(df), 'WykresZ_KA.png')
+  if(to_draw_graphs)
+    draw_corr_matrix(cor(df), 'WykresZ_KA.png')
   
   df <- cbind(df, blueWins)
   df <- delete_outliers(df)
@@ -100,8 +101,13 @@ do_preliminary_analisys <- function(to_scale = T, my_path = ""){
   blueWins <- df |> select('blueWins')
   df <- df |> select(!c('blueWins'))
   
-  draw_historgrams(df)
+  print(colnames(df))
+  
+  if(to_draw_graphs)
+    draw_historgrams(df)
   if(to_scale)
     scale(df)
   return(df)
 }
+
+do_preliminary_analisys(T)
