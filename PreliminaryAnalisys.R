@@ -52,7 +52,15 @@ delete_outliers <- function(df){
   return(df)
 }
 
-do_preliminary_analisys <- function(to_draw_graphs = c(F, F), to_scale = T, my_path = ""){
+# OMÓWIENIE ZMIENNYCH:
+# a) to_draw_graphs przyjmuje wektor zmiennych True/False, gdzie:
+#   1) oznacza rysowanie histogramów i boxplotów
+#   2) oznacza rysowanie macierzy korelacji
+#   3) oznacza ryzowanie wykresów do analizy PCA
+# b) to_scale, zmienna True/False, oznaczająca, czy dopuszczamy skalowanie;
+#     brak skalowania oznacza brak pca
+# c) my_path pozwala przekazać ścieżkę do folderu, w którym pracujemy
+do_preliminary_analisys <- function(to_draw_graphs = c(F, F, F), to_scale = T, my_path = ""){
   if( my_path != "")
     setwd(my_path)
   
@@ -95,6 +103,17 @@ do_preliminary_analisys <- function(to_draw_graphs = c(F, F), to_scale = T, my_p
   if(to_draw_graphs[2])
     draw_corr_matrix(cor(df), 'WykresZ_KA.png')
   
+  # Za pomocą PCA łączymy goldDiff i experienceDiff w jedną zmienną
+  if(to_scale){
+    if(!exists('reduce_dim_pca')){
+      source('PCA.R')
+    }
+    df <- reduce_dim_pca(df, c(ends_with('diff')), 1, "diff", to_draw_graphs[3])
+    if(to_draw_graphs[2])
+      draw_corr_matrix(cor(df), 'WykresBezDiff.png')
+  }
+  
+  # Usuwamy wszystkie rekordy, które zawierają 
   df <- cbind(df, blueWins)
   df <- delete_outliers(df)
   
@@ -111,4 +130,4 @@ do_preliminary_analisys <- function(to_draw_graphs = c(F, F), to_scale = T, my_p
 }
 
 # histograms, corr_matrixes
-do_preliminary_analisys(c(F, T))
+do_preliminary_analisys(c(F, T, T))
