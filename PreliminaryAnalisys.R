@@ -117,8 +117,8 @@ do_preliminary_analisys <- function(to_draw_graphs = c(F, F, F), to_scale = T, m
   df <- cbind(df, blueWins)
   df <- delete_outliers(df)
   
-  blueWins <- df |> select('blueWins')
-  df <- df |> select(!c('blueWins'))
+  if(to_draw_graphs[2])
+    draw_corr_matrix(cor(df), 'WykresZblueWins.png')
   
   print(colnames(df))
   
@@ -126,6 +126,7 @@ do_preliminary_analisys <- function(to_draw_graphs = c(F, F, F), to_scale = T, m
     draw_historgrams(df)
   if(to_scale)
     scale(df)
+  
   return(df)
 }
 
