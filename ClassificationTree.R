@@ -1,13 +1,11 @@
-df <- read.csv("lol.csv", header = TRUE)
-
 set.seed(23)
 
-if (!exists("prep_data")) {
-  source("PrepData.R")
+if (!exists("do_preliminary_analisys")) {
+  source("PreliminaryAnalisys.R")
 }
 
+df <- do_preliminary_analisys()
 df$blueWins <- as.factor(df$blueWins)
-df <- prep_data(df)
 
 library(tree)
 tree(df)
