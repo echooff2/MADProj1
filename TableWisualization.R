@@ -140,6 +140,11 @@ draw_confusion_matrix <- function(TP, FN, TN, FP, name){
       fontface = case_when(
         row %in% 3:4 & col %in% 3:4 ~ "bold",
         TRUE ~ "plain"
+      ),
+      
+      font_size = case_when(
+        row %in% 3:4 & col %in% 3:4 ~ 5,
+        TRUE ~ 4
       )
     )
   
@@ -197,11 +202,11 @@ draw_confusion_matrix <- function(TP, FN, TN, FP, name){
     # Tekst dla zwykłych komórek
     geom_richtext(
       data = cells_to_draw,
-      aes(x = x, y = y, label = label, color = text_color),
-      size = 4, 
+      aes(x = x, y = y, label = label, color = text_color, size = font_size),
       fill = NA,           # Bez tła
       label.color = NA     # Bez ramki wokół tekstu
     ) +
+    scale_size_identity() +
     # Tekst dla scalonych komórek
     geom_text(
       data = merged_cells,
