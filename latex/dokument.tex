@@ -114,6 +114,9 @@ Asysta przyznawana jest graczom, którzy uczestniczyli w eliminacji przeciwnika,
 \end{itemize}
 
 \section{Przedmiot badania}
+
+Przedmiotem badania są mecze rankingowe gry League of Legends analizowane na podstawie statystyk pochodzących z pierwszych 10 minut rozgrywki. W pracy skupiono się na zależności pomiędzy wczesną przewagą jednej z drużyn a końcowym wynikiem meczu. Analiza obejmuje zastosowanie metod klasyfikacji w celu sprawdzenia, czy dane dostępne na początkowym etapie gry pozwalają skutecznie przewidywać zwycięstwo lub porażkę drużyny niebieskiej.
+
 \subsection{Cel i zakres badania}
 Celem badania jest klasyfikacja meczów League of Legends na podstawie danych z
 pierwszych 10 minut rozgrywki przy użyciu kilku metod klasyfikacji, a następnie ocena
@@ -132,13 +135,28 @@ rezultatu.
 
 Zakres badania obejmuje:
 \begin{itemize}
-\item wybór zmiennych wykorzystanych w procesie klasyfikacji,
-\item wstępną analizę danych,
-\item zastosowanie metod klasyfikacji: [NAZWA METODY 1], [NAZWA METODY 2], [NAZWA METODY 3] oraz [NAZWA METODY MIESZANEJ],
-\item analizę i interpretację wyników klasyfikacji,
-\item ocenę skuteczności modeli przy użyciu wybranych miar jakości klasyfikacji [NAZWY METOD],
-\item porównanie skuteczności zastosowanych metod.
+\item charakterystykę oraz analizę zbioru danych zawierającego statystyki meczów League of Legends,
+\item przeprowadzenie wstępnej analizy danych, obejmującej statystyki opisowe oraz analizę korelacji pomiędzy zmiennymi,
+\item przygotowanie danych do procesu uczenia modeli, w tym obsługę wartości odstających, analizę braków danych, skalowanie cech oraz usunięcie zbędnych zmiennych,
+\item analizę końcowego zbioru danych po przeprowadzeniu preprocessingu,
+\item przedstawienie teoretycznych podstaw zastosowanych metod klasyfikacji,
+\item implementację oraz zastosowanie metod klasyfikacji: [NAZWA METODY 1], [NAZWA METODY 2], [NAZWA METODY 3] oraz [NAZWA METODY HYBRYDOWEJ],
+\item ocenę skuteczności modeli przy użyciu wybranych miar jakości klasyfikacji,
+\item analizę i interpretację uzyskanych wyników,
+\item porównanie skuteczności zastosowanych metod klasyfikacji,
+\item wykorzystanie najlepszego modelu do klasyfikacji syntetycznie wygenerowanych danych testowych.
 \end{itemize}
+
+\subsection{Źródło danych}
+W pracy wykorzystano publicznie dostępny zbiór danych zawierający statystyki meczów rankingowych gry League of Legends. Dane pochodzą z serwisu Kaggle i zostały pozyskane przy użyciu oficjalnego API udostępnianego przez Riot Games.
+
+Zbiór obejmuje mecze rankingowe rozgrywane na wysokim poziomie rankingowym tj. od rangi Diamond wzwyż, co odpowiada około 5\% najlepszych graczy. Dane pochodzą z okresu sprzed około sześciu lat. Autor zbioru nie określa dokładnego regionu serwerowego, z którego zostały pobrane mecze.
+
+Pojedynczy rekord reprezentuje statystyki obu drużyn po upływie pierwszych 10 minut pojedynczego meczu. Dane opisują sytuację ekonomiczną drużyn, przebieg walk, kontrolę mapy oraz realizację celów neutralnych we wczesnej fazie rozgrywki.
+
+Zbiór danych składa się z 9879 rekordów oraz 40 zmiennych. Zmienną decyzyjną jest blueWins, określająca końcowy wynik meczu z perspektywy drużyny niebieskiej. Wartość zmiennej informuje, czy drużyna niebieska odniosła zwycięstwo.
+
+Klasy w zbiorze danych są w przybliżeniu zbalansowane, co oznacza, że liczba zwycięstw drużyny niebieskiej i czerwonej jest podobna.
 
 \subsection{Przeglad literatury}
 Ze względu na ograniczoną liczbę prac dotyczących wczesnej fazy gry w League of Le-
@@ -153,26 +171,11 @@ wyniku meczu.
 Druga analiza wskazuje, że takie zmienne jak liczba zabójstw, asyst, złoto, do-
 świadczenie i zabite stwory dobrze różnicują mecze wygrane i przegrane. Potwierdza to,
 że przewaga budowana na początku gry często przekłada się na końcowy rezultat.
+
 Trzecia praca zawiera dokładną analizę wszystkich zmiennych oraz ich wpływu na
 wynik meczu.
 
-Obie prace uzasadniają zastosowane w niniejszej pracy podejście, wskazując, że dane
-z pierwszych minut zawierają informację predykcyjną, a ograniczony zestaw cech ilościo-
-wych może ujawniać strukturę meczów. W konsekwencji zastosowanie metod klasteryzacji
-(k-means oraz modele mieszanin Gaussa estymowane algorytmem EM) jest uzasadnione
-jako narzędzie eksploracji danych i oceny, czy wczesne statystyki pozwalają odróżnić me-
-cze wygrane i przegrane.
-
-\subsection{Źródło danych}
-W pracy wykorzystano publicznie dostępny zbiór danych zawierający statystyki meczów rankingowych gry League of Legends. Dane pochodzą z serwisu Kaggle i zostały pozyskane przy użyciu oficjalnego API udostępnianego przez Riot Games.
-
-Zbiór obejmuje mecze rankingowe rozgrywane na wysokim poziomie rankingowym — od rangi Diamond wzwyż, co odpowiada około 5\% najlepszych graczy. Dane pochodzą z okresu sprzed około sześciu lat. Autor zbioru nie określa dokładnego regionu serwerowego, z którego zostały pobrane mecze.
-
-Pojedynczy rekord reprezentuje statystyki obu drużyn po upływie pierwszych 10 minut pojedynczego meczu. Dane opisują sytuację ekonomiczną drużyn, przebieg walk, kontrolę mapy oraz realizację celów neutralnych we wczesnej fazie rozgrywki.
-
-Zbiór danych składa się z 9879 rekordów oraz 40 zmiennych. Zmienną decyzyjną jest blueWins, określająca końcowy wynik meczu z perspektywy drużyny niebieskiej. Wartość zmiennej informuje, czy drużyna niebieska odniosła zwycięstwo.
-
-Klasy w zbiorze danych są w przybliżeniu zbalansowane, co oznacza, że liczba zwycięstw drużyny niebieskiej i czerwonej jest podobna.
+Wnioski przedstawione w analizowanych pracach uzasadniają zastosowane w niniejszej pracy podejście badawcze. Dotychczasowe analizy wskazują, że dane z początkowej fazy rozgrywki zawierają istotną informację predykcyjną, a wykorzystanie metod klasyfikacji może umożliwić skuteczne przewidywanie wyniku meczu na podstawie ograniczonego zestawu cech opisujących pierwsze minuty gry.
 
 \section{Wstępna analiza danych}
 \subsection{Statystyki opisowe}
@@ -247,6 +250,8 @@ redGoldPerMin & 1648.90 & 1637.8 & 1121.2 & 2273.2 & 149.09 & 0.41 \\
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Przygotowanie danych}
+Przygotowanie danych stanowi jeden z kluczowych etapów procesu budowy modeli klasyfikacyjnych. Odpowiednie oczyszczenie oraz przekształcenie danych pozwala ograniczyć wpływ niepożądanych obserwacji, ujednolicić zakresy wartości poszczególnych cech oraz poprawić stabilność i skuteczność działania algorytmów uczenia maszynowego. W ramach przygotowania danych przeprowadzono analizę wartości odstających, sprawdzenie braków danych, skalowanie zmiennych oraz usunięcie zbędnych cech.
+
 \subsection{Wartości odstające}
 W celu ograniczenia wpływu wartości odstających na działanie modeli klasyfikacyjnych przeprowadzono proces oczyszczania danych. Wartości odstające identyfikowano osobno dla każdej zmiennej numerycznej na podstawie percentyla.
 
@@ -282,30 +287,29 @@ W analizowanym zbiorze danych nie stwierdzono braków danych.
 
 \subsection{Skalowanie danych}
 
-W celu ujednolicenia zakresów wartości poszczególnych cech zastosowano metodę skalowania Min-Max. Proces ten polega na przekształceniu wartości zmiennych do ustalonego przedziału, najczęściej od 0 do 1. Skalowanie danych jest szczególnie istotne w przypadku metod uczenia maszynowego wrażliwych na zakres wartości cech.
+W celu ujednolicenia rozkładów oraz zakresów wartości poszczególnych cech zastosowano standaryzację danych z wykorzystaniem funkcji \texttt{scale()} dostępnej w języku R. Metoda ta polega na przekształceniu wartości zmiennych w taki sposób, aby każda cecha posiadała średnią równą 0 oraz odchylenie standardowe równe 1.
 
-Transformacja Min-Max została wykonana zgodnie ze wzorem:
+Standaryzacja została wykonana zgodnie ze wzorem:
 
 \[
-x' = \frac{x - x_{\min}}{x_{\max} - x_{\min}}
+x' = \frac{x - \mu}{\sigma}
 \]
 
 gdzie:
 \begin{itemize}
-    \item $x$ --- wartość przed skalowaniem,
-    \item $x_{\min}$ --- najmniejsza wartość danej cechy,
-    \item $x_{\max}$ --- największa wartość danej cechy,
-    \item $x'$ --- wartość po przeskalowaniu.
+\item $x$ --- wartość przed skalowaniem,
+\item $\mu$ --- średnia wartość danej cechy,
+\item $\sigma$ --- odchylenie standardowe danej cechy,
+\item $x'$ --- wartość po standaryzacji.
 \end{itemize}
 
-W wyniku zastosowania skalowania wszystkie analizowane cechy numeryczne zostały sprowadzone do wspólnego zakresu wartości. Pozwoliło to ograniczyć wpływ różnic skali pomiędzy zmiennymi na działanie modeli klasyfikacyjnych.
+W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zostały sprowadzone do wspólnej skali. Pozwoliło to ograniczyć wpływ różnic pomiędzy zakresami wartości poszczególnych zmiennych na działanie modeli klasyfikacyjnych oraz poprawić stabilność procesu uczenia.
 
-\subsection{Usunięcie zmiennych}
+\subsection{Usuwanie zmiennych}
 
 \section{Analiza końcowego zbioru danych}
 \subsection{Opisy zmiennych}
 \subsection{Wizualizacja}
-\subsection{}
 
 \section{Opisy metod wraz ze wzorami}
 \subsection{Opis metody 1}
