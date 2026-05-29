@@ -4,6 +4,10 @@ if (!exists("do_preliminary_analisys")) {
   source("PreliminaryAnalisys.R")
 }
 
+if (!exists("draw_confusion_matrix")) {
+  source("TableWisualization.R")
+}
+
 df <- do_preliminary_analisys()
 df$blueWins <- as.factor(df$blueWins)
 
@@ -37,7 +41,8 @@ dev.off()
 summary(tree_res)
 
 predict_test <- predict(tree_res, newdata = test, type = "class")
-table(test$blueWins, predict_test)
+confusion_matrix <- table(Predicted = predict_test, Actual = test$blueWins)
+confusion_matrix
 summary(predict_test)
 
 library(caret)
@@ -64,3 +69,10 @@ cat(paste0(
   "Accuracy tree_res2 drzewa: ", round(acc_large * 100, 2), "%\n",
   "Accuracy tree_res drzewa: ", round(acc_normal * 100, 2), "%\n"
 ))
+
+tn <- confusion_matrix["0", "0"]
+tp <- confusion_matrix["1", "1"]
+fp <- confusion_matrix["0", "1"]
+fn <- confusion_matrix["1", "0"]
+
+draw_confusion_matrix(tp, fn, tn, fp, "classification_tree_confusion_matrix")

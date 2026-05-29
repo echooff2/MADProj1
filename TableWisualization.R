@@ -221,9 +221,9 @@ draw_confusion_matrix <- function(TP, FN, TN, FP, name){
     theme_void()
   
   # Zapis
-  ggsave(paste0("./Plots/confusion_matrixes/",name,".png"), p, width = 10, height = 10, dpi = 300, bg = "transparent")
+  ggsave(paste0("./Plots/confusion_matrixes/",name,".png"), p, width = 10, height = 10, dpi = 300, bg = "transparent", create.dir = TRUE)
 }
 
 if (sys.nframe() == 0L) {
-  draw_confusion_matrix(3891, 123, 253, 4000, "custom_table", dir.create = TRUE)
+  draw_confusion_matrix(3891, 123, 253, 4000, "custom_table", create.dir = TRUE)
 }
