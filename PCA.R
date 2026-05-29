@@ -1,9 +1,18 @@
+library(factoextra)
+
 draw_pca_graph <- function(pca_result, name){
   # add file extension
   name <- paste0(name, '.png')
-  png(paste0('./Plots/PCA/biplot_',name), width = 1500, height = 1500, res = 150, type = "cairo", bg="white")
-  biplot(pca_result)
-  dev.off()
+  p <- fviz_pca_biplot(pca_result, 
+                       geom.ind = "point", 
+                       col.ind = "#2166AC", 
+                       col.var = "#B2182B")
+  ggsave(filename = paste0('./Plots/PCA/biplot_', name), 
+         plot = p, 
+         width = 10,     # Inches by default
+         height = 10,    # Inches by default
+         dpi = 150,      # Replaces 'res'
+         bg = "white")
   
   # Scree plot
   png(paste0('./Plots/PCA/screeplot_',name), width = 1500, height = 1500, res = 150, type = "cairo", bg="white")

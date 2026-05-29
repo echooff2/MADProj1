@@ -56,6 +56,8 @@ rsconnect/
 *.aux
 *.blg
 *.toc
+*.log
+*.out
 
 # pycharm
 .idea
