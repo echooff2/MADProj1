@@ -1,0 +1,329 @@
+\documentclass{customStyle}
+
+%% ---- Additional packages (add as needed) ----
+\usepackage{booktabs}      % Professional tables (\toprule, \midrule, \bottomrule)
+\usepackage{multirow}      % Multi-row table cells
+%% graphicx, amsmath cls tarafından zaten yuklendiginden tekrar eklenmez.
+%% amssymb da eklenmez -- newtxmath ile \Bbbk catismasi yaratir.
+\usepackage{subcaption}    % Sub-figures (optional)
+\usepackage{hyperref}      % Clickable links in PDF (load last)
+\usepackage[polish]{babel}
+\usepackage{float}
+\hypersetup{
+  colorlinks = true,
+  linkcolor  = black,
+  citecolor  = black,
+  urlcolor   = black
+}
+
+%% ============================================================
+%%  TITLE BLOCK INFORMATION
+%% ============================================================
+
+\title{Klasyfikacja meczów League of Legends przy ograniczonych danych z pierwszych 10 minut meczu}
+
+%% Authors: use \textsuperscript{*} for affiliation markers
+%% \orcidlink{xxxx-xxxx-xxxx-xxxx} : yazar adının hemen yanına ORCID iD ikonu ekler.
+%% İkon tıklanabilir olup https://orcid.org/xxxx-xxxx-xxxx-xxxx adresine yönlendirir.
+%% ORCID ID'si olmayan yazar için \orcidlink{} satırını kaldırın.
+\author{%
+  Michał Wojda\textsuperscript{*} {\small (227753)} ,
+  Sebastian Śmietański\textsuperscript{*} {\small (227914)}, \\
+  Tomasz Teofilak\textsuperscript{*} {\small (227674)},
+  Tomasz Żołądek\textsuperscript{*} {\small (230998)}%
+}
+
+%% Affiliations (one line per group, separated by \\)
+\ijaffiliation{%
+  \textsuperscript{*}Wydział Zastosowań Informatyki i Matematyki, Szkoła Główna Gospodarstwa Wiejskiego, 	Warszawa, Polska
+}
+
+%% E-mail addresses of all authors (in parentheses, comma-separated)
+\ijemail{%
+  s227753@sggw.edu.pl,
+  s227914@sggw.edu.pl,
+  s227674@sggw.edu.pl,
+  s230998@sggw.edu.pl%
+}
+
+\receivedaccepted{09.06.2026}{09.06.2027}
+
+%% ============================================================
+%%  RUNNING HEADER METADATA
+%%  Bu bilgiler her sayfanın üst bilgisinde görünür.
+%% ============================================================
+
+%% Kısa yazar listesi: "Soyad et al." veya iki yazar ise "Soyad1 and Soyad2"
+\ijshortauthor{F.~Author et al.}
+
+%% Dergi cilt, sayı, ay ve yıl bilgisi (editörlük tarafından doldurulur)
+\ijvolume{x}
+\ijissue{x}
+\ijpubmonth{Month}
+\ijpubyear{xxxx}
+
+%% Makale türü: "Research Article" veya "Review Article"
+\ijarticletype{Metody Analizy Danych, Projekt 2}
+
+%% ============================================================
+%%  DOCUMENT BODY
+%% ============================================================
+\begin{document}
+
+\maketitle
+
+%% ---- Abstract (max 250 words, no citations) ----
+\begin{abstract}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras ex odio, elementum sit amet quam ac, accumsan pharetra libero. Suspendisse odio nisi, consequat sed ornare sed, convallis sed nulla. Nunc nec enim ut nisi facilisis cursus. Cras nec enim neque. Quisque nec consectetur odio. Pellentesque eget euismod sapien. Cras urna urna, gravida a eros eget, tincidunt scelerisque metus. Ut eget mi vehicula augue bibendum dapibus. Ut tempus tellus eros, eu lobortis est dignissim sit amet. Integer id molestie dolor. Mauris tincidunt nunc erat, ut suscipit lacus pharetra varius. Sed quis neque ut ligula vestibulum egestas a sed felis. Quisque vulputate tincidunt metus. 
+\end{abstract}
+
+%% ---- Keywords (minimum 3, maximum 5) ----
+\keywords{League of Legends, LoL, klasyfikacja, predykcja wyniku meczu, NAZWY UZYTYCH  METOD}
+
+%% ============================================================
+%%  SECTION 1: INTRODUCTION
+%% ============================================================
+\section{Wprowadzenie}
+musi byc przynajmniej jedna cytacja zeby latex sie nie wywalil \cite{IEA2023} 
+
+League of Legends jest jedną z najpopularniejszych gier komputerowych typu MOBA (Multiplayer Online Battle Arena), w której dwie pięcioosobowe drużyny rywalizują ze sobą w celu zniszczenia głównej struktury przeciwnika, zwanej Nexusem. Rozgrywka opiera się na współpracy zespołowej, zdobywaniu zasobów oraz stopniowym budowaniu przewagi ekonomicznej i strategicznej nad drużyną przeciwną.
+
+Na przebieg meczu wpływa wiele wzajemnie powiązanych czynników, takich jak liczba eliminacji, zdobywane złoto, doświadczenie bohaterów, kontrola mapy czy przejmowanie neutralnych obiektów. Szczególnie istotna jest początkowa faza rozgrywki, ponieważ to właśnie w pierwszych minutach meczu budowane są podstawy dalszej przewagi, które często mają wpływ na końcowy rezultat spotkania.
+
+Współczesne gry sieciowe generują duże ilości danych opisujących przebieg rozgrywek, co umożliwia wykorzystanie metod analizy danych oraz uczenia maszynowego do badania zależności występujących podczas meczu. Analiza statystyk z wczesnego etapu gry może dostarczyć informacji o typowych schematach prowadzących do zwycięstwa lub porażki drużyny.
+
+Problem badawczy poruszany w niniejszej pracy dotyczy możliwości przewidywania wyniku meczu rankingowego na podstawie statystyk z pierwszych 10 minut rozgrywki. W pracy wykorzystano dane dotyczące meczów rankingowych w celu zbadania, czy metody klasyfikacji pozwalają przewidywać zwycięstwo lub porażkę drużyny niebieskiej na podstawie cech opisujących początkową fazę meczu. Dodatkowym celem jest określenie, które zmienne mają największy wpływ na skuteczność modeli klasyfikacyjnych.
+
+\subsection{Wyjaśnienie terminów}
+\begin{itemize}
+\item \textbf{Doświadczenie} - Doświadczenie (experience, XP) jest zasobem zdobywanym przez bohaterów podczas rozgrywki głównie poprzez przebywanie w pobliżu eliminowanych przeciwników, takich jak miniony czy potwory z dżungli. Zdobywanie doświadczenia pozwala bohaterom awansować na kolejne poziomy, co zwiększa ich statystyki oraz umożliwia rozwijanie umiejętności.
+\item \textbf{Złoto} - Złoto jest podstawową walutą występującą w grze. Może być zdobywane między innymi poprzez eliminowanie minionów, bohaterów przeciwnika, potworów z dżungli oraz niszczenie struktur. Zgromadzone złoto pozwala na zakup przedmiotów zwiększających siłę bohatera.
+\item \textbf{Śmierci, zabójstwa i asysty} - Zabójstwo oznacza wyeliminowanie bohatera drużyny przeciwnej. Drużyna zdobywa wówczas złoto oraz przewagę czasową wynikającą z chwilowej nieobecności przeciwnika na mapie.
+Śmierć oznacza utratę bohatera na określony czas, co ogranicza możliwości drużyny.
+Asysta przyznawana jest graczom, którzy uczestniczyli w eliminacji przeciwnika, lecz nie zadali decydującego ciosu.
+\item \textbf{First Blood} - First Blood oznacza pierwsze zabójstwo wykonane w meczu. Zdarzenie to zapewnia dodatkową nagrodę w postaci złota i często umożliwia zdobycie wczesnej przewagi nad przeciwnikiem.
+\item \textbf{Wardy} - Wardy są przedmiotami lub umiejętnościami zapewniającymi wizję wybranego obszaru mapy. Mogą być rozmieszczane przez graczy w celu kontrolowania ruchów przeciwnika oraz zabezpieczania ważnych obiektów. Wrogie wardy mogą zostać wykryte i zniszczone przez drużynę przeciwną, co ogranicza dostęp przeciwników do informacji o mapie.
+\item \textbf{Miniony} - Miniony są jednostkami sterowanymi przez komputer, które regularnie pojawiają się w bazach obu drużyn i poruszają się wyznaczonymi liniami mapy. Eliminowanie minionów stanowi jedno z głównych źródeł złota i doświadczenia podczas wczesnej fazy gry.
+\item \textbf{Miniony z dżungli} - Miniony z dżungli, nazywane również potworami neutralnymi, występują w obszarze dżungli pomiędzy liniami. Ich eliminowanie zapewnia złoto, doświadczenie oraz dodatkowe efekty wzmacniające bohaterów.
+\item \textbf{Smoki} - Smoki są neutralnymi potworami pojawiającymi się okresowo na mapie. Ich pokonanie zapewnia drużynie trwałe premie wzmacniające statystyki bohaterów. Kontrola smoków jest jednym z ważniejszych elementów strategicznych rozgrywki.
+\item \textbf{Heroldy} - Heroldy, określane również jako Rift Herald, są neutralnymi potworami pojawiającymi się we wczesnej i środkowej fazie gry. Po pokonaniu herolda drużyna może przyzwać go na wybranej linii, gdzie pomaga on w niszczeniu struktur przeciwnika.
+\end{itemize}
+
+\section{Przedmiot badania}
+\subsection{Cel i zakres badania}
+Celem badania jest klasyfikacja meczów League of Legends na podstawie danych z
+pierwszych 10 minut rozgrywki przy użyciu kilku metod klasyfikacji, a następnie ocena
+skuteczności tych metod w przewidywaniu rzeczywistego wyniku meczu, rozumianego
+jako wygrana lub przegrana drużyny niebieskiej.
+
+Istotnym elementem pracy jest porównanie wyników uzyskanych za pomocą trzech
+metod klasyfikacji: [NAZWA METODY 1], [NAZWA METODY 2] oraz [NAZWA METODY 3],
+a także metody mieszanej [NAZWA METODY MIESZANEJ], łączącej cechy wybranych podejść.
+Celem analizy jest wskazanie, które z zastosowanych rozwiązań najlepiej przewiduje wynik
+meczu na podstawie danych dostępnych na wczesnym etapie gry.
+
+Analiza ma charakter predykcyjny i koncentruje się na sprawdzeniu, czy informacje
+dostępne w początkowej fazie meczu pozwalają na skuteczne przewidywanie jego końcowego
+rezultatu.
+
+Zakres badania obejmuje:
+\begin{itemize}
+\item wybór zmiennych wykorzystanych w procesie klasyfikacji,
+\item wstępną analizę danych,
+\item zastosowanie metod klasyfikacji: [NAZWA METODY 1], [NAZWA METODY 2], [NAZWA METODY 3] oraz [NAZWA METODY MIESZANEJ],
+\item analizę i interpretację wyników klasyfikacji,
+\item ocenę skuteczności modeli przy użyciu wybranych miar jakości klasyfikacji [NAZWY METOD],
+\item porównanie skuteczności zastosowanych metod.
+\end{itemize}
+
+\subsection{Przeglad literatury}
+Ze względu na ograniczoną liczbę prac dotyczących wczesnej fazy gry w League of Le-
+gends, przegląd oparto głównie na dwóch analizach z Kaggle wykorzystujących ten sam
+zbiór danych. 
+
+Pierwsza praca pokazuje, że już w pierwszych 10 minutach meczu pojawiają się
+istotne różnice statystyczne między drużynami, które mogą wpływać na dalszy przebieg
+rozgrywki. Wyniki sugerują, że wczesna faza gry dostarcza informacji o potencjalnym
+wyniku meczu.
+
+Druga analiza wskazuje, że takie zmienne jak liczba zabójstw, asyst, złoto, do-
+świadczenie i zabite stwory dobrze różnicują mecze wygrane i przegrane. Potwierdza to,
+że przewaga budowana na początku gry często przekłada się na końcowy rezultat.
+Trzecia praca zawiera dokładną analizę wszystkich zmiennych oraz ich wpływu na
+wynik meczu.
+
+Obie prace uzasadniają zastosowane w niniejszej pracy podejście, wskazując, że dane
+z pierwszych minut zawierają informację predykcyjną, a ograniczony zestaw cech ilościo-
+wych może ujawniać strukturę meczów. W konsekwencji zastosowanie metod klasteryzacji
+(k-means oraz modele mieszanin Gaussa estymowane algorytmem EM) jest uzasadnione
+jako narzędzie eksploracji danych i oceny, czy wczesne statystyki pozwalają odróżnić me-
+cze wygrane i przegrane.
+
+\subsection{Źródło danych}
+W pracy wykorzystano publicznie dostępny zbiór danych zawierający statystyki meczów rankingowych gry League of Legends. Dane pochodzą z serwisu Kaggle i zostały pozyskane przy użyciu oficjalnego API udostępnianego przez Riot Games.
+
+Zbiór obejmuje mecze rankingowe rozgrywane na wysokim poziomie rankingowym — od rangi Diamond wzwyż, co odpowiada około 5\% najlepszych graczy. Dane pochodzą z okresu sprzed około sześciu lat. Autor zbioru nie określa dokładnego regionu serwerowego, z którego zostały pobrane mecze.
+
+Pojedynczy rekord reprezentuje statystyki obu drużyn po upływie pierwszych 10 minut pojedynczego meczu. Dane opisują sytuację ekonomiczną drużyn, przebieg walk, kontrolę mapy oraz realizację celów neutralnych we wczesnej fazie rozgrywki.
+
+Zbiór danych składa się z 9879 rekordów oraz 40 zmiennych. Zmienną decyzyjną jest blueWins, określająca końcowy wynik meczu z perspektywy drużyny niebieskiej. Wartość zmiennej informuje, czy drużyna niebieska odniosła zwycięstwo.
+
+Klasy w zbiorze danych są w przybliżeniu zbalansowane, co oznacza, że liczba zwycięstw drużyny niebieskiej i czerwonej jest podobna.
+
+\section{Wstępna analiza danych}
+\subsection{Statystyki opisowe}
+\begin{table}[H]
+\centering
+\caption{Statystyki opisowe wszystkich zmiennych.}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{l c c c c c c c c c c c}
+\toprule
+Zmienna & Średnia & Mediana & Min. & Maks. & Odch. std.  & Skośność \\
+\midrule
+blueWardsPlaced & 22.29 & 16.0 & 5.0 & 250.0 & 18.02 & 4.14 \\
+blueWardsDestroyed & 2.82 & 3.0 & 0.0 & 27.0 & 2.17 & 2.85 \\
+blueFirstBlood & 0.50 & 1.0 & 0.0 & 1.0 & 0.50 & -0.02 \\
+blueKills & 6.18 & 6.0 & 0.0 & 22.0 & 3.01 & 0.54 \\
+blueDeaths & 6.14 & 6.0 & 0.0 & 22.0 & 2.93 & 0.51 \\
+blueAssists & 6.65 & 6.0 & 0.0 & 29.0 & 4.06 & 0.89 \\
+blueEliteMonsters & 0.55 & 0.0 & 0.0 & 2.0 & 0.63 & 0.69 \\
+blueDragons & 0.36 & 0.0 & 0.0 & 1.0 & 0.48 & 0.57 \\
+blueHeralds & 0.19 & 0.0 & 0.0 & 1.0 & 0.39 & 1.60 \\
+blueTowersDestroyed & 0.05 & 0.0 & 0.0 & 4.0 & 0.24 & 5.59 \\
+blueTotalGold & 16503.46 & 16398.0 & 10730.0 & 23701.0 & 1535.45 & 0.47 \\
+blueAvgLevel & 6.92 & 7.0 & 4.6 & 8.0 & 0.31 & -0.34 \\
+blueTotalExperience & 17928.11 & 17951.0 & 10098.0 & 22224.0 & 1200.52 & -0.25 \\
+blueTotalMinionsKilled & 216.70 & 218.0 & 90.0 & 283.0 & 21.86 & -0.27 \\
+blueTotalJungleMinionsKilled & 50.51 & 50.0 & 0.0 & 92.0 & 9.90 & 0.12 \\
+blueGoldDiff & 14.41 & 14.0 & -10830.0 & 11467.0 & 2453.35 & 0.03 \\
+blueExperienceDiff & -33.62 & -28.0 & -9333.0 & 8348.0 & 1920.37 & 0.02 \\
+blueCSPerMin & 21.67 & 21.8 & 9.0 & 28.3 & 2.19 & -0.27 \\
+blueGoldPerMin & 1650.35 & 1639.8 & 1073.0 & 2370.1 & 153.54 & 0.47 \\
+redWardsPlaced & 22.37 & 16.0 & 6.0 & 276.0 & 18.46 & 4.56 \\
+redWardsDestroyed & 2.72 & 2.0 & 0.0 & 24.0 & 2.14 & 2.95 \\
+redFirstBlood & 0.50 & 0.0 & 0.0 & 1.0 & 0.50 & 0.02 \\
+redKills & 6.14 & 6.0 & 0.0 & 22.0 & 2.93 & 0.51 \\
+redDeaths & 6.18 & 6.0 & 0.0 & 22.0 & 3.01 & 0.54 \\
+redAssists & 6.66 & 6.0 & 0.0 & 28.0 & 4.06 & 0.82 \\
+redEliteMonsters & 0.57 & 0.0 & 0.0 & 2.0 & 0.63 & 0.62 \\
+redDragons & 0.41 & 0.0 & 0.0 & 1.0 & 0.49 & 0.35 \\
+redHeralds & 0.16 & 0.0 & 0.0 & 1.0 & 0.37 & 1.85 \\
+redTowersDestroyed & 0.04 & 0.0 & 0.0 & 2.0 & 0.22 & 5.34 \\
+redTotalGold & 16489.04 & 16378.0 & 11212.0 & 22732.0 & 1490.89 & 0.41 \\
+redAvgLevel & 6.93 & 7.0 & 4.8 & 8.2 & 0.31 & -0.40 \\
+redTotalExperience & 17961.73 & 17974.0 & 10465.0 & 22269.0 & 1198.58 & -0.28 \\
+redTotalMinionsKilled & 217.35 & 218.0 & 107.0 & 289.0 & 21.91 & -0.29 \\
+redTotalJungleMinionsKilled & 51.31 & 51.0 & 4.0 & 92.0 & 10.03 & 0.23 \\
+redGoldDiff & -14.41 & -14.0 & -11467.0 & 10830.0 & 2453.35 & -0.03 \\
+redExperienceDiff & 33.62 & 28.0 & -8348.0 & 9333.0 & 1920.37 & -0.02 \\
+redCSPerMin & 21.73 & 21.8 & 10.7 & 28.9 & 2.19 & -0.29 \\
+redGoldPerMin & 1648.90 & 1637.8 & 1121.2 & 2273.2 & 149.09 & 0.41 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\subsection{Analiza korelacji}
+\begin{figure}[H]
+    \centering
+    \makebox[\textwidth][c]{%
+        \includegraphics[width=1.0\textwidth]{../Repo/Plots/corrmatrixes/WykresKorelacji1.png}
+    }
+    \caption{Macierz korelacji dla wszystkich zmiennych 1.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \makebox[\textwidth][c]{%
+        \includegraphics[width=1.0\textwidth]{../Repo/Plots/corrmatrixes/WykresKorelacji1.png}
+    }
+    \caption{Macierz korelacji dla wszystkich zmiennych 2.}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Przygotowanie danych}
+\subsection{Wartości odstające}
+W celu ograniczenia wpływu wartości odstających na działanie modeli klasyfikacyjnych przeprowadzono proces oczyszczania danych. Wartości odstające identyfikowano osobno dla każdej zmiennej numerycznej na podstawie percentyla.
+
+Dla każdej cechy wyznaczano górny próg odpowiadający wybranemu percentylowi:
+
+\[
+Q_{g} = Q_{1-\frac{p}{100}}
+\]
+
+gdzie:
+\begin{itemize}
+    \item $Q_{g}$ --- górny próg dla danej cechy,
+    \item $Q$ --- funkcja percentylowa,
+    \item $p$ --- procent najwyższych wartości uznawanych za odstające.
+\end{itemize}
+
+Następnie wszystkie wartości większe od wyznaczonego progu były oznaczane jako brakujące:
+
+\[
+x =
+\begin{cases}
+x, & \text{gdy } x \leq Q_{g} \\
+NA, & \text{gdy } x > Q_{g}
+\end{cases}
+\]
+
+Po oznaczeniu wartości odstających jako brakujące usuwano wszystkie rekordy zawierające przynajmniej jedną wartość \texttt{NA}. Ostatecznie ze zbioru danych usunięto XXXX rekordów, co stanowiło YY\% wszystkich obserwacji.
+
+Zastosowana metoda pozwoliła ograniczyć wpływ skrajnych obserwacji na proces uczenia modeli oraz zmniejszyć ryzyko zaburzenia działania algorytmów przez nietypowe wartości.
+
+\subsection{Braki danych}
+W analizowanym zbiorze danych nie stwierdzono braków danych.
+
+\subsection{Skalowanie}
+\subsection{Skalowanie danych}
+
+W celu ujednolicenia zakresów wartości poszczególnych cech zastosowano metodę skalowania Min-Max. Proces ten polega na przekształceniu wartości zmiennych do ustalonego przedziału, najczęściej od 0 do 1. Skalowanie danych jest szczególnie istotne w przypadku metod uczenia maszynowego wrażliwych na zakres wartości cech.
+
+Transformacja Min-Max została wykonana zgodnie ze wzorem:
+
+\[
+x' = \frac{x - x_{\min}}{x_{\max} - x_{\min}}
+\]
+
+gdzie:
+\begin{itemize}
+    \item $x$ --- wartość przed skalowaniem,
+    \item $x_{\min}$ --- najmniejsza wartość danej cechy,
+    \item $x_{\max}$ --- największa wartość danej cechy,
+    \item $x'$ --- wartość po przeskalowaniu.
+\end{itemize}
+
+W wyniku zastosowania skalowania wszystkie analizowane cechy numeryczne zostały sprowadzone do wspólnego zakresu wartości. Pozwoliło to ograniczyć wpływ różnic skali pomiędzy zmiennymi na działanie modeli klasyfikacyjnych.
+
+\subsection{Usunięcie zmiennych}
+
+\section{Analiza końcowego zbioru danych}
+\subsection{Opisy zmiennych}
+\subsection{Wizualizacja}
+\subsection{}
+
+\section{Opisy metod wraz ze wzorami}
+\subsection{Opis metody 1}
+\subsection{Opis metody 2}
+\subsection{Opis metody 3}
+\subsection{Opis metody hybrydowej}
+\subsection{Opis oceny metody oceniania}
+
+\section{Rezultaty}
+\subsection{Rezultat metody 1}
+\subsection{Rezultat metody 2}
+\subsection{Rezultat metody 3}
+\subsection{Rezultat metody hybrydowej}
+\subsection{Porównanie skuteczności metod}
+\subsection{Użycie najlepszego modelu na syntetycznych danych}
+
+\section{Podsumowanie}
+
+\section{Załączniki}
+
+\bibliographystyle{ieeetr}
+\bibliography{references}
+
+\end{document}

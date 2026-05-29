@@ -50,3 +50,9 @@ rsconnect/
 
 # every graphs
 *.png
+
+# latex
+*.synctex.gz
+
+# pycharm
+.idea
