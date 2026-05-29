@@ -53,6 +53,9 @@ rsconnect/
 
 # latex
 *.synctex.gz
+*.aux
+*.blg
+*.toc
 
 # pycharm
 .idea
