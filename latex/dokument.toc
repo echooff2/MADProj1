@@ -9,7 +9,7 @@
 \contentsline {subsection}{\numberline {3.1}Statystyki opisowe}{7}{subsection.3.1}%
 \contentsline {subsection}{\numberline {3.2}Braki danych}{8}{subsection.3.2}%
 \contentsline {subsection}{\numberline {3.3}Wartości odstające}{8}{subsection.3.3}%
-\contentsline {subsection}{\numberline {3.4}Skalowanie danych}{8}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.4}Standaryzowanie danych}{8}{subsection.3.4}%
 \contentsline {subsection}{\numberline {3.5}Usuwanie zmiennych}{9}{subsection.3.5}%
 \contentsline {subsubsection}{\numberline {3.5.1}Qausi Stałe zmienne}{9}{subsubsection.3.5.1}%
 \contentsline {subsubsection}{\numberline {3.5.2}Skorelowane prosto, liniowo}{9}{subsubsection.3.5.2}%

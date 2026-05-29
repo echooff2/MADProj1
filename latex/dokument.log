@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.5.21)  29 MAY 2026 21:17
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.5.21)  29 MAY 2026 21:36
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1417,8 +1417,15 @@ Package pdftex.def Info: sggw_logo.jpg  used on input line 335.
 LaTeX2e <2025-11-01>
 L3 programming layer <2020/03/25>
  ***********
-Package rerunfilecheck Info: File `dokument.out' has not changed.
-(rerunfilecheck)             Checksum: D5FD152E4B642710D3CD556B608C8E1C;5603.
+
+
+Package rerunfilecheck Warning: File `dokument.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `dokument.out':
+(rerunfilecheck)             Before: D5FD152E4B642710D3CD556B608C8E1C;5603
+(rerunfilecheck)             After:  7F9371835641E06794BBC6BCFED299FB;5628.
  ) 
 Here is how much of TeX's memory you used:
  30483 strings out of 467690
@@ -1442,7 +1449,7 @@ nts/type1/urw/helvetic/uhvr8a.pfb><C:/Users/rysio/AppData/Local/Programs/MiKTeX
 X/fonts/type1/public/newtx/ztmbi.pfb><C:/Users/rysio/AppData/Local/Programs/MiK
 TeX/fonts/type1/public/newtx/ztmr.pfb><C:/Users/rysio/AppData/Local/Programs/Mi
 KTeX/fonts/type1/public/newtx/ztmri.pfb>
-Output written on dokument.pdf (10 pages, 915280 bytes).
+Output written on dokument.pdf (10 pages, 915282 bytes).
 PDF statistics:
  325 PDF objects out of 1000 (max. 8388607)
  50 named destinations out of 1000 (max. 500000)
