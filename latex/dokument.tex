@@ -232,27 +232,8 @@ redGoldPerMin & 1648.90 & 1637.8 & 1121.2 & 2273.2 & 149.09 & 0.41 \\
 }
 \end{table}
 
-\subsection{Analiza korelacji}
-\begin{figure}[H]
-    \centering
-    \makebox[\textwidth][c]{%
-        \includegraphics[width=1.0\textwidth]{../Plots/corrmatrixes/WykresKorelacji1.png}
-    }
-    \caption{Macierz korelacji dla wszystkich zmiennych 1.}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \makebox[\textwidth][c]{%
-        \includegraphics[width=1.0\textwidth]{../Plots/corrmatrixes/WykresKorelacji1.png}
-    }
-    \caption{Macierz korelacji dla wszystkich zmiennych 2.}
-\end{figure}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Przygotowanie danych}
-Przygotowanie danych stanowi jeden z kluczowych etapów procesu budowy modeli klasyfikacyjnych. Odpowiednie oczyszczenie oraz przekształcenie danych pozwala ograniczyć wpływ niepożądanych obserwacji, ujednolicić zakresy wartości poszczególnych cech oraz poprawić stabilność i skuteczność działania algorytmów uczenia maszynowego. W ramach przygotowania danych przeprowadzono analizę wartości odstających, sprawdzenie braków danych, skalowanie zmiennych oraz usunięcie zbędnych cech.
+\subsection{Braki danych}
+W analizowanym zbiorze danych nie stwierdzono braków danych.
 
 \subsection{Wartości odstające}
 W celu ograniczenia wpływu wartości odstających na działanie modeli klasyfikacyjnych przeprowadzono proces oczyszczania danych. Wartości odstające identyfikowano osobno dla każdej zmiennej numerycznej na podstawie percentyla.
@@ -265,9 +246,9 @@ Q_{g} = Q_{1-\frac{p}{100}}
 
 gdzie:
 \begin{itemize}
-    \item $Q_{g}$ --- górny próg dla danej cechy,
-    \item $Q$ --- funkcja percentylowa,
-    \item $p$ --- procent najwyższych wartości uznawanych za odstające.
+	\item $Q_{g}$ --- górny próg dla danej cechy,
+	\item $Q$ --- funkcja percentylowa,
+	\item $p$ --- procent najwyższych wartości uznawanych za odstające.
 \end{itemize}
 
 Następnie wszystkie wartości większe od wyznaczonego progu były oznaczane jako brakujące:
@@ -275,17 +256,14 @@ Następnie wszystkie wartości większe od wyznaczonego progu były oznaczane ja
 \[
 x =
 \begin{cases}
-x, & \text{gdy } x \leq Q_{g} \\
-NA, & \text{gdy } x > Q_{g}
+	x, & \text{gdy } x \leq Q_{g} \\
+	NA, & \text{gdy } x > Q_{g}
 \end{cases}
 \]
 
 Po oznaczeniu wartości odstających jako brakujące usuwano wszystkie rekordy zawierające przynajmniej jedną wartość \texttt{NA}. Ostatecznie ze zbioru danych usunięto XXXX rekordów, co stanowiło YY\% wszystkich obserwacji.
 
 Zastosowana metoda pozwoliła ograniczyć wpływ skrajnych obserwacji na proces uczenia modeli oraz zmniejszyć ryzyko zaburzenia działania algorytmów przez nietypowe wartości.
-
-\subsection{Braki danych}
-W analizowanym zbiorze danych nie stwierdzono braków danych.
 
 \subsection{Skalowanie danych}
 
@@ -299,15 +277,34 @@ x' = \frac{x - \mu}{\sigma}
 
 gdzie:
 \begin{itemize}
-\item $x$ --- wartość przed skalowaniem,
-\item $\mu$ --- średnia wartość danej cechy,
-\item $\sigma$ --- odchylenie standardowe danej cechy,
-\item $x'$ --- wartość po standaryzacji.
+	\item $x$ --- wartość przed skalowaniem,
+	\item $\mu$ --- średnia wartość danej cechy,
+	\item $\sigma$ --- odchylenie standardowe danej cechy,
+	\item $x'$ --- wartość po standaryzacji.
 \end{itemize}
 
 W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zostały sprowadzone do wspólnej skali. Pozwoliło to ograniczyć wpływ różnic pomiędzy zakresami wartości poszczególnych zmiennych na działanie modeli klasyfikacyjnych oraz poprawić stabilność procesu uczenia.
 
 \subsection{Usuwanie zmiennych}
+
+\subsubsection{Qausi Stałe zmienne}
+
+\subsubsection{Skorelowane prosto, liniowo}
+\begin{figure}[H]
+	\centering
+	\makebox[\textwidth][c]{%
+		\includegraphics[width=1.0\textwidth]{../Plots/corrmatrixes/WykresKorelacji1.png}
+	}
+	\caption{Macierz korelacji dla wszystkich zmiennych 1.}
+\end{figure}
+
+\subsubsection{Skorelowane wielokrotnie, liniowo}
+
+\subsection{Łączenie zmiennych}
+
+\subsubsection{Agregacja}
+
+\subsubsection{PCA}
 
 \section{Analiza końcowego zbioru danych}
 \subsection{Opisy zmiennych}
