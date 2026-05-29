@@ -224,4 +224,6 @@ draw_confusion_matrix <- function(TP, FN, TN, FP, name){
   ggsave(paste0("./Plots/confusion_matrixes/",name,".png"), p, width = 10, height = 10, dpi = 300, bg = "transparent")
 }
 
-draw_confusion_matrix(3891, 123, 253, 4000, "custom_table")
+if (sys.nframe() == 0L) {
+  draw_confusion_matrix(3891, 123, 253, 4000, "custom_table", dir.create = TRUE)
+}
