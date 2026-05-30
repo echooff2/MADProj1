@@ -235,9 +235,14 @@ redGoldPerMin & 1648.90 & 1637.8 & 1121.2 & 2273.2 & 149.09 & 0.41 \\
 W analizowanym zbiorze danych nie stwierdzono braków danych.
 
 \subsection{Wartości odstające}
-W celu ograniczenia wpływu wartości odstających na działanie modeli klasyfikacyjnych przeprowadzono proces oczyszczania danych. Wartości odstające identyfikowano osobno dla każdej zmiennej numerycznej na podstawie percentyla.
+W celu ograniczenia wpływu wartości odstających na działanie modeli klasyfikacyjnych przeprowadzono proces oczyszczania danych. Za wartości odstające uznano jedynie 1\% najwyższych wartości zmiennych:
+\begin{itemize}
+	\item blueWardsPlaced
+	\item redWardsPlaced
+\end{itemize}
+jako że te zmienne miały największą ilość skrajnie dużych wartości. Dodatkowo, takie wartości świadczą o braku poważnego traktowania gry ze strony drużyny charakteryzującej się wysoką wartości zmiennej $WardsPlaced$.
 
-Dla każdej cechy wyznaczano górny próg odpowiadający wybranemu percentylowi:
+Dlatego dla każdej wyżej wymienionej cechy wyznaczano górny próg odpowiadający wybranemu percentylowi:
 
 \[
 Q_{g} = Q_{1-\frac{p}{100}}
@@ -260,7 +265,7 @@ x =
 \end{cases}
 \]
 
-Po oznaczeniu wartości odstających jako brakujące usuwano wszystkie rekordy zawierające przynajmniej jedną wartość \texttt{NA}. Ostatecznie ze zbioru danych usunięto XXXX rekordów, co stanowiło YY\% wszystkich obserwacji.
+Po oznaczeniu wartości odstających jako brakujące usuwano wszystkie rekordy zawierające przynajmniej jedną wartość \texttt{NA}. Ostatecznie ze zbioru danych usunięto 190 rekordów, co stanowiło w przybliżeniu 1.92\% wszystkich obserwacji.
 
 Zastosowana metoda pozwoliła ograniczyć wpływ skrajnych obserwacji na proces uczenia modeli oraz zmniejszyć ryzyko zaburzenia działania algorytmów przez nietypowe wartości.
 

@@ -39,8 +39,7 @@ delete_outliers <- function(df){
     mutate(
       across(
         c(
-          blueWardsPlaced, blueWardsDestroyed,
-          redWardsPlaced, redWardsDestroyed
+          blueWardsPlaced, redWardsPlaced
           ), ~ czysc_skrajne(.x, percentage)
       )
     )
@@ -121,6 +120,7 @@ do_preliminary_analisys <- function(to_draw_graphs = c(F, F, F), to_scale = T, m
     draw_corr_matrix(cor(df), 'WykresZblueWins.png')
   
   print(colnames(df))
+  print(dim(df))
   
   if(to_draw_graphs[1])
     draw_historgrams(df)
