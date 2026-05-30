@@ -92,6 +92,9 @@ do_preliminary_analisys <- function(to_draw_graphs = c(F, F, F), to_scale = T, m
   df <- df |>
     select(!c(ends_with('EliteMonsters'), ends_with('GoldPerMin'), ends_with('TotalExperience')))
   
+  if(to_draw_graphs[2])
+    draw_corr_matrix(cor(df), 'WykresBezElite.png')
+  
   df <- df %>%
     mutate(
       blueKA = blueKills + blueAssists,
