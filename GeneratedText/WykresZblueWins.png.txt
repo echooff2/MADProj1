@@ -1,0 +1,143 @@
+\begin{table}[!h]
+\centering
+\caption{Podział cech według siły korelacji}
+\centering
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{
+\begin{tabular}[t]{lllll}
+\toprule
+Bardzo słaba & Słaba & Umiarkowana & Silna & Bardzo silna\\
+\midrule
+\cellcolor{gray!10}{blueWardsPlaced -- blueWardsDestroyed (0.07)} & \cellcolor{gray!10}{blueWardsDestroyed -- redWardsDestroyed (0.21)} & \cellcolor{gray!10}{blueDragons -- redDragons (-0.63)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueWardsPlaced -- blueDragons (0.01) & blueHeralds -- redHeralds (-0.21) & redCSPerMin -- blueKA (-0.42) &  & \\
+\cellcolor{gray!10}{blueWardsDestroyed -- blueDragons (0.05)} & \cellcolor{gray!10}{redDragons -- redTotalJungleMinionsKilled (0.22)} & \cellcolor{gray!10}{blueCSPerMin -- redKA (-0.41)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueWardsPlaced -- blueHeralds (0.01) & redFirstBlood -- blueKA (-0.26) & blueCSPerMin -- diff\_PCA\_Component\_1 (-0.46) &  & \\
+\cellcolor{gray!10}{blueWardsDestroyed -- blueHeralds (0.02)} & \cellcolor{gray!10}{redDragons -- blueKA (-0.21)} & \cellcolor{gray!10}{redCSPerMin -- diff\_PCA\_Component\_1 (0.46)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+blueDragons -- blueHeralds (0.02) & redFirstBlood -- redKA (0.23) & blueKA -- diff\_PCA\_Component\_1 (-0.59) &  & \\
+\cellcolor{gray!10}{blueWardsPlaced -- blueTotalJungleMinionsKilled (0.01)} & \cellcolor{gray!10}{blueDragons -- diff\_PCA\_Component\_1 (-0.23)} & \cellcolor{gray!10}{redKA -- diff\_PCA\_Component\_1 (0.58)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueWardsDestroyed -- blueTotalJungleMinionsKilled (-0.02) & blueTotalJungleMinionsKilled -- diff\_PCA\_Component\_1 (-0.22) & diff\_PCA\_Component\_1 -- blueWins (-0.51) &  & \\
+\cellcolor{gray!10}{blueDragons -- blueTotalJungleMinionsKilled (0.16)} & \cellcolor{gray!10}{redFirstBlood -- diff\_PCA\_Component\_1 (0.32)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueHeralds -- blueTotalJungleMinionsKilled (0.12) & redDragons -- diff\_PCA\_Component\_1 (0.23) &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{blueWardsPlaced -- blueCSPerMin (-0.04)} & \cellcolor{gray!10}{redTotalJungleMinionsKilled -- diff\_PCA\_Component\_1 (0.23)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueWardsDestroyed -- blueCSPerMin (0.13) & blueDragons -- blueWins (0.22) &  &  & \\
+\cellcolor{gray!10}{blueDragons -- blueCSPerMin (0.09)} & \cellcolor{gray!10}{blueCSPerMin -- blueWins (0.22)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueHeralds -- blueCSPerMin (0.08) & redFirstBlood -- blueWins (-0.2) &  &  & \\
+\cellcolor{gray!10}{blueTotalJungleMinionsKilled -- blueCSPerMin (0.17)} & \cellcolor{gray!10}{redDragons -- blueWins (-0.21)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+blueWardsPlaced -- redWardsPlaced (-0.02) & redCSPerMin -- blueWins (-0.22) &  &  & \\
+\cellcolor{gray!10}{blueWardsDestroyed -- redWardsPlaced (0.12)} & \cellcolor{gray!10}{blueKA -- blueWins (0.31)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueDragons -- redWardsPlaced (-0.03) & redKA -- blueWins (-0.32) &  &  & \\
+\cellcolor{gray!10}{blueHeralds -- redWardsPlaced (0.01)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueTotalJungleMinionsKilled -- redWardsPlaced (0.01) &  &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{blueCSPerMin -- redWardsPlaced (0.02)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueWardsPlaced -- redWardsDestroyed (0.1) &  &  &  & \\
+\cellcolor{gray!10}{blueDragons -- redWardsDestroyed (-0.04)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueHeralds -- redWardsDestroyed (0.02) &  &  &  & \\
+\cellcolor{gray!10}{blueTotalJungleMinionsKilled -- redWardsDestroyed (-0.04)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+blueCSPerMin -- redWardsDestroyed (0) &  &  &  & \\
+\cellcolor{gray!10}{redWardsPlaced -- redWardsDestroyed (0.06)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueWardsPlaced -- redFirstBlood (0) &  &  &  & \\
+\cellcolor{gray!10}{blueWardsDestroyed -- redFirstBlood (-0.02)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueDragons -- redFirstBlood (-0.13) &  &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{blueHeralds -- redFirstBlood (-0.08)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueTotalJungleMinionsKilled -- redFirstBlood (-0.01) &  &  &  & \\
+\cellcolor{gray!10}{blueCSPerMin -- redFirstBlood (-0.13)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redWardsPlaced -- redFirstBlood (0.03) &  &  &  & \\
+\cellcolor{gray!10}{redWardsDestroyed -- redFirstBlood (0.05)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+blueWardsPlaced -- redDragons (-0.01) &  &  &  & \\
+\cellcolor{gray!10}{blueWardsDestroyed -- redDragons (-0.04)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueHeralds -- redDragons (0.02) &  &  &  & \\
+\cellcolor{gray!10}{blueTotalJungleMinionsKilled -- redDragons (-0.05)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueCSPerMin -- redDragons (-0.05) &  &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{redWardsPlaced -- redDragons (0.02)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redWardsDestroyed -- redDragons (0.07) &  &  &  & \\
+\cellcolor{gray!10}{redFirstBlood -- redDragons (0.14)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueWardsPlaced -- redHeralds (-0.02) &  &  &  & \\
+\cellcolor{gray!10}{blueWardsDestroyed -- redHeralds (0)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+blueDragons -- redHeralds (-0.02) &  &  &  & \\
+\cellcolor{gray!10}{blueTotalJungleMinionsKilled -- redHeralds (-0.06)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueCSPerMin -- redHeralds (-0.05) &  &  &  & \\
+\cellcolor{gray!10}{redWardsPlaced -- redHeralds (0.02)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redWardsDestroyed -- redHeralds (0) &  &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{redFirstBlood -- redHeralds (0.06)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redDragons -- redHeralds (0.04) &  &  &  & \\
+\cellcolor{gray!10}{blueWardsPlaced -- redTotalJungleMinionsKilled (0)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueWardsDestroyed -- redTotalJungleMinionsKilled (-0.04) &  &  &  & \\
+\cellcolor{gray!10}{blueDragons -- redTotalJungleMinionsKilled (-0.1)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+blueHeralds -- redTotalJungleMinionsKilled (-0.02) &  &  &  & \\
+\cellcolor{gray!10}{blueTotalJungleMinionsKilled -- redTotalJungleMinionsKilled (-0.03)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueCSPerMin -- redTotalJungleMinionsKilled (0.09) &  &  &  & \\
+\cellcolor{gray!10}{redWardsPlaced -- redTotalJungleMinionsKilled (0.02)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redWardsDestroyed -- redTotalJungleMinionsKilled (-0.03) &  &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{redFirstBlood -- redTotalJungleMinionsKilled (0.02)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redHeralds -- redTotalJungleMinionsKilled (0.08) &  &  &  & \\
+\cellcolor{gray!10}{blueWardsPlaced -- redCSPerMin (0.01)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueWardsDestroyed -- redCSPerMin (0.02) &  &  &  & \\
+\cellcolor{gray!10}{blueDragons -- redCSPerMin (-0.06)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+blueHeralds -- redCSPerMin (-0.05) &  &  &  & \\
+\cellcolor{gray!10}{blueTotalJungleMinionsKilled -- redCSPerMin (0.11)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueCSPerMin -- redCSPerMin (0) &  &  &  & \\
+\cellcolor{gray!10}{redWardsPlaced -- redCSPerMin (-0.02)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redWardsDestroyed -- redCSPerMin (0.15) &  &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{redFirstBlood -- redCSPerMin (0.16)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redDragons -- redCSPerMin (0.11) &  &  &  & \\
+\cellcolor{gray!10}{redHeralds -- redCSPerMin (0.09)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redTotalJungleMinionsKilled -- redCSPerMin (0.16) &  &  &  & \\
+\cellcolor{gray!10}{blueWardsPlaced -- blueKA (0.04)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+blueWardsDestroyed -- blueKA (0.06) &  &  &  & \\
+\cellcolor{gray!10}{blueDragons -- blueKA (0.18)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueHeralds -- blueKA (0.05) &  &  &  & \\
+\cellcolor{gray!10}{blueTotalJungleMinionsKilled -- blueKA (-0.13)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueCSPerMin -- blueKA (-0.05) &  &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{redWardsPlaced -- blueKA (-0.06)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redWardsDestroyed -- blueKA (-0.08) &  &  &  & \\
+\cellcolor{gray!10}{redHeralds -- blueKA (-0.09)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redTotalJungleMinionsKilled -- blueKA (-0.19) &  &  &  & \\
+\cellcolor{gray!10}{blueWardsPlaced -- redKA (-0.02)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+blueWardsDestroyed -- redKA (-0.07) &  &  &  & \\
+\cellcolor{gray!10}{blueDragons -- redKA (-0.18)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueHeralds -- redKA (-0.07) &  &  &  & \\
+\cellcolor{gray!10}{blueTotalJungleMinionsKilled -- redKA (-0.2)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redWardsPlaced -- redKA (0.02) &  &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{redWardsDestroyed -- redKA (0.08)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redDragons -- redKA (0.16) &  &  &  & \\
+\cellcolor{gray!10}{redHeralds -- redKA (0.05)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redTotalJungleMinionsKilled -- redKA (-0.12) &  &  &  & \\
+\cellcolor{gray!10}{redCSPerMin -- redKA (-0.06)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+blueKA -- redKA (-0.02) &  &  &  & \\
+\cellcolor{gray!10}{blueWardsPlaced -- diff\_PCA\_Component\_1 (-0.03)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueWardsDestroyed -- diff\_PCA\_Component\_1 (-0.1) &  &  &  & \\
+\cellcolor{gray!10}{blueHeralds -- diff\_PCA\_Component\_1 (-0.17)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redWardsPlaced -- diff\_PCA\_Component\_1 (0.04) &  &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{redWardsDestroyed -- diff\_PCA\_Component\_1 (0.13)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redHeralds -- diff\_PCA\_Component\_1 (0.17) &  &  &  & \\
+\cellcolor{gray!10}{blueWardsPlaced -- blueWins (0)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueWardsDestroyed -- blueWins (0.06) &  &  &  & \\
+\cellcolor{gray!10}{blueHeralds -- blueWins (0.09)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+blueTotalJungleMinionsKilled -- blueWins (0.13) &  &  &  & \\
+\cellcolor{gray!10}{redWardsPlaced -- blueWins (-0.03)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redWardsDestroyed -- blueWins (-0.07) &  &  &  & \\
+\cellcolor{gray!10}{redHeralds -- blueWins (-0.09)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redTotalJungleMinionsKilled -- blueWins (-0.11) &  &  &  & \\
+\bottomrule
+\end{tabular}}
+\end{table}

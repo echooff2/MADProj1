@@ -1,0 +1,257 @@
+\begin{table}[!h]
+\centering
+\caption{Podział cech według siły korelacji}
+\centering
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{
+\begin{tabular}[t]{lllll}
+\toprule
+Bardzo słaba & Słaba & Umiarkowana & Silna & Bardzo silna\\
+\midrule
+\cellcolor{gray!10}{blueWardsPlaced -- blueWardsDestroyed (0.03)} & \cellcolor{gray!10}{blueAssists -- blueTotalExperience (0.3)} & \cellcolor{gray!10}{blueEliteMonsters -- blueHeralds (0.64)} & \cellcolor{gray!10}{blueKills -- blueAssists (0.81)} & \cellcolor{gray!10}{}\\
+blueWardsPlaced -- blueKills (0.02) & blueEliteMonsters -- blueTotalExperience (0.23) & blueKills -- blueTotalExperience (0.47) & blueEliteMonsters -- blueDragons (0.78) & \\
+\cellcolor{gray!10}{blueWardsDestroyed -- blueKills (0.03)} & \cellcolor{gray!10}{blueEliteMonsters -- blueGoldPerMin (0.24)} & \cellcolor{gray!10}{blueTotalExperience -- blueTotalJungleMinionsKilled (0.41)} & \cellcolor{gray!10}{blueKills -- blueGoldPerMin (0.89)} & \cellcolor{gray!10}{}\\
+blueWardsPlaced -- blueAssists (0.03) & blueCSPerMin -- blueGoldPerMin (0.28) & blueTotalExperience -- blueCSPerMin (0.57) & blueAssists -- blueGoldPerMin (0.75) & \\
+\cellcolor{gray!10}{blueWardsDestroyed -- blueAssists (0.07)} & \cellcolor{gray!10}{blueKills -- redFirstBlood (-0.27)} & \cellcolor{gray!10}{blueTotalExperience -- blueGoldPerMin (0.68)} & \cellcolor{gray!10}{redKills -- redAssists (0.8)} & \cellcolor{gray!10}{}\\
+\addlinespace
+blueWardsPlaced -- blueEliteMonsters (0.02) & blueAssists -- redFirstBlood (-0.23) & blueTotalExperience -- redKills (-0.46) & redEliteMonsters -- redDragons (0.81) & \\
+\cellcolor{gray!10}{blueWardsDestroyed -- blueEliteMonsters (0.04)} & \cellcolor{gray!10}{blueGoldPerMin -- redFirstBlood (-0.31)} & \cellcolor{gray!10}{blueCSPerMin -- redKills (-0.47)} & \cellcolor{gray!10}{blueTotalExperience -- redGoldDiff (-0.72)} & \cellcolor{gray!10}{}\\
+blueKills -- blueEliteMonsters (0.18) & blueEliteMonsters -- redKills (-0.2) & blueEliteMonsters -- redEliteMonsters (-0.46) & blueGoldPerMin -- redGoldDiff (-0.82) & \\
+\cellcolor{gray!10}{blueAssists -- blueEliteMonsters (0.15)} & \cellcolor{gray!10}{blueTotalJungleMinionsKilled -- redKills (-0.23)} & \cellcolor{gray!10}{blueDragons -- redEliteMonsters (-0.51)} & \cellcolor{gray!10}{redTotalExperience -- redGoldDiff (0.71)} & \cellcolor{gray!10}{}\\
+blueWardsPlaced -- blueDragons (0.02) & redFirstBlood -- redKills (0.25) & blueEliteMonsters -- redDragons (-0.47) & blueTotalExperience -- redExperienceDiff (-0.8) & \\
+\addlinespace
+\cellcolor{gray!10}{blueWardsDestroyed -- blueDragons (0.04)} & \cellcolor{gray!10}{blueTotalExperience -- redAssists (-0.4)} & \cellcolor{gray!10}{blueDragons -- redDragons (-0.63)} & \cellcolor{gray!10}{blueGoldPerMin -- redExperienceDiff (-0.73)} & \cellcolor{gray!10}{}\\
+blueKills -- blueDragons (0.17) & blueCSPerMin -- redAssists (-0.34) & redEliteMonsters -- redHeralds (0.62) & redTotalExperience -- redExperienceDiff (0.8) & \\
+\cellcolor{gray!10}{blueAssists -- blueDragons (0.17)} & \cellcolor{gray!10}{redFirstBlood -- redAssists (0.2)} & \cellcolor{gray!10}{blueKills -- redTotalExperience (-0.46)} & \cellcolor{gray!10}{redGoldDiff -- redExperienceDiff (0.89)} & \cellcolor{gray!10}{}\\
+blueWardsPlaced -- blueHeralds (0.01) & blueKills -- redEliteMonsters (-0.22) & blueGoldPerMin -- redTotalExperience (-0.49) & redKills -- redGoldPerMin (0.89) & \\
+\cellcolor{gray!10}{blueWardsDestroyed -- blueHeralds (0.02)} & \cellcolor{gray!10}{blueGoldPerMin -- redEliteMonsters (-0.23)} & \cellcolor{gray!10}{redKills -- redTotalExperience (0.46)} & \cellcolor{gray!10}{redAssists -- redGoldPerMin (0.74)} & \cellcolor{gray!10}{}\\
+\addlinespace
+blueKills -- blueHeralds (0.08) & blueKills -- redDragons (-0.21) & redTotalExperience -- redTotalJungleMinionsKilled (0.43) & redGoldDiff -- redGoldPerMin (0.8) & \\
+\cellcolor{gray!10}{blueAssists -- blueHeralds (0.03)} & \cellcolor{gray!10}{blueGoldPerMin -- redDragons (-0.2)} & \cellcolor{gray!10}{blueKills -- redGoldDiff (-0.65)} & \cellcolor{gray!10}{redExperienceDiff -- redGoldPerMin (0.72)} & \cellcolor{gray!10}{}\\
+blueDragons -- blueHeralds (0.02) & blueHeralds -- redHeralds (-0.21) & blueAssists -- redGoldDiff (-0.55) &  & \\
+\cellcolor{gray!10}{blueWardsPlaced -- blueTotalExperience (0.03)} & \cellcolor{gray!10}{blueAssists -- redTotalExperience (-0.4)} & \cellcolor{gray!10}{blueCSPerMin -- redGoldDiff (-0.45)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueWardsDestroyed -- blueTotalExperience (0.07) & blueTotalExperience -- redTotalExperience (-0.28) & redKills -- redGoldDiff (0.64) &  & \\
+\addlinespace
+\cellcolor{gray!10}{blueDragons -- blueTotalExperience (0.18)} & \cellcolor{gray!10}{redAssists -- redTotalExperience (0.28)} & \cellcolor{gray!10}{redAssists -- redGoldDiff (0.53)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueHeralds -- blueTotalExperience (0.15) & redEliteMonsters -- redTotalExperience (0.24) & blueKills -- redExperienceDiff (-0.58) &  & \\
+\cellcolor{gray!10}{blueWardsPlaced -- blueTotalJungleMinionsKilled (0.01)} & \cellcolor{gray!10}{redDragons -- redTotalExperience (0.2)} & \cellcolor{gray!10}{blueAssists -- redExperienceDiff (-0.44)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueWardsDestroyed -- blueTotalJungleMinionsKilled (-0.02) & blueKills -- redTotalJungleMinionsKilled (-0.21) & blueCSPerMin -- redExperienceDiff (-0.45) &  & \\
+\cellcolor{gray!10}{blueKills -- blueTotalJungleMinionsKilled (-0.11)} & \cellcolor{gray!10}{redEliteMonsters -- redTotalJungleMinionsKilled (0.22)} & \cellcolor{gray!10}{redKills -- redExperienceDiff (0.58)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+blueAssists -- blueTotalJungleMinionsKilled (-0.13) & redDragons -- redTotalJungleMinionsKilled (0.21) & redAssists -- redExperienceDiff (0.42) &  & \\
+\cellcolor{gray!10}{blueEliteMonsters -- blueTotalJungleMinionsKilled (0.2)} & \cellcolor{gray!10}{blueEliteMonsters -- redGoldDiff (-0.28)} & \cellcolor{gray!10}{blueKills -- redCSPerMin (-0.47)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueDragons -- blueTotalJungleMinionsKilled (0.16) & blueDragons -- redGoldDiff (-0.23) & blueGoldPerMin -- redCSPerMin (-0.45) &  & \\
+\cellcolor{gray!10}{blueHeralds -- blueTotalJungleMinionsKilled (0.12)} & \cellcolor{gray!10}{redFirstBlood -- redGoldDiff (0.38)} & \cellcolor{gray!10}{redTotalExperience -- redCSPerMin (0.56)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueWardsPlaced -- blueCSPerMin (-0.03) & redEliteMonsters -- redGoldDiff (0.28) & redGoldDiff -- redCSPerMin (0.45) &  & \\
+\addlinespace
+\cellcolor{gray!10}{blueWardsDestroyed -- blueCSPerMin (0.11)} & \cellcolor{gray!10}{redDragons -- redGoldDiff (0.23)} & \cellcolor{gray!10}{redExperienceDiff -- redCSPerMin (0.44)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueKills -- blueCSPerMin (-0.03) & blueEliteMonsters -- redExperienceDiff (-0.26) & blueTotalExperience -- redGoldPerMin (-0.49) &  & \\
+\cellcolor{gray!10}{blueAssists -- blueCSPerMin (-0.06)} & \cellcolor{gray!10}{blueDragons -- redExperienceDiff (-0.21)} & \cellcolor{gray!10}{blueCSPerMin -- redGoldPerMin (-0.45)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueEliteMonsters -- blueCSPerMin (0.12) & blueTotalJungleMinionsKilled -- redExperienceDiff (-0.27) & redTotalExperience -- redGoldPerMin (0.67) &  & \\
+\cellcolor{gray!10}{blueDragons -- blueCSPerMin (0.09)} & \cellcolor{gray!10}{redFirstBlood -- redExperienceDiff (0.24)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+blueHeralds -- blueCSPerMin (0.08) & redEliteMonsters -- redExperienceDiff (0.27) &  &  & \\
+\cellcolor{gray!10}{blueTotalJungleMinionsKilled -- blueCSPerMin (0.17)} & \cellcolor{gray!10}{redDragons -- redExperienceDiff (0.22)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueWardsPlaced -- blueGoldPerMin (0.02) & redTotalJungleMinionsKilled -- redExperienceDiff (0.27) &  &  & \\
+\cellcolor{gray!10}{blueWardsDestroyed -- blueGoldPerMin (0.06)} & \cellcolor{gray!10}{blueAssists -- redCSPerMin (-0.34)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueDragons -- blueGoldPerMin (0.19) & blueEliteMonsters -- redGoldPerMin (-0.22) &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{blueHeralds -- blueGoldPerMin (0.15)} & \cellcolor{gray!10}{blueGoldPerMin -- redGoldPerMin (-0.31)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueTotalJungleMinionsKilled -- blueGoldPerMin (0.09) & redFirstBlood -- redGoldPerMin (0.3) &  &  & \\
+\cellcolor{gray!10}{blueWardsPlaced -- redWardsPlaced (-0.01)} & \cellcolor{gray!10}{redEliteMonsters -- redGoldPerMin (0.23)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueWardsDestroyed -- redWardsPlaced (0.14) & redCSPerMin -- redGoldPerMin (0.28) &  &  & \\
+\cellcolor{gray!10}{blueKills -- redWardsPlaced (-0.03)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+blueAssists -- redWardsPlaced (-0.03) &  &  &  & \\
+\cellcolor{gray!10}{blueEliteMonsters -- redWardsPlaced (-0.02)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueDragons -- redWardsPlaced (-0.03) &  &  &  & \\
+\cellcolor{gray!10}{blueHeralds -- redWardsPlaced (0.01)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueTotalExperience -- redWardsPlaced (-0.01) &  &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{blueTotalJungleMinionsKilled -- redWardsPlaced (0)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueCSPerMin -- redWardsPlaced (0.01) &  &  &  & \\
+\cellcolor{gray!10}{blueGoldPerMin -- redWardsPlaced (-0.02)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueWardsPlaced -- redWardsDestroyed (0.12) &  &  &  & \\
+\cellcolor{gray!10}{blueWardsDestroyed -- redWardsDestroyed (0.12)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+blueKills -- redWardsDestroyed (-0.09) &  &  &  & \\
+\cellcolor{gray!10}{blueAssists -- redWardsDestroyed (-0.06)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueEliteMonsters -- redWardsDestroyed (-0.01) &  &  &  & \\
+\cellcolor{gray!10}{blueDragons -- redWardsDestroyed (-0.02)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueHeralds -- redWardsDestroyed (0.02) &  &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{blueTotalExperience -- redWardsDestroyed (-0.06)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueTotalJungleMinionsKilled -- redWardsDestroyed (-0.02) &  &  &  & \\
+\cellcolor{gray!10}{blueCSPerMin -- redWardsDestroyed (0.03)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueGoldPerMin -- redWardsDestroyed (-0.09) &  &  &  & \\
+\cellcolor{gray!10}{redWardsPlaced -- redWardsDestroyed (0.02)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+blueWardsPlaced -- redFirstBlood (0) &  &  &  & \\
+\cellcolor{gray!10}{blueWardsDestroyed -- redFirstBlood (-0.02)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueEliteMonsters -- redFirstBlood (-0.15) &  &  &  & \\
+\cellcolor{gray!10}{blueDragons -- redFirstBlood (-0.13)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueHeralds -- redFirstBlood (-0.08) &  &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{blueTotalExperience -- redFirstBlood (-0.19)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueTotalJungleMinionsKilled -- redFirstBlood (-0.02) &  &  &  & \\
+\cellcolor{gray!10}{blueCSPerMin -- redFirstBlood (-0.13)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redWardsPlaced -- redFirstBlood (0.02) &  &  &  & \\
+\cellcolor{gray!10}{redWardsDestroyed -- redFirstBlood (0.04)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+blueWardsPlaced -- redKills (0) &  &  &  & \\
+\cellcolor{gray!10}{blueWardsDestroyed -- redKills (-0.07)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueKills -- redKills (0) &  &  &  & \\
+\cellcolor{gray!10}{blueAssists -- redKills (-0.03)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueDragons -- redKills (-0.19) &  &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{blueHeralds -- redKills (-0.1)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueGoldPerMin -- redKills (-0.16) &  &  &  & \\
+\cellcolor{gray!10}{redWardsPlaced -- redKills (0.01)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redWardsDestroyed -- redKills (0.04) &  &  &  & \\
+\cellcolor{gray!10}{blueWardsPlaced -- redAssists (-0.01)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+blueWardsDestroyed -- redAssists (-0.05) &  &  &  & \\
+\cellcolor{gray!10}{blueKills -- redAssists (-0.02)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueAssists -- redAssists (-0.01) &  &  &  & \\
+\cellcolor{gray!10}{blueEliteMonsters -- redAssists (-0.16)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueDragons -- redAssists (-0.16) &  &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{blueHeralds -- redAssists (-0.05)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueTotalJungleMinionsKilled -- redAssists (-0.17) &  &  &  & \\
+\cellcolor{gray!10}{blueGoldPerMin -- redAssists (-0.13)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redWardsPlaced -- redAssists (0.02) &  &  &  & \\
+\cellcolor{gray!10}{redWardsDestroyed -- redAssists (0.06)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+blueWardsPlaced -- redEliteMonsters (-0.02) &  &  &  & \\
+\cellcolor{gray!10}{blueWardsDestroyed -- redEliteMonsters (-0.03)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueAssists -- redEliteMonsters (-0.18) &  &  &  & \\
+\cellcolor{gray!10}{blueHeralds -- redEliteMonsters (-0.11)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueTotalExperience -- redEliteMonsters (-0.19) &  &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{blueTotalJungleMinionsKilled -- redEliteMonsters (-0.08)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueCSPerMin -- redEliteMonsters (-0.07) &  &  &  & \\
+\cellcolor{gray!10}{redWardsPlaced -- redEliteMonsters (0.03)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redWardsDestroyed -- redEliteMonsters (0.04) &  &  &  & \\
+\cellcolor{gray!10}{redFirstBlood -- redEliteMonsters (0.14)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+redKills -- redEliteMonsters (0.16) &  &  &  & \\
+\cellcolor{gray!10}{redAssists -- redEliteMonsters (0.13)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueWardsPlaced -- redDragons (-0.02) &  &  &  & \\
+\cellcolor{gray!10}{blueWardsDestroyed -- redDragons (-0.03)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueAssists -- redDragons (-0.19) &  &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{blueHeralds -- redDragons (0.02)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueTotalExperience -- redDragons (-0.15) &  &  &  & \\
+\cellcolor{gray!10}{blueTotalJungleMinionsKilled -- redDragons (-0.05)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueCSPerMin -- redDragons (-0.05) &  &  &  & \\
+\cellcolor{gray!10}{redWardsPlaced -- redDragons (0.02)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+redWardsDestroyed -- redDragons (0.05) &  &  &  & \\
+\cellcolor{gray!10}{redFirstBlood -- redDragons (0.14)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redKills -- redDragons (0.15) &  &  &  & \\
+\cellcolor{gray!10}{redAssists -- redDragons (0.14)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueWardsPlaced -- redHeralds (-0.01) &  &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{blueWardsDestroyed -- redHeralds (-0.01)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueKills -- redHeralds (-0.1) &  &  &  & \\
+\cellcolor{gray!10}{blueAssists -- redHeralds (-0.06)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueEliteMonsters -- redHeralds (-0.14) &  &  &  & \\
+\cellcolor{gray!10}{blueDragons -- redHeralds (-0.02)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+blueTotalExperience -- redHeralds (-0.12) &  &  &  & \\
+\cellcolor{gray!10}{blueTotalJungleMinionsKilled -- redHeralds (-0.06)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueCSPerMin -- redHeralds (-0.05) &  &  &  & \\
+\cellcolor{gray!10}{blueGoldPerMin -- redHeralds (-0.12)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redWardsPlaced -- redHeralds (0.02) &  &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{redWardsDestroyed -- redHeralds (0.01)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redFirstBlood -- redHeralds (0.06) &  &  &  & \\
+\cellcolor{gray!10}{redKills -- redHeralds (0.08)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redAssists -- redHeralds (0.03) &  &  &  & \\
+\cellcolor{gray!10}{redDragons -- redHeralds (0.04)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+blueWardsPlaced -- redTotalExperience (-0.01) &  &  &  & \\
+\cellcolor{gray!10}{blueWardsDestroyed -- redTotalExperience (-0.06)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueEliteMonsters -- redTotalExperience (-0.19) &  &  &  & \\
+\cellcolor{gray!10}{blueDragons -- redTotalExperience (-0.16)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueHeralds -- redTotalExperience (-0.11) &  &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{blueTotalJungleMinionsKilled -- redTotalExperience (-0.01)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueCSPerMin -- redTotalExperience (-0.14) &  &  &  & \\
+\cellcolor{gray!10}{redWardsPlaced -- redTotalExperience (0.04)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redWardsDestroyed -- redTotalExperience (0.08) &  &  &  & \\
+\cellcolor{gray!10}{redFirstBlood -- redTotalExperience (0.19)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+redHeralds -- redTotalExperience (0.14) &  &  &  & \\
+\cellcolor{gray!10}{blueWardsPlaced -- redTotalJungleMinionsKilled (0)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueWardsDestroyed -- redTotalJungleMinionsKilled (-0.04) &  &  &  & \\
+\cellcolor{gray!10}{blueAssists -- redTotalJungleMinionsKilled (-0.16)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueEliteMonsters -- redTotalJungleMinionsKilled (-0.09) &  &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{blueDragons -- redTotalJungleMinionsKilled (-0.1)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueHeralds -- redTotalJungleMinionsKilled (-0.02) &  &  &  & \\
+\cellcolor{gray!10}{blueTotalExperience -- redTotalJungleMinionsKilled (-0.01)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueTotalJungleMinionsKilled -- redTotalJungleMinionsKilled (-0.03) &  &  &  & \\
+\cellcolor{gray!10}{blueCSPerMin -- redTotalJungleMinionsKilled (0.09)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+blueGoldPerMin -- redTotalJungleMinionsKilled (-0.18) &  &  &  & \\
+\cellcolor{gray!10}{redWardsPlaced -- redTotalJungleMinionsKilled (0)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redWardsDestroyed -- redTotalJungleMinionsKilled (-0.01) &  &  &  & \\
+\cellcolor{gray!10}{redFirstBlood -- redTotalJungleMinionsKilled (0.02)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redKills -- redTotalJungleMinionsKilled (-0.1) &  &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{redAssists -- redTotalJungleMinionsKilled (-0.13)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redHeralds -- redTotalJungleMinionsKilled (0.08) &  &  &  & \\
+\cellcolor{gray!10}{blueWardsPlaced -- redGoldDiff (-0.02)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueWardsDestroyed -- redGoldDiff (-0.08) &  &  &  & \\
+\cellcolor{gray!10}{blueHeralds -- redGoldDiff (-0.16)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+blueTotalJungleMinionsKilled -- redGoldDiff (-0.17) &  &  &  & \\
+\cellcolor{gray!10}{redWardsPlaced -- redGoldDiff (0.02)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redWardsDestroyed -- redGoldDiff (0.1) &  &  &  & \\
+\cellcolor{gray!10}{redHeralds -- redGoldDiff (0.17)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redTotalJungleMinionsKilled -- redGoldDiff (0.17) &  &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{blueWardsPlaced -- redExperienceDiff (-0.03)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueWardsDestroyed -- redExperienceDiff (-0.08) &  &  &  & \\
+\cellcolor{gray!10}{blueHeralds -- redExperienceDiff (-0.16)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redWardsPlaced -- redExperienceDiff (0.03) &  &  &  & \\
+\cellcolor{gray!10}{redWardsDestroyed -- redExperienceDiff (0.09)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+redHeralds -- redExperienceDiff (0.17) &  &  &  & \\
+\cellcolor{gray!10}{blueWardsPlaced -- redCSPerMin (-0.01)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueWardsDestroyed -- redCSPerMin (0.04) &  &  &  & \\
+\cellcolor{gray!10}{blueEliteMonsters -- redCSPerMin (-0.07)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueDragons -- redCSPerMin (-0.06) &  &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{blueHeralds -- redCSPerMin (-0.05)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueTotalExperience -- redCSPerMin (-0.14) &  &  &  & \\
+\cellcolor{gray!10}{blueTotalJungleMinionsKilled -- redCSPerMin (0.11)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueCSPerMin -- redCSPerMin (0) &  &  &  & \\
+\cellcolor{gray!10}{redWardsPlaced -- redCSPerMin (-0.02)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+redWardsDestroyed -- redCSPerMin (0.13) &  &  &  & \\
+\cellcolor{gray!10}{redFirstBlood -- redCSPerMin (0.16)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redKills -- redCSPerMin (-0.04) &  &  &  & \\
+\cellcolor{gray!10}{redAssists -- redCSPerMin (-0.08)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redEliteMonsters -- redCSPerMin (0.13) &  &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{redDragons -- redCSPerMin (0.1)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redHeralds -- redCSPerMin (0.08) &  &  &  & \\
+\cellcolor{gray!10}{redTotalJungleMinionsKilled -- redCSPerMin (0.17)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueWardsPlaced -- redGoldPerMin (-0.01) &  &  &  & \\
+\cellcolor{gray!10}{blueWardsDestroyed -- redGoldPerMin (-0.07)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+blueKills -- redGoldPerMin (-0.16) &  &  &  & \\
+\cellcolor{gray!10}{blueAssists -- redGoldPerMin (-0.13)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueDragons -- redGoldPerMin (-0.19) &  &  &  & \\
+\cellcolor{gray!10}{blueHeralds -- redGoldPerMin (-0.11)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+blueTotalJungleMinionsKilled -- redGoldPerMin (-0.18) &  &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{redWardsPlaced -- redGoldPerMin (0.01)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redWardsDestroyed -- redGoldPerMin (0.07) &  &  &  & \\
+\cellcolor{gray!10}{redDragons -- redGoldPerMin (0.18)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+redHeralds -- redGoldPerMin (0.15) &  &  &  & \\
+\cellcolor{gray!10}{redTotalJungleMinionsKilled -- redGoldPerMin (0.1)} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\bottomrule
+\end{tabular}}
+\end{table}

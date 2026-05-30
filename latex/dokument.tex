@@ -1,8 +1,8 @@
 \documentclass{customStyle}
 
 %% ---- Additional packages (add as needed) ----
-\usepackage{booktabs}      % Professional tables (\toprule, \midrule, \bottomrule)
-\usepackage{multirow}      % Multi-row table cells
+\usepackage{booktabs}      	% Professional tables (\toprule, \midrule, \bottomrule)
+\usepackage{multirow}      	% Multi-row table cells
 %% graphicx, amsmath cls tarafından zaten yuklendiginden tekrar eklenmez.
 %% amssymb da eklenmez -- newtxmath ile \Bbbk catismasi yaratir.
 \usepackage{subcaption}    % Sub-figures (optional)
@@ -284,26 +284,136 @@ gdzie:
 
 W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zostały sprowadzone do wspólnej skali. Pozwoliło to ograniczyć wpływ różnic pomiędzy zakresami wartości poszczególnych zmiennych na działanie modeli klasyfikacyjnych oraz poprawić stabilność procesu uczenia.
 
-\subsection{Usuwanie zmiennych}
-
-\subsubsection{Qausi Stałe zmienne}
-
+\subsection{Usuwanie cech}
+\indent Ta poddsekcja będzie poświęcona procesowi doboru cech poprzez usuwanie Quasi stałych oraz usuwanie lub łączenie względnie silnie skorelowanych.
+\subsubsection{Quasi Stałe}
+\indent Do detekcji Quasi stałych zmiennych wykorzystaliśmy funkcję z pakietu Caret o nazwie nearZeroVar. Sprawdza ona, czy istnieją jakieś zmienne, które przyjmują tylko jedną unikalną wartość lub mają bardzo mało unikalnych wartośći relatywnie i stosunek częstotliwości najczęściej występującej wartości do częstotliwości drugiej najczęściej występującej wartości jest duży, na co wskazuje sama nazwa funkcji. Po jej wykonaniu otrzymaliśmy następującą listę cech:
+\begin{itemize}
+	\item blueTowersDestroyed 
+	\item redTowersDestroyed
+\end{itemize}
+\indent Otrzymaliśmy więc cechę "TowersDestroyed" dla obu drużyn. Dodatkowo z tabeli 1 wiemy, że ich mediany wynoszą 0. Nie powinno to zaskakiwać, jako że w pierwszych 10 minutach rozgrywki - względnie początkowej fazie - rzadko się zdarza zniszczenie wieży przeciwnika. W związku z powyższym usuwamy te 2 cechy z naszego data setu
 \subsubsection{Skorelowane prosto, liniowo}
+\indent Cechy skorelowane prosto, liniowo, to takie, pomiędzy którymi istnieje korelacja cecha do cechy. Ergo w tej podsekcji zajmiemy się znajdowaniem takich par i usuwaniu jednej z cech na tej podstawie. Wykorzystamy do tego wbudowaną funkcję w R o nazwie "cor". Za jej pomocą stworzymy macierz korelacji. Wizualizacji dokonamy z wykorzystaniem funkcji "corrplot" z pakietu o tej samej nazwie.
 \begin{figure}[H]
 	\centering
 	\makebox[\textwidth][c]{%
 		\includegraphics[width=1.0\textwidth]{../Plots/corrmatrixes/WykresKorelacji1.png}
 	}
-	\caption{Macierz korelacji dla wszystkich zmiennych 1.}
+	\caption{Macierz korelacji dla wszystkich zmiennych bez quasi stałych 1.}
 \end{figure}
-
+\begin{samepage}
+\indent Powyższa macierz przedstawia korelacje liniowe, proste pomiędzy wszystkimi zmiennymi, jakie nam zostały po usunięciu quasi stałych. Na jego postawie możemy znaleźć bardzo silnie skorelowane, czyli takie, których poziom korelacji jest większy bądź równy 0.9, pary cech:
+\begin{center}
+\begin{tabular}{l l c}
+	blueFirstBlood & redFirstBlood & -1 \\ 
+	redDeaths  &  blueKills & 1 \\
+	blueDeaths  & redKills  & 1 \\
+	blueTotalGold  & blueGoldPerMin &  1 \\
+	blueAvgLevel  & blueTotalExperience &  0.901297 \\
+	blueTotalMinionsKilled  & blueCSPerMin  & 1 \\
+	blueGoldDiff &  redGoldDiff  & -1 \\
+	blueExperienceDiff  & redExperienceDiff  & -1 \\
+	redTotalGold &  redGoldPerMin &  1 \\
+	redAvgLevel  & redTotalExperience &  0.901748 \\
+	redTotalMinionsKilled &  redCSPerMin  & 1 \\
+\end{tabular}
+\end{center}
+\end{samepage}
+\begin{samepage}
+\indent Na podstawie powyższego możemy usunąć następujące cech;
+\begin{itemize}
+	\item blueFirstBlood
+	\item redDeaths
+	\item blueDeaths  
+	\item blueTotalGold  
+	\item blueAvgLevel  
+	\item blueTotalMinionsKilled  
+	\item blueGoldDiff 
+	\item blueExperienceDiff  
+	\item redTotalGold 
+	\item redAvgLevel 
+	\item redTotalMinionsKilled 
+\end{itemize}
+\end{samepage}
+\begin{samepage}
 \subsubsection{Skorelowane wielokrotnie, liniowo}
+\indent \indent Dodatkowo, możemy, korzystając z definicji poszczególnych cech, zebrać korelacje wielokrotne, liniowe; innymi słowy takie korelacje, w których to jedna zmienna jest skorelowana liniowo z więcej niż jedną. Takich relacji mamy aż 6 i są one przedstawione poniżej:
+\begin{itemize}
+	\item $blueEliteMonsters = blueDragons + blueHeralds$
+	\item $redEliteMonsters = redDragons + redHeralds$
+	\item $blueGoldDiff = blueTotalGold - redTotalGold$ gdzie blueGoldDiff został już usunięty
+	\item $redGoldDiff = redTotalGold - blueTotalGold$
+	\item $blueExperienceDiff = blueTotalExperience - redTotalExperience$ gdzie blueExperienceDiff został już usunięty
+	\item $redExperienceDiff = redTotalExperience - blueTotalExperience$
+\end{itemize}
+\end{samepage}
+\begin{samepage}
+\indent \indent Na podstawie wyżej wymienionych relacji usuwamy następujące zmienne:
+\begin{itemize}
+	\item $blueEliteMonsters$ i $redEliteMonsters$ jako że istnieje potencjalnie istotna różnica pomiędzy zabiciem heralda a smoka i dlatego wolimy zostawić zmienne z wymienionymi skorelowane
+	\item $blueGoldPerMin$ i $redGoldPerMin$ jako że są one liniowo skorelowane odpowiednio z $blueTotalGold$ i $redTotalGold$ oraz przez wzgląd na to, że uznajemy różnicę między nimi za istotniejszą od tych zmiennych samych w sobie
+	\item $blueTotalExperience$ i $redTotalExperience$ jako że uznajemy różnicę między nimi za istotniejszą od tych zmiennych samych w sobie
+\end{itemize}
+\end{samepage}
 
 \subsection{Łączenie zmiennych}
-
+\indent \indent Po porzedniej podsekcji zostały nam cechy przedstawione na narysowanej poniżej macierzy korelacji:
+\begin{figure}[H]
+	\centering
+	\makebox[\textwidth][c]{%
+		\includegraphics[width=1.0\textwidth]{../Plots/corrmatrixes/WykresBezElite.png}
+	}
+	\caption{Macierz korelacji dla wszystkich zmiennych po usuwaniu liniowo skorelowanych}
+\end{figure}
+\pagebreak
+\begin{samepage}
 \subsubsection{Agregacja}
+\indent \indent Jak można wyczytać z powyższej macierzy, mamy 3 pary silnie skorelowanych cech. Spośród nich 2 to następujące pary:
+\begin{center}
+\begin{tabular}{l l c}
+	redKills & redAssists & 0.8 \\ 
+	blueKills  &  blueAssists & 0.81 \\
+\end{tabular}
+\end{center}
+\indent Te cechy zagragujemy liniowo w jedną, dla każdej drużyny, wedle następującej reguły:
+\begin{center}
+	$KA = Kills + Assists$
+\end{center}
 
+\indent Tym samym otrzymujemy następujące nowe cechy:
+\begin{itemize}
+	\item blueKA
+	\item redKA
+\end{itemize}
+\end{samepage}
+\begin{samepage}
 \subsubsection{PCA}
+\indent \indent Po agregacji została nam następująca para cech silnie skorelowanych:
+\begin{center}
+\begin{tabular}{l l c}
+	redGoldDiff & redExperienceDiff & 0.89 \\ 
+\end{tabular}
+\end{center}
+\indent Do zagregowania tych zmiennych wykorzystamy metodę PCA, a konkretniej będziemy bazować na wbudowanej funkcji "prcomp" i do wizualizacji rzutu wykorzystamy funkcję "fviz\_pca\_biplot" z biblioteki factoextra. Poniżej przedstawiony jest wykres po zastosowaniu PCA.
+\end{samepage}
+\begin{figure}[H]
+	\centering
+	\makebox[\textwidth][c]{%
+		\includegraphics[width=1\textwidth]{../Plots/PCA/biplot_diff.png}
+	}
+	\caption{Wykres PCA dla cech redGoldDiff i redExperienceDiff}
+\end{figure}
+\indent \indent Jak na załączonym wyżej obrazku widać, nowa cecha, roboczo nazwana $Dim1$, odpowiada za aż około 94.7\% wariancji. Stąd też możemy uznać, że taka agregacja będzie dobrą formą wyeliminowania silnej korelacji. Od tego momentu zmienna robocza nazwana $Dim1$ będzie miała nazwę $dif$\_$PCA$\_$Component$\_$1$.
+
+\indent Po wykonaniu wszystkich kroków usuwania silnie i bardzo silnie skorelowanych cech możemy przedstawić jak ostatecznie wygląda macierz korelacji. Dodatkowo macierz uwzględnia cechę $blueWins$, aby dodatkowo ukazać jak silnie jest ona skorelowana ze zmiennymi, które ostatecznie zostały.
+\begin{figure}[H]
+	\centering
+	\makebox[\textwidth][c]{%
+		\includegraphics[width=1.0\textwidth]{../Plots/corrmatrixes/WykresZblueWins.png}
+	}
+	\caption{Macierz korelacji dla wszystkich zmiennych po usuwaniu liniowo skorelowanych}
+\end{figure}
 
 \section{Analiza końcowego zbioru danych}
 \subsection{Opisy zmiennych}
