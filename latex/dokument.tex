@@ -182,7 +182,6 @@ Wnioski przedstawione w analizowanych pracach uzasadniają zastosowane w niniejs
 \subsection{Statystyki opisowe}
 \begin{table}[H]
 \centering
-\caption{Statystyki opisowe wszystkich zmiennych.}
 \resizebox{\textwidth}{!}{
 \begin{tabular}{l c c c c c c c c c c c}
 \toprule
@@ -229,6 +228,7 @@ redGoldPerMin & 1648.90 & 1637.8 & 1121.2 & 2273.2 & 149.09 & 0.41 \\
 \bottomrule
 \end{tabular}
 }
+\caption{Statystyki opisowe wszystkich zmiennych.}
 \end{table}
 
 \subsection{Braki danych}
@@ -292,7 +292,7 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
 \subsection{Usuwanie cech}
 \indent Ta poddsekcja będzie poświęcona procesowi doboru cech poprzez usuwanie Quasi stałych oraz usuwanie lub łączenie względnie silnie skorelowanych.
 \subsubsection{Quasi Stałe}
-\indent Do detekcji Quasi stałych zmiennych wykorzystaliśmy funkcję z pakietu Caret o nazwie nearZeroVar. Sprawdza ona, czy istnieją jakieś zmienne, które przyjmują tylko jedną unikalną wartość lub mają bardzo mało unikalnych wartośći relatywnie i stosunek częstotliwości najczęściej występującej wartości do częstotliwości drugiej najczęściej występującej wartości jest duży, na co wskazuje sama nazwa funkcji. Po jej wykonaniu otrzymaliśmy następującą listę cech:
+\indent Do detekcji Quasi stałych zmiennych wykorzystaliśmy funkcję z pakietu \textit{Caret} o nazwie \textit{nearZeroVar}. Sprawdza ona, czy istnieją jakieś zmienne, które przyjmują tylko jedną unikalną wartość lub mają bardzo mało unikalnych wartośći relatywnie i stosunek częstotliwości najczęściej występującej wartości do częstotliwości drugiej najczęściej występującej wartości jest duży, na co wskazuje sama nazwa funkcji. Po jej wykonaniu otrzymaliśmy następującą listę cech:
 \begin{itemize}
 	\item blueTowersDestroyed 
 	\item redTowersDestroyed
@@ -310,7 +310,12 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
 \begin{samepage}
 \indent Powyższa macierz przedstawia korelacje liniowe, proste pomiędzy wszystkimi zmiennymi, jakie nam zostały po usunięciu quasi stałych. Na jego postawie możemy znaleźć bardzo silnie skorelowane, czyli takie, których poziom korelacji jest większy bądź równy 0.9, pary cech:
 \begin{center}
+\begin{table}[H]
+  \centering
 \begin{tabular}{l l c}
+	\toprule
+	\textbf{Cecha A} & \textbf{Cecha B} &  \textbf{Korelacja A i B}  \\
+	\midrule
 	blueFirstBlood & redFirstBlood & -1 \\ 
 	redDeaths  &  blueKills & 1 \\
 	blueDeaths  & redKills  & 1 \\
@@ -322,7 +327,10 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
 	redTotalGold &  redGoldPerMin &  1 \\
 	redAvgLevel  & redTotalExperience &  0.901748 \\
 	redTotalMinionsKilled &  redCSPerMin  & 1 \\
+	\bottomrule
 \end{tabular}
+\caption{Tabela korelacji silnie skorelowanych zmiennych 1.}
+\end{table}
 \end{center}
 \end{samepage}
 \begin{samepage}
@@ -372,14 +380,23 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
 	\caption{Macierz korelacji dla wszystkich zmiennych po usuwaniu liniowo skorelowanych}
 \end{figure}
 \pagebreak
+
 \begin{samepage}
 \subsubsection{Agregacja}
 \indent \indent Jak można wyczytać z powyższej macierzy, mamy 3 pary silnie skorelowanych cech. Spośród nich 2 to następujące pary:
 \begin{center}
+\begin{table}[H]
+  \centering
 \begin{tabular}{l l c}
+	\toprule
+	\textbf{Cecha A} & \textbf{Cecha B} &  \textbf{Korelacja A i B}  \\
+	\midrule
 	redKills & redAssists & 0.8 \\ 
 	blueKills  &  blueAssists & 0.81 \\
+	\bottomrule
 \end{tabular}
+\caption{Tabela korelacji silnie skorelowanych zmiennych 2.}
+\end{table}
 \end{center}
 \indent Te cechy zagragujemy liniowo w jedną, dla każdej drużyny, wedle następującej reguły:
 \begin{center}
