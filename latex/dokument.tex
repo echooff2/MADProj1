@@ -165,16 +165,16 @@ Ze względu na ograniczoną liczbę prac dotyczących wczesnej fazy gry w League
 gends, przegląd oparto głównie na dwóch analizach z Kaggle wykorzystujących ten sam
 zbiór danych. 
 
-Pierwsza praca pokazuje, że już w pierwszych 10 minutach meczu pojawiają się
+Pierwsza praca [?] pokazuje, że już w pierwszych 10 minutach meczu pojawiają się
 istotne różnice statystyczne między drużynami, które mogą wpływać na dalszy przebieg
 rozgrywki. Wyniki sugerują, że wczesna faza gry dostarcza informacji o potencjalnym
 wyniku meczu.
 
-Druga analiza wskazuje, że takie zmienne jak liczba zabójstw, asyst, złoto, do-
+Druga analiza [?] wskazuje, że takie zmienne jak liczba zabójstw, asyst, złoto, do-
 świadczenie i zabite stwory dobrze różnicują mecze wygrane i przegrane. Potwierdza to,
 że przewaga budowana na początku gry często przekłada się na końcowy rezultat.
 
-Trzecia praca zawiera dokładną analizę wszystkich zmiennych oraz ich wpływu na
+Trzecia praca [?] zawiera dokładną analizę wszystkich zmiennych oraz ich wpływu na
 wynik meczu.
 
 Wnioski przedstawione w analizowanych pracach uzasadniają zastosowane w niniejszej pracy podejście badawcze. Dotychczasowe analizy wskazują, że dane z początkowej fazy rozgrywki zawierają istotną informację predykcyjną, a wykorzystanie metod klasyfikacji może umożliwić skuteczne przewidywanie wyniku meczu na podstawie ograniczonego zestawu cech opisujących pierwsze minuty gry.
@@ -460,7 +460,7 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
 \end{itemize}
 
 \subsection{Charakterystyka zmiennych}
-Zmienne opisujące opisujące ilość zabitych smoków i heroldów powinny być zmiennymi nimerycznymi jednak przez ograniczoną naturę badanego zbioru danych przyjmują jedynie wartości 0 lub 1. Z tego powodu zostały one opisane jako zmienne binarne.
+Zmienne opisujące opisujące ilość zabitych smoków i heroldów powinny być zmiennymi numerycznymi jednak przez ograniczoną naturę badanego zbioru danych przyjmują jedynie wartości 0 lub 1. Z tego powodu zostały one opisane jako zmienne binarne.
 \begin{table}[H]
 \centering
 \begin{tabular}{l l l l}
@@ -659,12 +659,149 @@ Zmienne opisujące opisujące ilość zabitych smoków i heroldów powinny być 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Opisy metod wraz ze wzorami}
-\subsection{Sieci nauronowe}
+\section{Opisy metod}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Sieci neuronowe}
+
+\subsubsection{Opis}
+
+Sieci neuronowe [?] należą do grupy nieliniowych modeli klasyfikacyjnych inspirowanych strukturą biologicznych sieci neuronowych. Ich zadaniem jest aproksymacja funkcji odwzorowującej przestrzeń wejściową cech na zmienną decyzyjną. W analizie wykorzystano wielowarstwową perceptronową sieć neuronową (MLP) zaimplementowaną w bibliotekach \texttt{keras3} oraz \texttt{tensorflow} w języku R.
+
+Rozważana sieć neuronowa składa się z warstw gęstych (ang. \textit{dense layers}), w których każdy neuron jest połączony ze wszystkimi neuronami warstwy poprzedniej. Dla problemu klasyfikacji binarnej, model realizuje funkcję:
+
+\begin{equation}
+\hat{y} = \sigma(f(\mathbf{x}, \theta))
+\end{equation}
+
+gdzie:
+\begin{itemize}
+    \item $\mathbf{x}$ -- wektor cech wejściowych,
+    \item $\theta$ -- wektor parametrów modelu,
+    \item $f(\cdot)$ -- nieliniowa transformacja realizowana przez kolejne warstwy sieci,
+    \item $\sigma(\cdot)$ -- funkcja sigmoidalna:
+\end{itemize}
+
+\begin{equation}
+\sigma(z) = \frac{1}{1 + e^{-z}}
+\end{equation}
+
+W analizie zastosowano architekturę składającą się z warstw ukrytych o liczbie neuronów 128 oraz 64. W warstwach ukrytych użyto funkcji aktywacji typu ELU oraz Softplus, które wprowadzają nieliniowość do modelu i pozwalają na modelowanie złożonych zależności w danych.
+
+W celu ograniczenia przeuczenia zastosowano mechanizm \textit{dropout}, który polega na losowym wyłączaniu części neuronów podczas uczenia z prawdopodobieństwem $p = 0.5$.
+
+Model uczony był poprzez minimalizację funkcji straty typu binary cross-entropy:
+
+\begin{equation}
+L = -\frac{1}{N} \sum_{i=1}^{N} \left[ y_i \log(\hat{y}_i) + (1 - y_i)\log(1 - \hat{y}_i) \right]
+\end{equation}
+
+gdzie:
+\begin{itemize}
+    \item $N$ -- liczba obserwacji,
+    \item $y_i$ -- rzeczywista klasa,
+    \item $\hat{y}_i$ -- predykcja modelu.
+\end{itemize}
+
+Optymalizacja parametrów modelu została przeprowadzona przy użyciu algorytmu RMSprop, który adaptacyjnie dostosowuje współczynnik uczenia na podstawie historii gradientów.
+
+\subsubsection{Procedura uczenia i ewaluacji}
+
+Dane zostały losowo podzielone na zbiór treningowy (60\%) oraz testowy (40\%). Proces uczenia był powtarzany 100 razy, aby ograniczyć wpływ losowej inicjalizacji wag oraz podziału danych na wynik końcowy.
+
+Dla każdej iteracji model trenowano przez 50 epok przy stałej wielkości batcha wynoszącej 100 obserwacji. Jako miarę jakości klasyfikacji zastosowano dokładność (Binary Accuracy), a końcowy wynik stanowiła średnia ze 100 uruchomień modelu.
+
+Skuteczność modelu oceniano na zbiorze testowym, co pozwoliło na uzyskanie stabilnej estymacji jakości klasyfikacji dla analizowanego problemu przewidywania wyniku meczu gry \textit{League of Legends}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Drzewo klasyfikacyjne}
-\subsection{KNN?}
+
+\subsubsection{Opis}
+
+Drzewo decyzyjne [?] jest metodą klasyfikacji wykorzystującą strukturę hierarchiczną składającą się z węzłów decyzyjnych oraz liści reprezentujących klasy. Celem algorytmu jest podział przestrzeni cech na obszary możliwie jednorodne pod względem zmiennej decyzyjnej.
+
+Proces budowy drzewa rozpoczyna się od umieszczenia wszystkich obserwacji w węźle korzeniowym. Następnie wykonywane są kolejne podziały zbioru danych na podstawie wartości wybranych cech. W każdym kroku wybierany jest taki podział, który prowadzi do największego zwiększenia jednorodności klas w otrzymanych podzbiorach.
+
+Algorytm budowy drzewa można przedstawić w postaci następujących kroków:
+
+\begin{enumerate}
+    \item Umieszczenie wszystkich obserwacji w węźle korzeniowym.
+    \item Wyznaczenie najlepszego podziału dla każdej dostępnej cechy.
+    \item Wybór podziału maksymalizującego jakość rozdzielenia klas.
+    \item Utworzenie nowych węzłów potomnych.
+    \item Powtarzanie kroków 2--4 aż do spełnienia kryterium zatrzymania.
+\end{enumerate}
+
+W analizie wykorzystano drzewo klasyfikacyjne służące do przewidywania wartości zmiennej \texttt{blueWins}, określającej końcowy wynik meczu z perspektywy drużyny niebieskiej.
+
+\subsubsection{Kryterium podziału}
+
+Podczas budowy drzewa zastosowano kryterium dewiancji, wykorzystywane przez bibliotekę \texttt{tree}. Dla pojedynczego węzła dewiancja definiowana jest jako:
+
+\begin{equation}
+D = -2 \sum_{i=1}^{K} n_i \ln(p_i)
+\end{equation}
+
+gdzie:
+\begin{itemize}
+    \item $K$ -- liczba klas,
+    \item $n_i$ -- liczba obserwacji należących do klasy $i$,
+    \item $p_i$ -- prawdopodobieństwo wystąpienia klasy $i$ w analizowanym węźle.
+\end{itemize}
+
+Optymalny podział jest wybierany w taki sposób, aby maksymalnie zmniejszyć całkowitą dewiancję drzewa.
+
+\subsubsection{Przycinanie drzewa}
+
+Drzewa decyzyjne są podatne na przeuczenie (\textit{overfitting}), szczególnie gdy ich struktura staje się zbyt rozbudowana. W celu ograniczenia tego zjawiska zastosowano proces przycinania drzewa (\textit{pruning}).
+
+Przycinanie polega na usuwaniu części gałęzi, które nie wnoszą istotnej informacji predykcyjnej. W pracy optymalny rozmiar drzewa został wyznaczony z wykorzystaniem walidacji krzyżowej. Spośród analizowanych struktur wybierano model minimalizujący błąd klasyfikacji na danych walidacyjnych.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Sieci bayesowskie}
+
+\subsubsection{Opis}
+
+Sieci bayesowskie są probabilistycznymi modelami graficznymi reprezentującymi zależności warunkowe pomiędzy zmiennymi losowymi. Struktura sieci ma postać acyklicznego grafu skierowanego (DAG), w którym węzły odpowiadają zmiennym, natomiast krawędzie opisują zależności warunkowe pomiędzy nimi.
+
+Celem modelu jest reprezentacja wspólnego rozkładu prawdopodobieństwa w postaci iloczynu rozkładów warunkowych:
+
+\begin{equation}
+P(X_1, X_2, \ldots, X_n) = \prod_{i=1}^{n} P(X_i \mid Pa(X_i))
+\end{equation}
+
+gdzie:
+\begin{itemize}
+    \item $X_i$ -- zmienna losowa,
+    \item $Pa(X_i)$ -- zbiór rodziców węzła $X_i$ w grafie skierowanym.
+\end{itemize}
+
+W analizie wykorzystano sieć bayesowską do klasyfikacji zmiennej \texttt{blueWins}, określającej wynik meczu z perspektywy drużyny niebieskiej.
+
+\subsubsection{Uczenie struktury i parametrów}
+
+W pierwszym etapie przeprowadzono uczenie struktury sieci bayesowskiej na podstawie danych treningowych. W tym celu zastosowano algorytm wspinaczki (ang. \textit{hill-climbing}, HC), który iteracyjnie modyfikuje strukturę grafu w celu maksymalizacji funkcji dopasowania modelu do danych.
+
+Następnie estymowano parametry modelu, czyli rozkłady warunkowe zmiennych, na podstawie danych treningowych. Formalnie oznacza to estymację wartości:
+
+\begin{equation}
+P(X_i \mid Pa(X_i))
+\end{equation}
+
+dla każdej zmiennej w modelu.
+
+\subsubsection{Predykcja modelu}
+
+Predykcja zmiennej decyzyjnej \texttt{blueWins} została wykonana z wykorzystaniem ważonego estymatora bayesowskiego (ang. \textit{likelihood weighting}). Dla każdej obserwacji testowej wyznaczano najbardziej prawdopodobną klasę:
+
+\begin{equation}
+\hat{y} = \arg\max_{c \in \{0,1\}} P(blueWins = c \mid \mathbf{x})
+\end{equation}
+
+gdzie $\mathbf{x}$ oznacza wektor zmiennych wejściowych.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Opis metody hybrydowej}
-\subsection{Opis oceny metody oceniania}
+\subsection{Opisy metod oceniania}
 
 \section{Rezultaty}
 \subsection{Rezultat metody 1}
