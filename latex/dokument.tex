@@ -460,7 +460,7 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
 \end{itemize}
 
 \subsection{Charakterystyka zmiennych}
-[TODO][zmienne typu BlueDragons sa z zasady numeryczne ale w tym datasecie sa binarne, jak to opisac?]
+Zmienne opisujące opisujące ilość zabitych smoków i heroldów powinny być zmiennymi nimerycznymi jednak przez ograniczoną naturę badanego zbioru danych przyjmują jedynie wartości 0 lub 1. Z tego powodu zostały one opisane jako zmienne binarne.
 \begin{table}[H]
 \centering
 \begin{tabular}{l l l l}
@@ -469,20 +469,20 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
 \midrule
 	blueWardsPlaced & Numeryczna & Ilościowa & Skokowa \\
 	blueWardsDestroyed & Numeryczna & Ilościowa & Skokowa \\
-	blueDragons & Numeryczna & Ilościowa & Skokowa \\
-	blueHeralds & Numeryczna & Ilościowa & Skokowa \\
+	blueDragons & Binarna & Nominalna & Skokowa \\
+	blueHeralds & Binarna & Nominalna & Skokowa \\
 	blueTotalJungleMinionsKilled & Numeryczna & Ilościowa & Skokowa \\
 	blueCSPerMin & Numeryczna & Ilościowa & Ciągła \\
 	redWardsPlaced & Numeryczna & Ilościowa & Skokowa \\
 	redWardsDestroyed & Numeryczna & Ilościowa & Skokowa \\
 	redFirstBlood & Binarna & Nominalna & Skokowa \\
-	redDragons & Numeryczna & Ilościowa & Skokowa \\
-	redHeralds & Numeryczna & Ilościowa & Skokowa \\
+	redDragons & Binarna & Nominalna & Skokowa \\
+	redHeralds & Binarna & Nominalna & Skokowa \\
 	redTotalJungleMinionsKilled & Numeryczna & Ilościowa & Skokowa \\
 	redCSPerMin & Numeryczna & Ilościowa & Ciągła \\
 	blueKA & Numeryczna & Ilościowa & Skokowa \\
 	redKA & Numeryczna & Ilościowa & Skokowa \\
-	diff\_PCA\_Component\_1 & Numeryczna & Ilościowa & Skokowa \\
+	diff\_PCA\_Component\_1 & Numeryczna & Ilościowa & Ciągła \\
 \bottomrule
 \end{tabular}
 \caption{Charakterystyka końcowych zmiennych.}
@@ -519,6 +519,8 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
 \end{table}
 
 \subsection{Wizualizacja}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
     \begin{figure}[H]
         \centering
         \includegraphics[height=0.33\textwidth]{../Plots/boxplots/box_blueWardsPlaced.png}
@@ -628,7 +630,7 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
         \label{fig:both_images}
     \end{figure}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     \begin{figure}[H]
         \centering
@@ -655,10 +657,12 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
         \label{fig:both_images}
     \end{figure}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Opisy metod wraz ze wzorami}
-\subsection{Opis metody 1}
-\subsection{Opis metody 2}
-\subsection{Opis metody 3}
+\subsection{Sieci nauronowe}
+\subsection{Drzewo klasyfikacyjne}
+\subsection{KNN?}
 \subsection{Opis metody hybrydowej}
 \subsection{Opis oceny metody oceniania}
 
