@@ -1,20 +1,3 @@
-draw_historgram <- function(df, feature, name){
-  p <- ggplot(data.frame(feature), aes(x=feature)) +
-    geom_histogram(aes(y = ..density..), colour = 1, fill = "white") +
-    geom_density(color = "darkgrey", lwd = 1.5, fill="gray", alpha = 0.5) +
-    ggtitle(name) +
-    theme(plot.title = element_text(size=15, hjust=0.5))
-  ggsave(paste0("Plots/histograms/hist_", name, ".png"))
-}
-
-draw_historgrams <- function(df){
-  for (col_nr in 1:ncol(df)) {
-    feature <- df[, col_nr]
-    name <- names(df)[col_nr]
-    draw_historgram(df, feature, name)
-  }
-}
-
 delete_quasi_const <- function(df){
   nzv_cols <- nearZeroVar(df)
   print(colnames(df)[nzv_cols])
@@ -54,7 +37,7 @@ delete_outliers <- function(df){
 
 # OMÓWIENIE ZMIENNYCH:
 # a) to_draw_graphs przyjmuje wektor zmiennych True/False, gdzie:
-#   1) oznacza rysowanie histogramów i boxplotów
+#   1) oznacza rysowanie histogramów, barplotow, boxplotów i piechartow
 #   2) oznacza rysowanie macierzy korelacji
 #   3) oznacza ryzowanie wykresów do analizy PCA
 # b) to_scale, zmienna True/False, oznaczająca, czy dopuszczamy skalowanie;
@@ -122,8 +105,11 @@ do_preliminary_analisys <- function(to_draw_graphs = c(F, F, F), to_scale = T, m
   
   print(colnames(df))
   
-  if(to_draw_graphs[1])
-    draw_historgrams(df)
+  if(to_draw_graphs[1]){
+      if(!exists('draw_end_dataset_plots'))
+          source('endDatasetWisualization.R')
+      draw_end_dataset_plots(df)
+  }
   if(to_scale)
     scale(df)
   
