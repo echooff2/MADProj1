@@ -761,7 +761,7 @@ Przycinanie polega na usuwaniu części gałęzi, które nie wnoszą istotnej in
 
 \subsubsection{Opis}
 
-Sieci bayesowskie są probabilistycznymi modelami graficznymi reprezentującymi zależności warunkowe pomiędzy zmiennymi losowymi. Struktura sieci ma postać acyklicznego grafu skierowanego (DAG), w którym węzły odpowiadają zmiennym, natomiast krawędzie opisują zależności warunkowe pomiędzy nimi.
+Sieci bayesowskie [?] są probabilistycznymi modelami graficznymi reprezentującymi zależności warunkowe pomiędzy zmiennymi losowymi. Struktura sieci ma postać acyklicznego grafu skierowanego (DAG), w którym węzły odpowiadają zmiennym, natomiast krawędzie opisują zależności warunkowe pomiędzy nimi.
 
 Celem modelu jest reprezentacja wspólnego rozkładu prawdopodobieństwa w postaci iloczynu rozkładów warunkowych:
 
@@ -801,8 +801,83 @@ gdzie $\mathbf{x}$ oznacza wektor zmiennych wejściowych.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Opis metody hybrydowej}
-\subsection{Opisy metod oceniania}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Metody oceniania}
 
+Ocena jakości modeli klasyfikacyjnych stanowi istotny element analizy, ponieważ pozwala na porównanie skuteczności zastosowanych metod oraz określenie ich przydatności w kontekście rozważanego problemu predykcji wyniku meczu. W niniejszej pracy wykorzystano miary oparte na macierzy pomyłek oraz krzywą ROC wraz z polem pod krzywą AUC.
+
+\subsubsection{Macierz pomyłek i miary klasyfikacji}
+
+Podstawą oceny modeli klasyfikacyjnych jest macierz pomyłek, która zestawia rzeczywiste klasy obserwacji z klasami przewidzianymi przez model. Dla problemu binarnej klasyfikacji wyróżnia się cztery podstawowe wartości:
+
+\begin{itemize}
+    \item $TP$ (True Positive) -- liczba poprawnie przewidzianych przypadków pozytywnej klasy,
+    \item $TN$ (True Negative) -- liczba poprawnie przewidzianych przypadków negatywnej klasy,
+    \item $FP$ (False Positive) -- liczba błędnie przewidzianych przypadków pozytywnej klasy,
+    \item $FN$ (False Negative) -- liczba błędnie przewidzianych przypadków negatywnej klasy.
+\end{itemize}
+
+Na podstawie macierzy pomyłek definiuje się następujące miary jakości klasyfikacji:
+
+\textbf{Dokładność (Accuracy)} określająca odsetek poprawnych klasyfikacji:
+
+\begin{equation}
+Accuracy = \frac{TP + TN}{TP + TN + FP + FN}
+\end{equation}
+
+\textbf{Precyzja (Precision)} określająca, jak wiele przewidzianych przypadków pozytywnych jest rzeczywiście poprawnych:
+
+\begin{equation}
+Precision = \frac{TP}{TP + FP}
+\end{equation}
+
+\textbf{Czułość (Sensitivity, Recall)} określająca zdolność modelu do wykrywania pozytywnych przypadków:
+
+\begin{equation}
+Sensitivity = \frac{TP}{TP + FN}
+\end{equation}
+
+\textbf{Specyficzność (Specificity)} określająca zdolność modelu do poprawnego wykrywania przypadków negatywnych:
+
+\begin{equation}
+Specificity = \frac{TN}{TN + FP}
+\end{equation}
+
+\textbf{Negatywna wartość predykcyjna (NPV)} określająca poprawność przewidywań klasy negatywnej:
+
+\begin{equation}
+NPV = \frac{TN}{TN + FN}
+\end{equation}
+
+Miary te pozwalają na kompleksową ocenę jakości modeli, uwzględniając zarówno poprawne klasyfikacje, jak i błędy różnych typów.
+
+\subsubsection{Krzywa ROC oraz pole pod krzywą AUC}
+
+Krzywa ROC (Receiver Operating Characteristic) przedstawia zależność pomiędzy czułością modelu a odsetkiem fałszywych alarmów (False Positive Rate):
+
+\begin{equation}
+FPR = \frac{FP}{FP + TN}
+\end{equation}
+
+Krzywa ROC jest wykresem funkcji:
+
+\begin{equation}
+ROC = (FPR, Sensitivity)
+\end{equation}
+
+Analiza krzywej ROC pozwala ocenić kompromis pomiędzy czułością a specyficznością modelu dla różnych progów decyzyjnych.
+
+Pole pod krzywą ROC (AUC -- Area Under Curve) stanowi zagregowaną miarę jakości klasyfikatora:
+
+\begin{equation}
+AUC = \int_{0}^{1} TPR(FPR)\, d(FPR)
+\end{equation}
+
+gdzie $TPR$ oznacza czułość modelu.
+
+Wartość AUC przyjmuje wartości z przedziału $[0,1]$, gdzie wartość 1 oznacza idealny klasyfikator, natomiast wartość 0.5 odpowiada klasyfikatorowi losowemu. W niniejszej pracy miara AUC została wykorzystana do porównania skuteczności analizowanych modeli klasyfikacyjnych.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Rezultaty}
 \subsection{Rezultat metody 1}
 \subsection{Rezultat metody 2}
