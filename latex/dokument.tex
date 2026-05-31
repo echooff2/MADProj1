@@ -324,13 +324,13 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
 	\item {\bf redCSPerMin} --- Ilość zabitych minionów przez drużnę czerwoną w przeliczeniu na minute.
 	\item {\bf blueKA} --- Łączna ilość zabójstw i asyst drużyny niebieskiej.
 	\item {\bf redKA} --- Łączna ilość zabójstw i asyst drużyny czerwonej.
-	\item {\bf diff\_PCA\_Component\_1} --- Nowa zmienna utworzona w procesie PCA. [TODO][DOPRECYZOWAĆ]
+	\item {\bf diff\_PCA\_Component\_1} --- Nowa zmienna utworzona w procesie PCA ze zmiennych \textit{redGoldDiff} i \textit{redExperienceDiff}.
 \end{itemize}
 
 \subsection{Charakterystyka zmiennych}
+[TODO][zmienne typu BlueDragons sa z zasady numeryczne ale w tym datasecie sa binarne, jak to opisac?]
 \begin{table}[H]
 \centering
-\caption{Charakterystyka wybranych zmiennych.}
 \begin{tabular}{l l l l}
 \toprule
 	\textbf{Zmienna} & \textbf{Typ} & \textbf{Skala} & \textbf{Charakter} \\
@@ -343,7 +343,7 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
 	blueCSPerMin & Numeryczna & Ilościowa & Ciągła \\
 	redWardsPlaced & Numeryczna & Ilościowa & Skokowa \\
 	redWardsDestroyed & Numeryczna & Ilościowa & Skokowa \\
-	redFirstBlood & Binarna & Norminalna & Skokowa \\
+	redFirstBlood & Binarna & Nominalna & Skokowa \\
 	redDragons & Numeryczna & Ilościowa & Skokowa \\
 	redHeralds & Numeryczna & Ilościowa & Skokowa \\
 	redTotalJungleMinionsKilled & Numeryczna & Ilościowa & Skokowa \\
@@ -353,12 +353,12 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
 	diff\_PCA\_Component\_1 & Numeryczna & Ilościowa & Skokowa \\
 \bottomrule
 \end{tabular}
+\caption{Charakterystyka końcowych zmiennych.}
 \end{table}
 
 \subsection{Statystyki opisowe}
 \begin{table}[H]
 \centering
-\caption{Statystyki opisowe wybranych zmiennych.}
 \resizebox{\textwidth}{!}{
 \begin{tabular}{l c c c c c c c c c c c}
 \toprule
@@ -383,16 +383,145 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
 \bottomrule
 \end{tabular}
 }
+\caption{Statystyki opisowe końcowych zmiennych.}
 \end{table}
 
 \subsection{Wizualizacja}
-\begin{figure}[H]
-	\centering
-	\makebox[\textwidth][c]{%
-		\includegraphics[width=1.0\textwidth]{../Plots/corrmatrixes/WykresZ_KA.png}
-	}
-	\caption{Macierz korelacji dla wybranych zmiennych.}
-\end{figure}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.33\textwidth]{../Plots/boxplots/box_blueWardsPlaced.png}
+        \hfill
+        \includegraphics[height=0.33\textwidth]{../Plots/histograms_and_barplots/hist_blueWardsPlaced.png}
+        \caption{Boxplot oraz histogram z nałożoną funkcją gęstości dla zmiennej blueWardsPlaced.}
+        \label{fig:both_images}
+    \end{figure}
+    
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.33\textwidth]{../Plots/boxplots/box_blueWardsDestroyed.png}
+        \hfill
+        \includegraphics[height=0.33\textwidth]{../Plots/histograms_and_barplots/bar_blueWardsDestroyed.png}
+        \caption{Boxplot oraz barplot dla zmiennej blueWardsDestroyed.}
+        \label{fig:both_images}
+    \end{figure}
+    
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.33\textwidth]{../Plots/boxplots/box_blueTotalJungleMinionsKilled.png}
+        \hfill
+        \includegraphics[height=0.33\textwidth]{../Plots/histograms_and_barplots/hist_blueTotalJungleMinionsKilled.png}
+        \caption{Boxplot oraz histogram z nałożoną funkcją gęstości dla zmiennej blueTotalJungleMinionsKilled.}
+        \label{fig:both_images}
+    \end{figure}
+    
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.33\textwidth]{../Plots/boxplots/box_blueCSPerMin.png}
+        \hfill
+        \includegraphics[height=0.33\textwidth]{../Plots/histograms_and_barplots/hist_blueCSPerMin.png}
+        \caption{Boxplot oraz histogram z nałożoną funkcją gęstości dla zmiennej blueCSPerMin.}
+        \label{fig:both_images}
+    \end{figure}
+    
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.33\textwidth]{../Plots/boxplots/box_redWardsPlaced.png}
+        \hfill
+        \includegraphics[height=0.33\textwidth]{../Plots/histograms_and_barplots/hist_redWardsPlaced.png}
+        \caption{Boxplot oraz histogram z nałożoną funkcją gęstości dla zmiennej redWardsPlaced.}
+        \label{fig:both_images}
+    \end{figure}
+    
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.33\textwidth]{../Plots/boxplots/box_redWardsDestroyed.png}
+        \hfill
+        \includegraphics[height=0.33\textwidth]{../Plots/histograms_and_barplots/bar_redWardsDestroyed.png}
+        \caption{Boxplot oraz barplot dla zmiennej redWardsDestroyed.}
+        \label{fig:both_images}
+    \end{figure}
+    
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.33\textwidth]{../Plots/boxplots/box_redTotalJungleMinionsKilled.png}
+        \hfill
+        \includegraphics[height=0.33\textwidth]{../Plots/histograms_and_barplots/hist_redTotalJungleMinionsKilled.png}
+        \caption{Boxplot oraz histogram z nałożoną funkcją gęstości dla zmiennej redTotalJungleMinionsKilled.}
+        \label{fig:both_images}
+    \end{figure}
+    
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.33\textwidth]{../Plots/boxplots/box_redCSPerMin.png}
+        \hfill
+        \includegraphics[height=0.33\textwidth]{../Plots/histograms_and_barplots/hist_redCSPerMin.png}
+        \caption{Boxplot oraz histogram z nałożoną funkcją gęstości dla zmiennej redCSPerMin.}
+        \label{fig:both_images}
+    \end{figure}
+    
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.33\textwidth]{../Plots/boxplots/box_blueKA.png}
+        \hfill
+        \includegraphics[height=0.33\textwidth]{../Plots/histograms_and_barplots/hist_blueKA.png}
+        \caption{Boxplot oraz histogram z nałożoną funkcją gęstości dla zmiennej blueKA.}
+        \label{fig:both_images}
+    \end{figure}
+    
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.33\textwidth]{../Plots/boxplots/box_redKA.png}
+        \hfill
+        \includegraphics[height=0.33\textwidth]{../Plots/histograms_and_barplots/hist_redKA.png}
+        \caption{Boxplot oraz histogram z nałożoną funkcją gęstości dla zmiennej redKA.}
+        \label{fig:both_images}
+    \end{figure}
+    
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.33\textwidth]{../Plots/boxplots/box_diff_PCA_Component_1.png}
+        \hfill
+        \includegraphics[height=0.33\textwidth]{../Plots/histograms_and_barplots/hist_diff_PCA_Component_1.png}
+        \caption{Boxplot oraz histogram z nałożoną funkcją gęstości dla zmiennej diff\_PCA\_Component\_1.}
+        \label{fig:both_images}
+    \end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.33\textwidth]{../Plots/piecharts/pie_blueDragons.png}
+        \hfill
+        \includegraphics[height=0.33\textwidth]{../Plots/piecharts/pie_redDragons.png}
+	\caption{Piecharty dla zmiennych blueDragons oraz redDragons.}
+        \label{fig:both_images}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.33\textwidth]{../Plots/piecharts/pie_blueHeralds.png}
+        \hfill
+        \includegraphics[height=0.33\textwidth]{../Plots/piecharts/pie_redHeralds.png}
+	\caption{Piecharty dla zmiennych blueHeralds oraz redHeralds.}
+        \label{fig:both_images}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.33\textwidth]{../Plots/piecharts/pie_redFirstBlood.png}
+	\caption{Piechart dla zmiennej redFirstBlood.}
+        \label{fig:both_images}
+    \end{figure}
 
 \section{Opisy metod wraz ze wzorami}
 \subsection{Opis metody 1}

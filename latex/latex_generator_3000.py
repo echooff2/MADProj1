@@ -1,3 +1,5 @@
+import os
+
 def reduce_spaces(str):
     for i in range(10):
         str = str.replace("  ", " ")
@@ -18,14 +20,22 @@ def format_var_name(var):
 
 
 def print_latex_graphs(var_names):
+    boxplots = " ".join(os.listdir(r"../Plots/boxplots"))
+    hist_and_bar = " ".join(os.listdir(r"../Plots/histograms_and_barplots"))
     for var_name in var_names:
+        if var_name not in boxplots:
+            continue
+        if "hist_" + var_name in hist_and_bar:
+            plot_type = "hist"
+        else:
+            plot_type = "bar"
         print("""
     \\begin{figure}[H]
         \\centering
-        \\includegraphics[width=0.43\\textwidth]{../wykresy/boxploty/box_""" + var_name + """.png}
+        \\includegraphics[height=0.33\\textwidth]{../Plots/boxplots/box_""" + var_name + """.png}
         \\hfill
-        \\includegraphics[width=0.43\\textwidth]{../wykresy/histogramy/hist_""" + var_name + """.png}
-        \\caption{Boxplot oraz histogram dla zmiennej """ + var_name + """.}
+        \\includegraphics[height=0.33\\textwidth]{../Plots/histograms_and_barplots/""" + plot_type + "_" + var_name + """.png}
+        \\caption{Boxplot oraz """ + ("histogram z nałożoną funkcją gęstości" if plot_type == "hist" else "barplot") + """ dla zmiennej """ + (var_name.replace(r"_", r"\_") if "PCA" in var_name else var_name) + """.}
         \\label{fig:both_images}
     \\end{figure}
     """)
@@ -60,33 +70,29 @@ redKA                        12.81  12.00  0.00  43.00  6.66  0.63
 diff_PCA_Component_1          0.00   0.01 -6.36   6.55  1.38 -0.03
 """
 
-summary = summary.strip()
-summary = reduce_spaces(summary)
-summary = format(summary)
-print(summary)
-print()
+# summary = summary.strip()
+# summary = reduce_spaces(summary)
+# summary = format(summary)
+# print(summary)
+# print()
 
 var_names = [line.split(" ")[0] for line in summary.splitlines()]
 # print(var_names)
-print()
+# print()
 
-# print_latex_graphs(var_names)
+print_latex_graphs(var_names)
 # print_latex_var_list(var_names)
-print_latex_var_table(var_names)
+# print_latex_var_table(var_names)
+# print()
 
-print()
-
-results = """Cluster blueKills blueDeaths blueAssists blueTotalGold blueAvgLevel blueTotalExperience blueTotalMinionsKilled blueTotalJungleMinionsKilled redAssists redTotalGold redAvgLevel redTotalExperience redTotalMinionsKilled redTotalJungleMinionsKilled
-1  4.530545   7.496208    4.654870      15537.83     6.757884            17255.45               210.3110                     49.25181   8.096831     17326.60    7.088774           18648.18              224.6253                    52.72263
-2  7.845526   4.661706    8.434302      17476.90     7.088920            18652.44               223.7194                     51.65116   4.884424     15583.77    6.763035           17268.16              210.0955                    49.59875"""
-
-results = results.strip()
-results = reduce_spaces(results)
-
-chuj = [line.split(" ") for line in results.split("\n")]
-
-for i in range(14):
-    print(chuj[0][i], end=" & ")
-    print(chuj[1][i], end=" & ")
-    print(chuj[2][i], end=" \\\\\n")
+# results = """Cluster blueKills blueDeaths blueAssists blueTotalGold blueAvgLevel blueTotalExperience blueTotalMinionsKilled blueTotalJungleMinionsKilled redAssists redTotalGold redAvgLevel redTotalExperience redTotalMinionsKilled redTotalJungleMinionsKilled
+# 1  4.530545   7.496208    4.654870      15537.83     6.757884            17255.45               210.3110                     49.25181   8.096831     17326.60    7.088774           18648.18              224.6253                    52.72263
+# 2  7.845526   4.661706    8.434302      17476.90     7.088920            18652.44               223.7194                     51.65116   4.884424     15583.77    6.763035           17268.16              210.0955                    49.59875"""
+# results = results.strip()
+# results = reduce_spaces(results)
+# chuj = [line.split(" ") for line in results.split("\n")]
+# for i in range(14):
+#     print(chuj[0][i], end=" & ")
+#     print(chuj[1][i], end=" & ")
+#     print(chuj[2][i], end=" \\\\\n")
 
