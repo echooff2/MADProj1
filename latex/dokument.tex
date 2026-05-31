@@ -87,7 +87,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras ex odio, elementum
 %%  SECTION 1: INTRODUCTION
 %% ============================================================
 \section{Wprowadzenie}
-musi byc przynajmniej jedna cytacja zeby latex sie nie wywalil \cite{IEA2023} 
+[TODO][USUNAC]musi byc przynajmniej jedna cytacja zeby latex sie nie wywalil \cite{IEA2023} 
 
 League of Legends jest jedną z najpopularniejszych gier komputerowych typu MOBA (Multiplayer Online Battle Arena), w której dwie pięcioosobowe drużyny rywalizują ze sobą w celu zniszczenia głównej struktury przeciwnika, zwanej Nexusem. Rozgrywka opiera się na współpracy zespołowej, zdobywaniu zasobów oraz stopniowym budowaniu przewagi ekonomicznej i strategicznej nad drużyną przeciwną.
 
@@ -123,7 +123,7 @@ skuteczności tych metod w przewidywaniu rzeczywistego wyniku meczu, rozumianego
 jako wygrana lub przegrana drużyny niebieskiej.
 
 Istotnym elementem pracy jest porównanie wyników uzyskanych za pomocą trzech
-metod klasyfikacji: [NAZWA METODY 1], [NAZWA METODY 2] oraz [NAZWA METODY 3],
+metod klasyfikacji: [TODO][NAZWA METODY 1], [NAZWA METODY 2] oraz [NAZWA METODY 3],
 a także metody mieszanej [NAZWA METODY MIESZANEJ], łączącej cechy wybranych podejść.
 Celem analizy jest wskazanie, które z zastosowanych rozwiązań najlepiej przewiduje wynik
 meczu na podstawie danych dostępnych na wczesnym etapie gry.
@@ -139,14 +139,14 @@ Zakres badania obejmuje:
 \item przygotowanie danych do procesu uczenia modeli, w tym obsługę wartości odstających, analizę braków danych, skalowanie cech oraz usunięcie zbędnych zmiennych,
 \item analizę końcowego zbioru danych po przeprowadzeniu preprocessingu,
 \item przedstawienie teoretycznych podstaw zastosowanych metod klasyfikacji,
-\item implementację oraz zastosowanie metod klasyfikacji: [NAZWA METODY 1], [NAZWA METODY 2], [NAZWA METODY 3] oraz [NAZWA METODY HYBRYDOWEJ],
+\item implementację oraz zastosowanie metod klasyfikacji: [TODO][NAZWA METODY 1], [NAZWA METODY 2], [NAZWA METODY 3] oraz [NAZWA METODY HYBRYDOWEJ],
 \item ocenę skuteczności modeli przy użyciu wybranych miar jakości klasyfikacji,
 \item analizę i interpretację uzyskanych wyników,
 \item porównanie skuteczności zastosowanych metod klasyfikacji,
 \item wykorzystanie najlepszego modelu do klasyfikacji syntetycznie wygenerowanych danych testowych.
 \end{itemize}
 
-Analizę danych oraz implementację modeli klasyfikacyjnych wykonano przy użyciu języka R. Obliczenia przeprowadzono w środowisku RStudio. Użyte biblioteki: [LISTA WSZYSTKICH BIBLIOTEK]
+Analizę danych oraz implementację modeli klasyfikacyjnych wykonano przy użyciu języka R. Obliczenia przeprowadzono w środowisku RStudio. Użyte biblioteki: [TODO][LISTA WSZYSTKICH BIBLIOTEK]
 
 \subsection{Źródło danych}
 W pracy wykorzystano publicznie dostępny zbiór danych zawierający statystyki meczów rankingowych gry League of Legends. Dane pochodzą z serwisu Kaggle i zostały pozyskane przy użyciu oficjalnego API udostępnianego przez Riot Games.
@@ -160,6 +160,7 @@ Zbiór danych składa się z 9879 rekordów oraz 40 zmiennych. Zmienną decyzyjn
 Klasy w zbiorze danych są w przybliżeniu zbalansowane, co oznacza, że liczba zwycięstw drużyny niebieskiej i czerwonej jest podobna.
 
 \subsection{Przeglad literatury}
+[TODO][DODAC CYTOWNIA DO PRAC Z KAGGLA]
 Ze względu na ograniczoną liczbę prac dotyczących wczesnej fazy gry w League of Le-
 gends, przegląd oparto głównie na dwóch analizach z Kaggle wykorzystujących ten sam
 zbiór danych. 
@@ -438,8 +439,221 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
 \end{figure}
 
 \section{Analiza końcowego zbioru danych}
-\subsection{Opisy zmiennych}
+\subsection{Wyjaśnienie zmiennych}
+\begin{itemize}
+	\item {\bf blueWardsPlaced} --- Ilość wardów postawionych przez druyżynę niebieską.
+	\item {\bf blueWardsDestroyed} --- Ilość wardów zniszczonych przez druyżynę niebieską. 
+	\item {\bf blueDragons} --- Liczba smoków zabitych przez drużynę niebieską.
+	\item {\bf blueHeralds} --- Liczba Heroldów zabitych przez drużynę niebieską.
+	\item {\bf blueTotalJungleMinionsKilled} --- Łączna ilość zabitych minionów z dżungli przez drużynę niebieską.
+	\item {\bf blueCSPerMin} --- Ilość zabitych minionów przez drużnę niebieską w przeliczeniu na minute.
+	\item {\bf redWardsPlaced} --- Ilość wardów postawionych przez druyżynę czerwoną.
+	\item {\bf redWardsDestroyed} ---  Ilość wardów zniszczonych przez druyżynę czerwoną. 
+	\item {\bf redFirstBlood} --- Informacja o zdobyciu pierwszego zabójstwa (First Blood) przez drużynę czerwoną.
+	\item {\bf redDragons} ---  Liczba smoków zabitych przez drużynę czerwoną.
+	\item {\bf redHeralds} --- Liczba Heroldów zabitych przez drużynę czerwoną.
+	\item {\bf redTotalJungleMinionsKilled} --- Łączna ilość zabitych minionów z dżungli przez drużynę czerwoną.
+	\item {\bf redCSPerMin} --- Ilość zabitych minionów przez drużnę czerwoną w przeliczeniu na minute.
+	\item {\bf blueKA} --- Łączna ilość zabójstw i asyst drużyny niebieskiej.
+	\item {\bf redKA} --- Łączna ilość zabójstw i asyst drużyny czerwonej.
+	\item {\bf diff\_PCA\_Component\_1} --- Nowa zmienna utworzona w procesie PCA ze zmiennych \textit{redGoldDiff} i \textit{redExperienceDiff}.
+\end{itemize}
+
+\subsection{Charakterystyka zmiennych}
+[TODO][zmienne typu BlueDragons sa z zasady numeryczne ale w tym datasecie sa binarne, jak to opisac?]
+\begin{table}[H]
+\centering
+\begin{tabular}{l l l l}
+\toprule
+	\textbf{Zmienna} & \textbf{Typ} & \textbf{Skala} & \textbf{Charakter} \\
+\midrule
+	blueWardsPlaced & Numeryczna & Ilościowa & Skokowa \\
+	blueWardsDestroyed & Numeryczna & Ilościowa & Skokowa \\
+	blueDragons & Numeryczna & Ilościowa & Skokowa \\
+	blueHeralds & Numeryczna & Ilościowa & Skokowa \\
+	blueTotalJungleMinionsKilled & Numeryczna & Ilościowa & Skokowa \\
+	blueCSPerMin & Numeryczna & Ilościowa & Ciągła \\
+	redWardsPlaced & Numeryczna & Ilościowa & Skokowa \\
+	redWardsDestroyed & Numeryczna & Ilościowa & Skokowa \\
+	redFirstBlood & Binarna & Nominalna & Skokowa \\
+	redDragons & Numeryczna & Ilościowa & Skokowa \\
+	redHeralds & Numeryczna & Ilościowa & Skokowa \\
+	redTotalJungleMinionsKilled & Numeryczna & Ilościowa & Skokowa \\
+	redCSPerMin & Numeryczna & Ilościowa & Ciągła \\
+	blueKA & Numeryczna & Ilościowa & Skokowa \\
+	redKA & Numeryczna & Ilościowa & Skokowa \\
+	diff\_PCA\_Component\_1 & Numeryczna & Ilościowa & Skokowa \\
+\bottomrule
+\end{tabular}
+\caption{Charakterystyka końcowych zmiennych.}
+\end{table}
+
+\subsection{Statystyki opisowe}
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{l c c c c c c c c c c c}
+\toprule
+	\textbf{Zmienna} & \textbf{Średnia} & \textbf{Mediana} & \textbf{Min.} & \textbf{Maks.} & \textbf{Odch. std.}  & \textbf{Skośność} \\
+\midrule
+	blueWardsPlaced & 20.97 & 16.00 & 5.00 & 105.00 & 13.78 & 3.04 \\
+	blueWardsDestroyed & 2.70 & 3.00 & 0.00 & 11.00 & 1.73 & 0.79 \\
+	blueDragons & 0.36 & 0.00 & 0.00 & 1.00 & 0.48 & 0.58 \\
+	blueHeralds & 0.19 & 0.00 & 0.00 & 1.00 & 0.39 & 1.60 \\
+	blueTotalJungleMinionsKilled & 50.50 & 50.00 & 0.00 & 92.00 & 9.91 & 0.11 \\
+	blueCSPerMin & 21.66 & 21.80 & 9.00 & 28.30 & 2.19 & -0.26 \\
+	redWardsPlaced & 20.95 & 16.00 & 6.00 & 104.00 & 13.43 & 2.89 \\
+	redWardsDestroyed & 2.60 & 2.00 & 0.00 & 10.00 & 1.67 & 0.72 \\
+	redFirstBlood & 0.50 & 0.00 & 0.00 & 1.00 & 0.50 & 0.02 \\
+	redDragons & 0.41 & 0.00 & 0.00 & 1.00 & 0.49 & 0.35 \\
+	redHeralds & 0.16 & 0.00 & 0.00 & 1.00 & 0.37 & 1.86 \\
+	redTotalJungleMinionsKilled & 51.32 & 51.00 & 4.00 & 92.00 & 10.05 & 0.23 \\
+	redCSPerMin & 21.73 & 21.80 & 10.70 & 28.90 & 2.19 & -0.29 \\
+	blueKA & 12.84 & 12.00 & 0.00 & 51.00 & 6.76 & 0.69 \\
+	redKA & 12.81 & 12.00 & 0.00 & 43.00 & 6.66 & 0.63 \\
+	diff\_PCA\_Component\_1 & 0.00 & 0.01 & -6.36 & 6.55 & 1.38 & -0.03 \\
+\bottomrule
+\end{tabular}
+}
+\caption{Statystyki opisowe końcowych zmiennych.}
+\end{table}
+
 \subsection{Wizualizacja}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.33\textwidth]{../Plots/boxplots/box_blueWardsPlaced.png}
+        \hfill
+        \includegraphics[height=0.33\textwidth]{../Plots/histograms_and_barplots/hist_blueWardsPlaced.png}
+        \caption{Boxplot oraz histogram z nałożoną funkcją gęstości dla zmiennej blueWardsPlaced.}
+        \label{fig:both_images}
+    \end{figure}
+    
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.33\textwidth]{../Plots/boxplots/box_blueWardsDestroyed.png}
+        \hfill
+        \includegraphics[height=0.33\textwidth]{../Plots/histograms_and_barplots/bar_blueWardsDestroyed.png}
+        \caption{Boxplot oraz barplot dla zmiennej blueWardsDestroyed.}
+        \label{fig:both_images}
+    \end{figure}
+    
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.33\textwidth]{../Plots/boxplots/box_blueTotalJungleMinionsKilled.png}
+        \hfill
+        \includegraphics[height=0.33\textwidth]{../Plots/histograms_and_barplots/hist_blueTotalJungleMinionsKilled.png}
+        \caption{Boxplot oraz histogram z nałożoną funkcją gęstości dla zmiennej blueTotalJungleMinionsKilled.}
+        \label{fig:both_images}
+    \end{figure}
+    
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.33\textwidth]{../Plots/boxplots/box_blueCSPerMin.png}
+        \hfill
+        \includegraphics[height=0.33\textwidth]{../Plots/histograms_and_barplots/hist_blueCSPerMin.png}
+        \caption{Boxplot oraz histogram z nałożoną funkcją gęstości dla zmiennej blueCSPerMin.}
+        \label{fig:both_images}
+    \end{figure}
+    
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.33\textwidth]{../Plots/boxplots/box_redWardsPlaced.png}
+        \hfill
+        \includegraphics[height=0.33\textwidth]{../Plots/histograms_and_barplots/hist_redWardsPlaced.png}
+        \caption{Boxplot oraz histogram z nałożoną funkcją gęstości dla zmiennej redWardsPlaced.}
+        \label{fig:both_images}
+    \end{figure}
+    
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.33\textwidth]{../Plots/boxplots/box_redWardsDestroyed.png}
+        \hfill
+        \includegraphics[height=0.33\textwidth]{../Plots/histograms_and_barplots/bar_redWardsDestroyed.png}
+        \caption{Boxplot oraz barplot dla zmiennej redWardsDestroyed.}
+        \label{fig:both_images}
+    \end{figure}
+    
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.33\textwidth]{../Plots/boxplots/box_redTotalJungleMinionsKilled.png}
+        \hfill
+        \includegraphics[height=0.33\textwidth]{../Plots/histograms_and_barplots/hist_redTotalJungleMinionsKilled.png}
+        \caption{Boxplot oraz histogram z nałożoną funkcją gęstości dla zmiennej redTotalJungleMinionsKilled.}
+        \label{fig:both_images}
+    \end{figure}
+    
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.33\textwidth]{../Plots/boxplots/box_redCSPerMin.png}
+        \hfill
+        \includegraphics[height=0.33\textwidth]{../Plots/histograms_and_barplots/hist_redCSPerMin.png}
+        \caption{Boxplot oraz histogram z nałożoną funkcją gęstości dla zmiennej redCSPerMin.}
+        \label{fig:both_images}
+    \end{figure}
+    
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.33\textwidth]{../Plots/boxplots/box_blueKA.png}
+        \hfill
+        \includegraphics[height=0.33\textwidth]{../Plots/histograms_and_barplots/hist_blueKA.png}
+        \caption{Boxplot oraz histogram z nałożoną funkcją gęstości dla zmiennej blueKA.}
+        \label{fig:both_images}
+    \end{figure}
+    
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.33\textwidth]{../Plots/boxplots/box_redKA.png}
+        \hfill
+        \includegraphics[height=0.33\textwidth]{../Plots/histograms_and_barplots/hist_redKA.png}
+        \caption{Boxplot oraz histogram z nałożoną funkcją gęstości dla zmiennej redKA.}
+        \label{fig:both_images}
+    \end{figure}
+    
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.33\textwidth]{../Plots/boxplots/box_diff_PCA_Component_1.png}
+        \hfill
+        \includegraphics[height=0.33\textwidth]{../Plots/histograms_and_barplots/hist_diff_PCA_Component_1.png}
+        \caption{Boxplot oraz histogram z nałożoną funkcją gęstości dla zmiennej diff\_PCA\_Component\_1.}
+        \label{fig:both_images}
+    \end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.33\textwidth]{../Plots/piecharts/pie_blueDragons.png}
+        \hfill
+        \includegraphics[height=0.33\textwidth]{../Plots/piecharts/pie_redDragons.png}
+	\caption{Piecharty dla zmiennych blueDragons oraz redDragons.}
+        \label{fig:both_images}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.33\textwidth]{../Plots/piecharts/pie_blueHeralds.png}
+        \hfill
+        \includegraphics[height=0.33\textwidth]{../Plots/piecharts/pie_redHeralds.png}
+	\caption{Piecharty dla zmiennych blueHeralds oraz redHeralds.}
+        \label{fig:both_images}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.33\textwidth]{../Plots/piecharts/pie_redFirstBlood.png}
+	\caption{Piechart dla zmiennej redFirstBlood.}
+        \label{fig:both_images}
+    \end{figure}
 
 \section{Opisy metod wraz ze wzorami}
 \subsection{Opis metody 1}
