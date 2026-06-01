@@ -27,7 +27,7 @@ test_df_class <- blueWins[inp==2,]
 
 score<-NULL
 
-for(x in 1:100){
+#for(x in 1:100){
 model <- keras_model_sequential() %>%                       #16 dla prelim, 38 dla raw
   layer_dense(units = 128, activation = 'elu', input_shape = c(38)) %>%
   layer_dropout(rate = 0.5) %>%
@@ -48,11 +48,13 @@ model <- keras_model_sequential() %>%                       #16 dla prelim, 38 d
 #summary(model)
 #print(x)
 model %>% fit(training_df_data, training_df_class, epochs=50, batch_size=100)
-  score_add = model %>%evaluate(test_df_data,test_df_class)
-  score_add<-as.data.frame(score_add)
-  score <-c(score,score_add$BinaryAccuracy)
-}
+prob_vector_test <- predict_on_batch(model, test_df_data)
+prob_vector_entset <-predict_on_batch(model, df) 
+#  score_add = model %>%evaluate(test_df_data,test_df_class)
+#  score_add<-as.data.frame(score_add)
+#  score <-c(score,score_add$BinaryAccuracy)
+#}
 
-mean(score)
-summary(score)
+#mean(score)
+#summary(score)
 
