@@ -78,7 +78,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras ex odio, elementum
 \end{abstract}
 
 %% ---- Keywords (minimum 3, maximum 5) ----
-\keywords{League of Legends, LoL, klasyfikacja, predykcja wyniku meczu, NAZWY UZYTYCH  METOD}
+\keywords{League of Legends, LoL, klasyfikacja, predykcja wyniku meczu, sieci neuronowe, drzewo klasyfikacyjne, KNN}
 
 \tableofcontents
 \newpage
@@ -123,8 +123,8 @@ skuteczności tych metod w przewidywaniu rzeczywistego wyniku meczu, rozumianego
 jako wygrana lub przegrana drużyny niebieskiej.
 
 Istotnym elementem pracy jest porównanie wyników uzyskanych za pomocą trzech
-metod klasyfikacji: [TODO][NAZWA METODY 1], [NAZWA METODY 2] oraz [NAZWA METODY 3],
-a także metody mieszanej [NAZWA METODY MIESZANEJ], łączącej cechy wybranych podejść.
+metod klasyfikacji: sieci neuronowych, drzewa klasyfikacyjnego oraz KNN,
+a także metody mieszanej [TODO][NAZWA METODY MIESZANEJ], łączącej cechy wybranych podejść.
 Celem analizy jest wskazanie, które z zastosowanych rozwiązań najlepiej przewiduje wynik
 meczu na podstawie danych dostępnych na wczesnym etapie gry.
 
@@ -139,12 +139,13 @@ Zakres badania obejmuje:
 \item przygotowanie danych do procesu uczenia modeli, w tym obsługę wartości odstających, analizę braków danych, skalowanie cech oraz usunięcie zbędnych zmiennych,
 \item analizę końcowego zbioru danych po przeprowadzeniu preprocessingu,
 \item przedstawienie teoretycznych podstaw zastosowanych metod klasyfikacji,
-\item implementację oraz zastosowanie metod klasyfikacji: [TODO][NAZWA METODY 1], [NAZWA METODY 2], [NAZWA METODY 3] oraz [NAZWA METODY HYBRYDOWEJ],
+\item implementację oraz zastosowanie metod klasyfikacji: sieci nauronowe, drzewo klasyfikacyjne, KNN oraz [TODO][NAZWA METODY HYBRYDOWEJ],
 \item ocenę skuteczności modeli przy użyciu wybranych miar jakości klasyfikacji,
 \item analizę i interpretację uzyskanych wyników,
 \item porównanie skuteczności zastosowanych metod klasyfikacji,
 \item wykorzystanie najlepszego modelu do klasyfikacji syntetycznie wygenerowanych danych testowych.
 \end{itemize}
+[TODO][zweryfikowac czy ta lista jest poprawna]
 
 Analizę danych oraz implementację modeli klasyfikacyjnych wykonano przy użyciu języka R. Obliczenia przeprowadzono w środowisku RStudio. Użyte biblioteki: [TODO][LISTA WSZYSTKICH BIBLIOTEK]
 
@@ -534,21 +535,21 @@ Zmienne opisujące opisujące ilość zabitych smoków i heroldów powinny być 
 \toprule
 	\textbf{Zmienna} & \textbf{Średnia} & \textbf{Mediana} & \textbf{Min.} & \textbf{Maks.} & \textbf{Odch. std.}  & \textbf{Skośność} \\
 \midrule
-	blueWardsPlaced & 20.97 & 16.00 & 5.00 & 105.00 & 13.78 & 3.04 \\
-	blueWardsDestroyed & 2.70 & 3.00 & 0.00 & 11.00 & 1.73 & 0.79 \\
-	blueDragons & 0.36 & 0.00 & 0.00 & 1.00 & 0.48 & 0.58 \\
+	blueWardsPlaced & 21.19 & 16.00 & 5.00 & 105.00 & 13.92 & 2.94 \\
+	blueWardsDestroyed & 2.83 & 3.00 & 0.00 & 27.00 & 2.18 & 2.85 \\
+	blueDragons & 0.36 & 0.00 & 0.00 & 1.00 & 0.48 & 0.57 \\
 	blueHeralds & 0.19 & 0.00 & 0.00 & 1.00 & 0.39 & 1.60 \\
-	blueTotalJungleMinionsKilled & 50.50 & 50.00 & 0.00 & 92.00 & 9.91 & 0.11 \\
-	blueCSPerMin & 21.66 & 21.80 & 9.00 & 28.30 & 2.19 & -0.26 \\
-	redWardsPlaced & 20.95 & 16.00 & 6.00 & 104.00 & 13.43 & 2.89 \\
-	redWardsDestroyed & 2.60 & 2.00 & 0.00 & 10.00 & 1.67 & 0.72 \\
+	blueTotalJungleMinionsKilled & 50.50 & 50.00 & 0.00 & 92.00 & 9.91 & 0.12 \\
+	blueCSPerMin & 21.67 & 21.80 & 9.00 & 28.30 & 2.19 & -0.26 \\
+	redWardsPlaced & 21.14 & 16.00 & 6.00 & 104.00 & 13.55 & 2.81 \\
+	redWardsDestroyed & 2.73 & 2.00 & 0.00 & 24.00 & 2.15 & 2.95 \\
 	redFirstBlood & 0.50 & 0.00 & 0.00 & 1.00 & 0.50 & 0.02 \\
 	redDragons & 0.41 & 0.00 & 0.00 & 1.00 & 0.49 & 0.35 \\
 	redHeralds & 0.16 & 0.00 & 0.00 & 1.00 & 0.37 & 1.86 \\
-	redTotalJungleMinionsKilled & 51.32 & 51.00 & 4.00 & 92.00 & 10.05 & 0.23 \\
-	redCSPerMin & 21.73 & 21.80 & 10.70 & 28.90 & 2.19 & -0.29 \\
-	blueKA & 12.84 & 12.00 & 0.00 & 51.00 & 6.76 & 0.69 \\
-	redKA & 12.81 & 12.00 & 0.00 & 43.00 & 6.66 & 0.63 \\
+	redTotalJungleMinionsKilled & 51.33 & 51.00 & 4.00 & 92.00 & 10.05 & 0.23 \\
+	redCSPerMin & 21.74 & 21.80 & 10.70 & 28.90 & 2.19 & -0.29 \\
+	blueKA & 12.82 & 12.00 & 0.00 & 51.00 & 6.75 & 0.69 \\
+	redKA & 12.79 & 12.00 & 0.00 & 43.00 & 6.66 & 0.63 \\
 	diff\_PCA\_Component\_1 & 0.00 & 0.01 & -6.36 & 6.55 & 1.38 & -0.03 \\
 \bottomrule
 \end{tabular}
@@ -702,9 +703,11 @@ Zmienne opisujące opisujące ilość zabitych smoków i heroldów powinny być 
 
 \subsubsection{Opis}
 
-Sieci neuronowe [?] należą do grupy nieliniowych modeli klasyfikacyjnych inspirowanych strukturą biologicznych sieci neuronowych. Ich zadaniem jest aproksymacja funkcji odwzorowującej przestrzeń wejściową cech na zmienną decyzyjną. W analizie wykorzystano wielowarstwową perceptronową sieć neuronową (MLP) zaimplementowaną w bibliotekach \texttt{keras3} oraz \texttt{tensorflow} w języku R.
+Sieci neuronowe są modelami uczenia maszynowego inspirowanymi działaniem biologicznych sieci neuronowych. Składają się z połączonych ze sobą neuronów tworzących kolejne warstwy przetwarzające dane wejściowe. Dzięki zastosowaniu nieliniowych funkcji aktywacji sieci neuronowe są zdolne do modelowania złożonych zależności pomiędzy zmiennymi.
 
-Rozważana sieć neuronowa składa się z warstw gęstych (ang. \textit{dense layers}), w których każdy neuron jest połączony ze wszystkimi neuronami warstwy poprzedniej. Dla problemu klasyfikacji binarnej, model realizuje funkcję:
+W analizie wykorzystano wielowarstwową sieć neuronową typu MLP (Multi-Layer Perceptron) zaimplementowaną przy użyciu bibliotek \texttt{keras3} oraz \texttt{tensorflow}. Zadaniem modelu było przewidywanie wartości zmiennej \texttt{blueWins}, określającej końcowy wynik meczu z perspektywy drużyny niebieskiej.
+
+Dla wektora wejściowego $\mathbf{x}$ predykcja modelu może zostać zapisana jako:
 
 \begin{equation}
 \hat{y} = \sigma(f(\mathbf{x}, \theta))
@@ -712,42 +715,58 @@ Rozważana sieć neuronowa składa się z warstw gęstych (ang. \textit{dense la
 
 gdzie:
 \begin{itemize}
-    \item $\mathbf{x}$ -- wektor cech wejściowych,
-    \item $\theta$ -- wektor parametrów modelu,
-    \item $f(\cdot)$ -- nieliniowa transformacja realizowana przez kolejne warstwy sieci,
-    \item $\sigma(\cdot)$ -- funkcja sigmoidalna:
+\item $\mathbf{x}$ -- wektor cech wejściowych,
+\item $\theta$ -- zbiór parametrów modelu,
+\item $f(\cdot)$ -- transformacja realizowana przez warstwy ukryte,
+\item $\sigma(\cdot)$ -- funkcja sigmoidalna.
 \end{itemize}
 
+Funkcja sigmoidalna przyjmuje postać:
+
 \begin{equation}
-\sigma(z) = \frac{1}{1 + e^{-z}}
+\sigma(z)=\frac{1}{1+e^{-z}}
 \end{equation}
 
-W analizie zastosowano architekturę składającą się z warstw ukrytych o liczbie neuronów 128 oraz 64. W warstwach ukrytych użyto funkcji aktywacji typu ELU oraz Softplus, które wprowadzają nieliniowość do modelu i pozwalają na modelowanie złożonych zależności w danych.
+i zwraca wartość z przedziału $[0,1]$, interpretowaną jako prawdopodobieństwo przynależności do klasy pozytywnej.
 
-W celu ograniczenia przeuczenia zastosowano mechanizm \textit{dropout}, który polega na losowym wyłączaniu części neuronów podczas uczenia z prawdopodobieństwem $p = 0.5$.
+Zastosowana architektura składała się z:
+\begin{itemize}
+\item warstwy wejściowej zawierającej 16 cech,
+\item pierwszej warstwy ukrytej zawierającej 128 neuronów z funkcją aktywacji ELU,
+\item drugiej warstwy ukrytej zawierającej 64 neurony z funkcją aktywacji Softplus,
+\item warstwy wyjściowej zawierającej jeden neuron z funkcją sigmoidalną.
+\end{itemize}
 
-Model uczony był poprzez minimalizację funkcji straty typu binary cross-entropy:
+W celu ograniczenia zjawiska przeuczenia pomiędzy warstwami zastosowano mechanizm \textit{dropout} z parametrem $p=0.5$, polegający na losowym wyłączaniu części neuronów podczas procesu uczenia.
+
+\subsubsection{Funkcja straty}
+
+Proces uczenia polegał na minimalizacji funkcji straty binary cross-entropy:
 
 \begin{equation}
-L = -\frac{1}{N} \sum_{i=1}^{N} \left[ y_i \log(\hat{y}_i) + (1 - y_i)\log(1 - \hat{y}_i) \right]
+L = -\frac{1}{N}\sum_{i=1}^{N}
+\left[
+y_i \log(\hat{y}_i)
++
+(1-y_i)\log(1-\hat{y}_i)
+\right]
 \end{equation}
 
 gdzie:
 \begin{itemize}
-    \item $N$ -- liczba obserwacji,
-    \item $y_i$ -- rzeczywista klasa,
-    \item $\hat{y}_i$ -- predykcja modelu.
+\item $N$ -- liczba obserwacji,
+\item $y_i$ -- rzeczywista wartość klasy,
+\item $\hat{y}_i$ -- prawdopodobieństwo przewidziane przez model.
 \end{itemize}
 
-Optymalizacja parametrów modelu została przeprowadzona przy użyciu algorytmu RMSprop, który adaptacyjnie dostosowuje współczynnik uczenia na podstawie historii gradientów.
+Minimalizacja funkcji straty była realizowana przy użyciu algorytmu RMSprop, który adaptacyjnie dostosowuje współczynnik uczenia na podstawie historii gradientów.
 
-\subsubsection{Procedura uczenia i ewaluacji}
+\subsubsection{Proces uczenia}
 
-Dane zostały losowo podzielone na zbiór treningowy (60\%) oraz testowy (40\%). Proces uczenia był powtarzany 100 razy, aby ograniczyć wpływ losowej inicjalizacji wag oraz podziału danych na wynik końcowy.
+Dane zostały losowo podzielone na zbiór treningowy (60\% obserwacji) oraz testowy (40\% obserwacji). Model trenowano przez 50 epok przy wielkości batcha wynoszącej 100 obserwacji.
 
-Dla każdej iteracji model trenowano przez 50 epok przy stałej wielkości batcha wynoszącej 100 obserwacji. Jako miarę jakości klasyfikacji zastosowano dokładność (Binary Accuracy), a końcowy wynik stanowiła średnia ze 100 uruchomień modelu.
+Po zakończeniu procesu uczenia wyznaczono prawdopodobieństwa przynależności do klasy pozytywnej dla obserwacji ze zbioru testowego. Otrzymane wartości zostały następnie wykorzystane do oceny jakości klasyfikacji przy użyciu miar opisanych w sekcji dotyczącej metod oceniania.
 
-Skuteczność modelu oceniano na zbiorze testowym, co pozwoliło na uzyskanie stabilnej estymacji jakości klasyfikacji dla analizowanego problemu przewidywania wyniku meczu gry \textit{League of Legends}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Drzewo klasyfikacyjne}
@@ -769,6 +788,9 @@ Algorytm budowy drzewa można przedstawić w postaci następujących kroków:
 \end{enumerate}
 
 W analizie wykorzystano drzewo klasyfikacyjne służące do przewidywania wartości zmiennej \texttt{blueWins}, określającej końcowy wynik meczu z perspektywy drużyny niebieskiej.
+
+Dane zostały losowo podzielone na zbiór treningowy (70\% obserwacji) oraz testowy (30\% obserwacji). Model został wytrenowany na zbiorze treningowym, natomiast jego skuteczność oceniono na niezależnym zbiorze testowym. Dodatkowo podczas procesu przycinania drzewa wykorzystano walidację krzyżową w celu wyznaczenia optymalnego rozmiaru modelu i ograniczenia zjawiska przeuczenia.
+
 
 \subsubsection{Kryterium podziału}
 
@@ -794,47 +816,68 @@ Drzewa decyzyjne są podatne na przeuczenie (\textit{overfitting}), szczególnie
 Przycinanie polega na usuwaniu części gałęzi, które nie wnoszą istotnej informacji predykcyjnej. W pracy optymalny rozmiar drzewa został wyznaczony z wykorzystaniem walidacji krzyżowej. Spośród analizowanych struktur wybierano model minimalizujący błąd klasyfikacji na danych walidacyjnych.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Sieci bayesowskie}
+\subsection{K najbliższych sąsiadów}
 
 \subsubsection{Opis}
 
-Sieci bayesowskie [?] są probabilistycznymi modelami graficznymi reprezentującymi zależności warunkowe pomiędzy zmiennymi losowymi. Struktura sieci ma postać acyklicznego grafu skierowanego (DAG), w którym węzły odpowiadają zmiennym, natomiast krawędzie opisują zależności warunkowe pomiędzy nimi.
+Metoda k najbliższych sąsiadów (ang. \textit{k-Nearest Neighbours}, KNN) należy do grupy metod klasyfikacji opartych na podobieństwie obserwacji. Klasyfikacja nowego obiektu odbywa się na podstawie klas przypisanych do $k$ najbardziej podobnych obserwacji ze zbioru treningowego.
 
-Celem modelu jest reprezentacja wspólnego rozkładu prawdopodobieństwa w postaci iloczynu rozkładów warunkowych:
+Dla każdej obserwacji testowej wyznaczani są jej najbliżsi sąsiedzi w przestrzeni cech, a następnie przypisywana jest klasa najczęściej występująca wśród znalezionych sąsiadów. Metoda nie tworzy jawnego modelu podczas etapu uczenia, dlatego zaliczana jest do grupy metod leniwych (ang. \textit{lazy learning}).
+
+W analizie wykorzystano algorytm KNN zaimplementowany w bibliotekach \texttt{caret} oraz \texttt{class}. Dane zostały losowo podzielone na zbiór treningowy (80\% obserwacji) oraz testowy (20\% obserwacji). Model został zbudowany na zbiorze treningowym, natomiast jego skuteczność oceniono na niezależnym zbiorze testowym.
+
+\subsubsection{Miara odległości}
+
+Kluczowym elementem algorytmu KNN jest wyznaczenie odległości pomiędzy obserwacjami. W analizie wykorzystano odległość euklidesową:
 
 \begin{equation}
-P(X_1, X_2, \ldots, X_n) = \prod_{i=1}^{n} P(X_i \mid Pa(X_i))
+d(\mathbf{x}, \mathbf{y}) =
+\sqrt{
+\sum_{j=1}^{p}
+(x_j-y_j)^2
+}
 \end{equation}
 
 gdzie:
 \begin{itemize}
-    \item $X_i$ -- zmienna losowa,
-    \item $Pa(X_i)$ -- zbiór rodziców węzła $X_i$ w grafie skierowanym.
+    \item $\mathbf{x}$ oraz $\mathbf{y}$ -- porównywane obserwacje,
+    \item $p$ -- liczba cech,
+    \item $x_j$, $y_j$ -- wartości $j$-tej cechy.
 \end{itemize}
 
-W analizie wykorzystano sieć bayesowską do klasyfikacji zmiennej \texttt{blueWins}, określającej wynik meczu z perspektywy drużyny niebieskiej.
+Na podstawie obliczonych odległości wybieranych jest $k$ najbliższych sąsiadów analizowanej obserwacji.
 
-\subsubsection{Uczenie struktury i parametrów}
+\subsubsection{Dobór parametru \texorpdfstring{$k$}{k}}
 
-W pierwszym etapie przeprowadzono uczenie struktury sieci bayesowskiej na podstawie danych treningowych. W tym celu zastosowano algorytm wspinaczki (ang. \textit{hill-climbing}, HC), który iteracyjnie modyfikuje strukturę grafu w celu maksymalizacji funkcji dopasowania modelu do danych.
+Jednym z najważniejszych parametrów algorytmu jest liczba sąsiadów $k$. Zbyt małe wartości mogą prowadzić do nadmiernego dopasowania modelu do danych treningowych, natomiast zbyt duże mogą powodować utratę zdolności rozróżniania klas.
 
-Następnie estymowano parametry modelu, czyli rozkłady warunkowe zmiennych, na podstawie danych treningowych. Formalnie oznacza to estymację wartości:
+W celu wyznaczenia optymalnej wartości parametru $k$ zastosowano dziesięciokrotną walidację krzyżową. Analizowano wyłącznie nieparzyste wartości parametru z przedziału od 1 do 101:
+
+\[
+k \in \{1,3,5,\ldots,101\}
+\]
+
+Jako wartość końcową przyjęto parametr zapewniający najwyższą skuteczność klasyfikacji podczas walidacji krzyżowej.
+
+\subsubsection{Reguła klasyfikacji}
+
+Klasa nowej obserwacji wyznaczana jest na podstawie głosowania większościowego wśród $k$ najbliższych sąsiadów:
 
 \begin{equation}
-P(X_i \mid Pa(X_i))
+\hat{y} =
+\arg\max_{c \in C}
+\sum_{i \in N_k}
+I(y_i = c)
 \end{equation}
 
-dla każdej zmiennej w modelu.
+gdzie:
+\begin{itemize}
+    \item $C$ -- zbiór możliwych klas,
+    \item $N_k$ -- zbiór $k$ najbliższych sąsiadów,
+    \item $I(\cdot)$ -- funkcja wskaźnikowa przyjmująca wartość 1, gdy warunek jest spełniony, oraz 0 w przeciwnym przypadku.
+\end{itemize}
 
-\subsubsection{Predykcja modelu}
-
-Predykcja zmiennej decyzyjnej \texttt{blueWins} została wykonana z wykorzystaniem ważonego estymatora bayesowskiego (ang. \textit{likelihood weighting}). Dla każdej obserwacji testowej wyznaczano najbardziej prawdopodobną klasę:
-
-\begin{equation}
-\hat{y} = \arg\max_{c \in \{0,1\}} P(blueWins = c \mid \mathbf{x})
-\end{equation}
-
-gdzie $\mathbf{x}$ oznacza wektor zmiennych wejściowych.
+Oprócz przewidywanej klasy algorytm wyznacza również prawdopodobieństwo przynależności do klasy pozytywnej, obliczane jako udział sąsiadów należących do tej klasy.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Opis metody hybrydowej}
@@ -915,10 +958,52 @@ gdzie $TPR$ oznacza czułość modelu.
 Wartość AUC przyjmuje wartości z przedziału $[0,1]$, gdzie wartość 1 oznacza idealny klasyfikator, natomiast wartość 0,5 odpowiada klasyfikatorowi losowemu. W niniejszej pracy miara AUC została wykorzystana do porównania skuteczności analizowanych modeli klasyfikacyjnych.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
 \section{Rezultaty}
-\subsection{Rezultat metody 1}
-\subsection{Rezultat metody 2}
-\subsection{Rezultat metody 3}
+\subsection{Sieci nauronowe}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\textwidth]{../Plots/confusion_matrixes/neural_network.png}
+	\caption{Macierz pomyłek dla metody sieci neuronowych.}
+        \label{fig:both_images}
+    \end{figure}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.6\textwidth]{../Plots/roc_curves/roc_Sieci neuronowe.png}
+	\caption{Wykres krzywej ROC dla metody sieci neuronowych.}
+        \label{fig:both_images}
+    \end{figure}
+
+\newpage
+\subsection{Drzewo klasyfikacyjne}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\textwidth]{../Plots/confusion_matrixes/classification_tree_confusion_matrix.png}
+	\caption{Macierz pomyłek dla metody drzwa klasyfikacyjnego.}
+        \label{fig:both_images}
+    \end{figure}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.6\textwidth]{../Plots/roc_curves/roc_Drzewo klasyfikacyjne.png}
+	\caption{Wykres krzywej ROC dla metody drzewa kalsyfikacyjnego.}
+        \label{fig:both_images}
+    \end{figure}
+
+\newpage
+\subsection{K najbliższych sąsiadów}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\textwidth]{../Plots/confusion_matrixes/KNN.png}
+	\caption{Macierz pomyłek dla metody dla metody KNN.}
+        \label{fig:both_images}
+    \end{figure}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.6\textwidth]{../Plots/roc_curves/roc_KNN.png}
+	\caption{Wykres krzywej ROC dla metody KNN.}
+        \label{fig:both_images}
+    \end{figure}
+
 \subsection{Rezultat metody hybrydowej}
 \subsection{Porównanie skuteczności metod}
 \subsection{Użycie najlepszego modelu na syntetycznych danych}

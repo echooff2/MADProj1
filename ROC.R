@@ -32,7 +32,7 @@ draw_roc_plot <- function(real_classes, probabilities, name) {
     ggsave(
         paste0("Plots/roc_curves/roc_", name, ".png"),
         plot = p,
-        width = 8.5,
+        width = 7,
         height = 6,
         dpi = 80
     )

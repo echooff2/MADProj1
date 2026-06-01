@@ -203,15 +203,17 @@ draw_confusion_matrix <- function(TP, FN, TN, FP, name){
     geom_richtext(
       data = cells_to_draw,
       aes(x = x, y = y, label = label, color = text_color, size = font_size),
-      fill = NA,           # Bez tła
-      label.color = NA     # Bez ramki wokół tekstu
+      fill = NA,            # Bez tła
+      label.color = NA,     # Bez ramki wokół tekstu
+      size = 5
     ) +
     scale_size_identity() +
     # Tekst dla scalonych komórek
     geom_text(
       data = merged_cells,
       aes(x = x, y = y, label = label, color = text_color, fontface = fontface, angle = angle),
-      size = 4, lineheight = 1.1
+      #size = 4, lineheight = 1.1
+      size = 6, lineheight = 1.1
     ) +
     scale_color_identity() +
     

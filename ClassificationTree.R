@@ -83,7 +83,3 @@ fn <- confusion_matrix["1", "0"]
 draw_confusion_matrix(tp, fn, tn, fp, "classification_tree_confusion_matrix")
 
 draw_roc_plot(test$blueWins, predict_probs, "Drzewo klasyfikacyjne")
-
-for (x in prob_vector_test) {
-    print(x)
-}
