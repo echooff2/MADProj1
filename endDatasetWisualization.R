@@ -92,7 +92,7 @@ draw_end_dataset_plots <- function(df){
 
         if (max(feature) > 25 || grepl("PCA", name, fixed=TRUE) ){
             draw_historgram(df, feature, name)
-            #draw_boxplot(df, feature, name)
+            draw_boxplot(df, feature, name)
         } 
         else if (max(feature) > 1) {
             draw_barplot(df, feature, name)
