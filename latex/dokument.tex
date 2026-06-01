@@ -418,7 +418,45 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
 	redGoldDiff & redExperienceDiff & 0.89 \\ 
 \end{tabular}
 \end{center}
-\indent Do zagregowania tych zmiennych wykorzystamy metodę PCA, a konkretniej będziemy bazować na wbudowanej funkcji "prcomp" i do wizualizacji rzutu wykorzystamy funkcję "fviz\_pca\_biplot" z biblioteki factoextra. Poniżej przedstawiony jest wykres po zastosowaniu PCA.
+\indent \indent Do zagregowania tych zmiennych wykorzystamy metodę PCA. Poniżej przedstawimy, opis tej metody:
+\newline 
+
+Niech macierz danych będzie opisana jako
+\[
+\mathbf{X} \in \mathbb{R}^{n \times p},
+\]
+gdzie $n$ oznacza liczbę obserwacji, a $p$ liczbę zmiennych. Metoda PCA przekształca pierwotny zbiór $p$ skorelowanych zmiennych w nowy zbiór zmiennych, zwanych \textbf{głównymi składowymi}, które są wzajemnie nieskorelowane i uporządkowane według malejącej wariancji.
+
+W pierwszym kroku dane są zwykle centrowane, a w przypadku zmiennych mierzonych w różnych skalach również standaryzowane. Następnie wyznacza się macierz kowariancji:
+\[
+\mathbf{S} = \frac{1}{n-1}\mathbf{X}^\top \mathbf{X},
+\]
+lub, w przypadku danych standaryzowanych, macierz korelacji.
+
+Kolejnym etapem jest wyznaczenie wartości własnych i wektorów własnych macierzy $\mathbf{S}$:
+\[
+\mathbf{S}\mathbf{v}_k = \lambda_k \mathbf{v}_k,
+\]
+gdzie $\lambda_k$ oznacza $k$-tą wartość własną, a $\mathbf{v}_k$ odpowiadający jej wektor własny. Wektory własne wyznaczają kierunki głównych składowych, natomiast wartości własne informują o ilości wariancji wyjaśnianej przez każdą składową.
+
+Główne składowe wyznacza się jako liniowe kombinacje zmiennych pierwotnych:
+\[
+\mathbf{z}_k = \mathbf{X}\mathbf{v}_k.
+\]
+Pierwsza główna składowa wyjaśnia największą możliwą część wariancji danych, druga -- największą część pozostałej wariancji, przy zachowaniu ortogonalności względem pierwszej, itd.
+
+Redukcja wymiarowości polega na wyborze pierwszych $m$ składowych, gdzie $m < p$, tak aby zachować jak największą część całkowitej zmienności danych. Udział wariancji wyjaśnionej przez $k$-tą składową można obliczyć jako:
+\[
+\frac{\lambda_k}{\sum_{j=1}^{p}\lambda_j}.
+\]
+Z kolei skumulowany udział wyjaśnionej wariancji dla pierwszych $m$ składowych wynosi:
+\[
+\frac{\sum_{k=1}^{m}\lambda_k}{\sum_{j=1}^{p}\lambda_j}.
+\]
+
+W praktyce wybiera się taką liczbę składowych, aby skumulowana wariancja osiągała założony poziom, np. $80\%$, $90\%$ lub $95\%$. Dzięki temu możliwe jest zastąpienie dużej liczby zmiennych mniejszym zbiorem nowych cech, co upraszcza analizę, zmniejsza złożoność modeli oraz ogranicza problem współliniowości.
+
+W skrypcie będziemy bazować na wbudowanej funkcji "prcomp" i do wizualizacji rzutu wykorzystamy funkcję "fviz\_pca\_biplot" z biblioteki factoextra. Poniżej przedstawiony jest wykres po zastosowaniu PCA.
 \end{samepage}
 \begin{figure}[H]
 	\centering
