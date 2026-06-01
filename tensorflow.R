@@ -12,11 +12,11 @@ blueWins<-as.matrix(blueWins)
 
 
 #test dla danych bez analizy wstępnej
-df <- read.csv("lol.csv", header = T)
-blueWins <- df |> select('blueWins')
-df <- df |>
-  select(!c('blueWins', 'gameId'))
-df<-scale(df)
+#df <- read.csv("lol.csv", header = T)
+#blueWins <- df |> select('blueWins')
+#df <- df |>
+#  select(!c('blueWins', 'gameId'))
+#df<-scale(df)
 
 
 inp <- sample(2, nrow(df), replace = TRUE, prob = c(0.6, 0.4))
@@ -29,7 +29,7 @@ score<-NULL
 
 #for(x in 1:100){
 model <- keras_model_sequential() %>%                       #16 dla prelim, 38 dla raw
-  layer_dense(units = 128, activation = 'elu', input_shape = c(38)) %>%
+  layer_dense(units = 128, activation = 'elu', input_shape = c(16)) %>%
   layer_dropout(rate = 0.5) %>%
 #  layer_dense(units = 128, activation = 'relu') %>%
 #  layer_dropout(rate = 0.5) %>%
@@ -58,3 +58,23 @@ prob_vector_entset <-predict_on_batch(model, df)
 #mean(score)
 #summary(score)
 
+# MACIERZ POMYLEK
+pred_class <- ifelse(prob_vector_test > 0.5, 1, 0)
+cm <- table(
+    Predicted = pred_class,
+    Actual = test_df_class
+)
+TN <- cm["0","0"]
+FN <- cm["0","1"]
+FP <- cm["1","0"]
+TP <- cm["1","1"]
+if (!exists("draw_confusion_matrix")) {
+    source("TableWisualization.R")
+}
+draw_confusion_matrix(TP, FN, TN, FP, "neural_network")
+
+#ROC
+if (!exists("draw_roc_plot")) {
+    source("ROC.R")
+}
+draw_roc_plot(test_df_class, prob_vector_test, "Sieci neuronowe")

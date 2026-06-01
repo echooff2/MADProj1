@@ -8,6 +8,10 @@ if (!exists("draw_confusion_matrix")) {
   source("TableWisualization.R")
 }
 
+if (!exists("draw_roc_plot")) {
+    source("ROC.R")
+}
+
 df <- do_preliminary_analisys()
 df$blueWins <- as.factor(df$blueWins)
 
@@ -40,6 +44,7 @@ dev.off()
 
 summary(tree_res)
 
+predict_probs <- predict(tree_res, newdata = test)[, 2]
 predict_test <- predict(tree_res, newdata = test, type = "class")
 confusion_matrix <- table(Predicted = predict_test, Actual = test$blueWins)
 confusion_matrix
@@ -76,3 +81,9 @@ fp <- confusion_matrix["0", "1"]
 fn <- confusion_matrix["1", "0"]
 
 draw_confusion_matrix(tp, fn, tn, fp, "classification_tree_confusion_matrix")
+
+draw_roc_plot(test$blueWins, predict_probs, "Drzewo klasyfikacyjne")
+
+for (x in prob_vector_test) {
+    print(x)
+}

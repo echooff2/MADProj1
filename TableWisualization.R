@@ -82,11 +82,11 @@ draw_confusion_matrix <- function(TP, FN, TN, FP, name){
         row == 4 & col == 3 ~ paste0("", FN),
         row == 4 & col == 4 ~ paste0("", TN),
         
-        row == 5 & col == 3 ~ paste0("**Precisionl** <br>", precision, "%"),
-        row == 5 & col == 4 ~ paste0("**Negative Predictive<br>Value**<br>", negative_pred_val, "%"),
-        row == 3 & col == 5 ~ paste0("**Sensitivity** <br>", sensitivity, "%"),
-        row == 4 & col == 5 ~ paste0("**Specificity** <br>", specificity, "%"),
-        row == 5 & col == 5 ~ paste0("**Accuracy** <br>", accuracy, "%"),
+        row == 5 & col == 3 ~ paste0("**Precisionl** <br>", precision * 100, "%"),
+        row == 5 & col == 4 ~ paste0("**Negative Predictive<br>Value**<br>", negative_pred_val * 100, "%"),
+        row == 3 & col == 5 ~ paste0("**Sensitivity** <br>", sensitivity * 100, "%"),
+        row == 4 & col == 5 ~ paste0("**Specificity** <br>", specificity * 100, "%"),
+        row == 5 & col == 5 ~ paste0("**Accuracy** <br>", accuracy * 100, "%"),
         
         TRUE ~ ""
       ),
@@ -225,5 +225,5 @@ draw_confusion_matrix <- function(TP, FN, TN, FP, name){
 }
 
 if (sys.nframe() == 0L) {
-  draw_confusion_matrix(3891, 123, 253, 4000, "custom_table", create.dir = TRUE)
+  draw_confusion_matrix(3891, 123, 253, 4000, "custom_table")
 }
