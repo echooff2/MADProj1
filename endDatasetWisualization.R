@@ -90,7 +90,7 @@ draw_end_dataset_plots <- function(df){
         feature <- df[, col_nr]
         name <- names(df)[col_nr]
 
-        if (max(feature) > 25 || grepl("PCA", name, fixed=TRUE) ){
+        if (max(feature) > 55 || grepl("PCA", name, fixed=TRUE) || grepl("CSPerMin", name, fixed=TRUE)){
             draw_historgram(df, feature, name)
             draw_boxplot(df, feature, name)
         } 
