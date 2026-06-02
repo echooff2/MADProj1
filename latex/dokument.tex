@@ -161,7 +161,7 @@ Zbiór danych składa się z 9879 rekordów oraz 40 zmiennych. Zmienną decyzyjn
 Klasy w zbiorze danych są w przybliżeniu zbalansowane, co oznacza, że liczba zwycięstw drużyny niebieskiej i czerwonej jest podobna.
 
 \subsection{Przeglad literatury}
-[TODO][DODAC CYTOWNIA DO PRAC Z KAGGLA]
+[TODO][DODAC CYTOWNIA DO PRAC Z KAGGLA][wspomniec czym sie zainspirowalismy z pracy francuza]
 Ze względu na ograniczoną liczbę prac dotyczących wczesnej fazy gry w League of Le-
 gends, przegląd oparto głównie na dwóch analizach z Kaggle wykorzystujących ten sam
 zbiór danych. 
@@ -766,7 +766,7 @@ Minimalizacja funkcji straty była realizowana przy użyciu algorytmu RMSprop, k
 
 \subsubsection{Proces uczenia}
 
-Dane zostały losowo podzielone na zbiór treningowy (60\% obserwacji) oraz testowy (40\% obserwacji). Model trenowano przez 50 epok przy wielkości batcha wynoszącej 100 obserwacji.
+Dane zostały losowo podzielone na zbiór treningowy (70\% obserwacji) oraz testowy (30\% obserwacji). Model trenowano przez 50 epok przy wielkości batcha wynoszącej 100 obserwacji.
 
 Po zakończeniu procesu uczenia wyznaczono prawdopodobieństwa przynależności do klasy pozytywnej dla obserwacji ze zbioru testowego. Otrzymane wartości zostały następnie wykorzystane do oceny jakości klasyfikacji przy użyciu miar opisanych w sekcji dotyczącej metod oceniania.
 
@@ -827,7 +827,7 @@ Metoda k najbliższych sąsiadów (ang. \textit{k-Nearest Neighbours}, KNN) nale
 
 Dla każdej obserwacji testowej wyznaczani są jej najbliżsi sąsiedzi w przestrzeni cech, a następnie przypisywana jest klasa najczęściej występująca wśród znalezionych sąsiadów. Metoda nie tworzy jawnego modelu podczas etapu uczenia, dlatego zaliczana jest do grupy metod leniwych (ang. \textit{lazy learning}).
 
-W analizie wykorzystano algorytm KNN zaimplementowany w bibliotekach \texttt{caret} oraz \texttt{class}. Dane zostały losowo podzielone na zbiór treningowy (80\% obserwacji) oraz testowy (20\% obserwacji). Model został zbudowany na zbiorze treningowym, natomiast jego skuteczność oceniono na niezależnym zbiorze testowym.
+W analizie wykorzystano algorytm KNN zaimplementowany w bibliotekach \texttt{caret} oraz \texttt{class}. Dane zostały losowo podzielone na zbiór treningowy (70\% obserwacji) oraz testowy (30\% obserwacji). Model został zbudowany na zbiorze treningowym, natomiast jego skuteczność oceniono na niezależnym zbiorze testowym.
 
 \subsubsection{Miara odległości}
 

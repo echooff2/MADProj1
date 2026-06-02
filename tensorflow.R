@@ -19,7 +19,7 @@ blueWins<-as.matrix(blueWins)
 #df<-scale(df)
 
 
-inp <- sample(2, nrow(df), replace = TRUE, prob = c(0.6, 0.4))
+inp <- sample(2, nrow(df), replace = TRUE, prob = c(0.7, 0.3))
 training_df_data <- df[inp==1,]
 test_df_data <- df[inp==2, ] #
 training_df_class <- blueWins[inp==1,]

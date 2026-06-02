@@ -24,7 +24,7 @@ set.seed(123)
 
 train_index <- createDataPartition(
     df$blueWins,
-    p = 0.8,
+    p = 0.7,
     list = FALSE
 )
 
