@@ -179,11 +179,11 @@ Trzecia praca [?] zawiera dokładną analizę wszystkich zmiennych oraz ich wpł
 wynik meczu.
 
 Wnioski przedstawione w analizowanych pracach uzasadniają zastosowane w niniejszej pracy podejście badawcze. Dotychczasowe analizy wskazują, że dane z początkowej fazy rozgrywki zawierają istotną informację predykcyjną, a wykorzystanie metod klasyfikacji może umożliwić skuteczne przewidywanie wyniku meczu na podstawie ograniczonego zestawu cech opisujących pierwsze minuty gry.
-
 \section{Wstępna analiza danych}
 \subsection{Statystyki opisowe}
 \begin{table}[H]
 \centering
+\footnotesize
 \resizebox{\textwidth}{!}{
 \begin{tabular}{l c c c c c c c c c c c}
 \toprule
@@ -237,7 +237,7 @@ redGoldPerMin & 1648.90 & 1637.8 & 1121.2 & 2273.2 & 149.09 & 0.41 \\
 W analizowanym zbiorze danych nie stwierdzono braków danych.
 
 \subsection{Wartości odstające}
-W celu ograniczenia wpływu wartości odstających na działanie modeli klasyfikacyjnych przeprowadzono proces oczyszczania danych. Za wartości odstające uznano jedynie 1\% najwyższych wartości zmiennych:
+Badany zbiór danych z racji bycia pobranym przez API bezpośrednio z serwerów gry nie zawiera błędnych danych, aczkolwiek w celu ograniczenia wpływu wartości odstających na działanie modeli klasyfikacyjnych przeprowadzono proces oczyszczania danych. Za wartości odstające uznano jedynie 1\% najwyższych wartości zmiennych:
 \begin{itemize}
 	\item blueWardsPlaced
 	\item redWardsPlaced
@@ -246,9 +246,9 @@ jako że te zmienne miały największą ilość skrajnie dużych wartości. Doda
 
 Dlatego dla każdej wyżej wymienionej cechy wyznaczano górny próg odpowiadający wybranemu percentylowi:
 
-\[
+\begin{equation}
 Q_{g} = Q_{1-\frac{p}{100}}
-\]
+\end{equation}
 
 gdzie:
 \begin{itemize}
@@ -259,13 +259,13 @@ gdzie:
 
 Następnie wszystkie wartości większe od wyznaczonego progu były oznaczane jako brakujące:
 
-\[
+\begin{equation}
 x =
 \begin{cases}
 	x, & \text{gdy } x \leq Q_{g} \\
 	NA, & \text{gdy } x > Q_{g}
 \end{cases}
-\]
+\end{equation}
 
 Po oznaczeniu wartości odstających jako brakujące usuwano wszystkie rekordy zawierające przynajmniej jedną wartość \texttt{NA}. Ostatecznie ze zbioru danych usunięto 190 rekordów, co stanowiło w przybliżeniu 1.92\% wszystkich obserwacji.
 
@@ -277,9 +277,9 @@ W celu ujednolicenia rozkładów oraz zakresów wartości poszczególnych cech z
 
 Standaryzacja została wykonana zgodnie ze wzorem:
 
-\[
+\begin{equation}
 x' = \frac{x - \mu}{\sigma}
-\]
+\end{equation}
 
 gdzie:
 \begin{itemize}
@@ -299,7 +299,7 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
 	\item blueTowersDestroyed 
 	\item redTowersDestroyed
 \end{itemize}
-\indent Otrzymaliśmy więc cechę "TowersDestroyed" dla obu drużyn. Dodatkowo z tabeli 1 wiemy, że ich mediany wynoszą 0. Nie powinno to zaskakiwać, jako że w pierwszych 10 minutach rozgrywki - względnie początkowej fazie - rzadko się zdarza zniszczenie wieży przeciwnika. W związku z powyższym usuwamy te 2 cechy z naszego data setu
+\indent Otrzymaliśmy więc cechę "TowersDestroyed" dla obu drużyn. Dodatkowo z tabeli 1 wiemy, że ich mediany wynoszą 0. Nie powinno to zaskakiwać, jako że w pierwszych 10 minutach rozgrywki - względnie początkowej fazie - rzadko się zdarza zniszczenie wieży przeciwnika. W związku z powyższym usuwamy te 2 cechy z naszego data setu.
 \subsubsection{Skorelowane prosto, liniowo}
 \indent Cechy skorelowane prosto, liniowo, to takie, pomiędzy którymi istnieje korelacja cecha do cechy. Ergo w tej podsekcji zajmiemy się znajdowaniem takich par i usuwaniu jednej z cech na tej podstawie. Wykorzystamy do tego wbudowaną funkcję w R o nazwie "cor". Za jej pomocą stworzymy macierz korelacji. Wizualizacji dokonamy z wykorzystaniem funkcji "corrplot" z pakietu o tej samej nazwie.
 \begin{figure}[H]
@@ -311,7 +311,6 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
 \end{figure}
 \begin{samepage}
 \indent Powyższa macierz przedstawia korelacje liniowe, proste pomiędzy wszystkimi zmiennymi, jakie nam zostały po usunięciu quasi stałych. Na jego postawie możemy znaleźć bardzo silnie skorelowane, czyli takie, których poziom korelacji jest większy bądź równy 0.9, pary cech:
-\begin{center}
 \begin{table}[H]
   \centering
 \begin{tabular}{l l c}
@@ -333,7 +332,6 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
 \end{tabular}
 \caption{Tabela korelacji silnie skorelowanych zmiennych 1.}
 \end{table}
-\end{center}
 \end{samepage}
 \begin{samepage}
 \indent Na podstawie powyższego możemy usunąć następujące cech;
@@ -386,7 +384,6 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
 \begin{samepage}
 \subsubsection{Agregacja}
 \indent \indent Jak można wyczytać z powyższej macierzy, mamy 3 pary silnie skorelowanych cech. Spośród nich 2 to następujące pary:
-\begin{center}
 \begin{table}[H]
   \centering
 \begin{tabular}{l l c}
@@ -399,11 +396,10 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
 \end{tabular}
 \caption{Tabela korelacji silnie skorelowanych zmiennych 2.}
 \end{table}
-\end{center}
 \indent Te cechy zagragujemy liniowo w jedną, dla każdej drużyny, wedle następującej reguły:
-\begin{center}
-	$KA = Kills + Assists$
-\end{center}
+\begin{equation}
+	KA = Kills + Assists
+\end{equation}
 
 \indent Tym samym otrzymujemy następujące nowe cechy:
 \begin{itemize}
@@ -414,46 +410,52 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
 \begin{samepage}
 \subsubsection{PCA}
 \indent \indent Po agregacji została nam następująca para cech silnie skorelowanych:
-\begin{center}
+\begin{table}[H]
+  \centering
 \begin{tabular}{l l c}
+	\toprule
+	\textbf{Cecha A} & \textbf{Cecha B} &  \textbf{Korelacja A i B}  \\
+	\midrule
 	redGoldDiff & redExperienceDiff & 0.89 \\ 
+	\bottomrule
 \end{tabular}
-\end{center}
+\caption{Tabela korelacji silnie skorelowanych zmiennych 3.}
+\end{table}
 \indent \indent Do zagregowania tych zmiennych wykorzystamy metodę PCA. Poniżej przedstawimy, opis tej metody:
 \newline 
 
-Niech macierz danych będzie opisana jako
-\[
+Niech macierz danych będzie opisana jako:
+\begin{equation}
 \mathbf{X} \in \mathbb{R}^{n \times p},
-\]
+\end{equation}
 gdzie $n$ oznacza liczbę obserwacji, a $p$ liczbę zmiennych. Metoda PCA przekształca pierwotny zbiór $p$ skorelowanych zmiennych w nowy zbiór zmiennych, zwanych \textbf{głównymi składowymi}, które są wzajemnie nieskorelowane i uporządkowane według malejącej wariancji.
 
 W pierwszym kroku dane są zwykle centrowane, a w przypadku zmiennych mierzonych w różnych skalach również standaryzowane. Następnie wyznacza się macierz kowariancji:
-\[
+\begin{equation}
 \mathbf{S} = \frac{1}{n-1}\mathbf{X}^\top \mathbf{X},
-\]
+\end{equation}
 lub, w przypadku danych standaryzowanych, macierz korelacji.
 
 Kolejnym etapem jest wyznaczenie wartości własnych i wektorów własnych macierzy $\mathbf{S}$:
-\[
+\begin{equation}
 \mathbf{S}\mathbf{v}_k = \lambda_k \mathbf{v}_k,
-\]
+\end{equation}
 gdzie $\lambda_k$ oznacza $k$-tą wartość własną, a $\mathbf{v}_k$ odpowiadający jej wektor własny. Wektory własne wyznaczają kierunki głównych składowych, natomiast wartości własne informują o ilości wariancji wyjaśnianej przez każdą składową.
 
 Główne składowe wyznacza się jako liniowe kombinacje zmiennych pierwotnych:
-\[
+\begin{equation}
 \mathbf{z}_k = \mathbf{X}\mathbf{v}_k.
-\]
+\end{equation}
 Pierwsza główna składowa wyjaśnia największą możliwą część wariancji danych, druga -- największą część pozostałej wariancji, przy zachowaniu ortogonalności względem pierwszej, itd.
 
 Redukcja wymiarowości polega na wyborze pierwszych $m$ składowych, gdzie $m < p$, tak aby zachować jak największą część całkowitej zmienności danych. Udział wariancji wyjaśnionej przez $k$-tą składową można obliczyć jako:
-\[
+\begin{equation}
 \frac{\lambda_k}{\sum_{j=1}^{p}\lambda_j}.
-\]
+\end{equation}
 Z kolei skumulowany udział wyjaśnionej wariancji dla pierwszych $m$ składowych wynosi:
-\[
+\begin{equation}
 \frac{\sum_{k=1}^{m}\lambda_k}{\sum_{j=1}^{p}\lambda_j}.
-\]
+\end{equation}
 
 W praktyce wybiera się taką liczbę składowych, aby skumulowana wariancja osiągała założony poziom, np. $80\%$, $90\%$ lub $95\%$. Dzięki temu możliwe jest zastąpienie dużej liczby zmiennych mniejszym zbiorem nowych cech, co upraszcza analizę, zmniejsza złożoność modeli oraz ogranicza problem współliniowości.
 
@@ -469,13 +471,6 @@ W skrypcie będziemy bazować na wbudowanej funkcji "prcomp" i do wizualizacji r
 \indent \indent Jak na załączonym wyżej obrazku widać, nowa cecha, roboczo nazwana $Dim1$, odpowiada za aż około 94.7\% wariancji. Stąd też możemy uznać, że taka agregacja będzie dobrą formą wyeliminowania silnej korelacji. Od tego momentu zmienna robocza nazwana $Dim1$ będzie miała nazwę $dif$\_$PCA$\_$Component$\_$1$.
 
 \indent Po wykonaniu wszystkich kroków usuwania silnie i bardzo silnie skorelowanych cech możemy przedstawić jak ostatecznie wygląda macierz korelacji. Dodatkowo macierz uwzględnia cechę $blueWins$, aby dodatkowo ukazać jak silnie jest ona skorelowana ze zmiennymi, które ostatecznie zostały.
-\begin{figure}[H]
-	\centering
-	\makebox[\textwidth][c]{%
-		\includegraphics[width=1.0\textwidth]{../Plots/corrmatrixes/WykresZblueWins.png}
-	}
-	\caption{Macierz korelacji dla wszystkich zmiennych po usuwaniu liniowo skorelowanych}
-\end{figure}
 
 \section{Analiza końcowego zbioru danych}
 \subsection{Wyjaśnienie zmiennych}
@@ -559,6 +554,14 @@ Zmienne opisujące opisujące ilość zabitych smoków i heroldów powinny być 
 
 \subsection{Wizualizacja}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[H]
+	\centering
+	\makebox[\textwidth][c]{%
+		\includegraphics[width=1.0\textwidth]{../Plots/corrmatrixes/WykresZblueWins.png}
+	}
+	\caption{Macierz korelacji dla ostatecznych zmiennych oraz dla zmiennej przewidywanej \textit{blueWins}.}
+\end{figure}
+
     \begin{figure}[H]
         \centering
         \includegraphics[height=0.33\textwidth]{../Plots/boxplots/box_blueWardsPlaced.png}
@@ -729,7 +732,7 @@ Funkcja sigmoidalna przyjmuje postać:
 
 i zwraca wartość z przedziału $[0,1]$, interpretowaną jako prawdopodobieństwo przynależności do klasy pozytywnej.
 
-Zastosowana architektura składała się z:
+Zastosowana architektura składała się z czterech warstw:
 \begin{itemize}
 \item warstwy wejściowej zawierającej 16 cech,
 \item pierwszej warstwy ukrytej zawierającej 128 neuronów z funkcją aktywacji ELU,
