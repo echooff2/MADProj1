@@ -52,22 +52,22 @@ def print_latex_var_table(var_names):
         print(var_name + " & Numeryczna & Ilościowa & " + ("Ciągła" if "avg" in format_var_name(var_name) else "Skokowa") +" \\\\")
 
 
-summary = """blueWardsPlaced              21.19  16.00  5.00 105.00 13.92  2.94
-blueWardsDestroyed            2.83   3.00  0.00  27.00  2.18  2.85
-blueDragons                   0.36   0.00  0.00   1.00  0.48  0.57
-blueHeralds                   0.19   0.00  0.00   1.00  0.39  1.60
-blueTotalJungleMinionsKilled 50.50  50.00  0.00  92.00  9.91  0.12
-blueCSPerMin                 21.67  21.80  9.00  28.30  2.19 -0.26
-redWardsPlaced               21.14  16.00  6.00 104.00 13.55  2.81
-redWardsDestroyed             2.73   2.00  0.00  24.00  2.15  2.95
-redFirstBlood                 0.50   0.00  0.00   1.00  0.50  0.02
-redDragons                    0.41   0.00  0.00   1.00  0.49  0.35
-redHeralds                    0.16   0.00  0.00   1.00  0.37  1.86
-redTotalJungleMinionsKilled  51.33  51.00  4.00  92.00 10.05  0.23
-redCSPerMin                  21.74  21.80 10.70  28.90  2.19 -0.29
-blueKA                       12.82  12.00  0.00  51.00  6.75  0.69
-redKA                        12.79  12.00  0.00  43.00  6.66  0.63
-diff_PCA_Component_1          0.00   0.01 -6.36   6.55  1.38 -0.03
+summary = """blueWardsPlaced              0.00  -0.37 -1.16  6.02 1.00  2.94
+blueWardsDestroyed           0.00   0.08 -1.30 11.10 1.00  2.85
+blueDragons                  0.36   0.00  0.00  1.00 0.48  0.57
+blueHeralds                  0.19   0.00  0.00  1.00 0.39  1.60
+blueTotalJungleMinionsKilled 0.00  -0.05 -5.09  4.19 1.00  0.12
+blueCSPerMin                 0.00   0.06 -5.79  3.03 1.00 -0.26
+redWardsPlaced               0.00  -0.38 -1.12  6.11 1.00  2.81
+redWardsDestroyed            0.00  -0.34 -1.27  9.92 1.00  2.95
+redFirstBlood                0.50   0.00  0.00  1.00 0.50  0.02
+redDragons                   0.41   0.00  0.00  1.00 0.49  0.35
+redHeralds                   0.16   0.00  0.00  1.00 0.37  1.86
+redTotalJungleMinionsKilled  0.00  -0.03 -4.71  4.05 1.00  0.23
+redCSPerMin                  0.00   0.03 -5.04  3.26 1.00 -0.29
+blueKA                       0.00  -0.12 -1.90  5.66 1.00  0.69
+redKA                        0.00  -0.12 -1.92  4.54 1.00  0.63
+diff_PCA_Component_1         0.00   0.00 -4.61  4.75 1.00 -0.03
 """
 
 summary = summary.strip()

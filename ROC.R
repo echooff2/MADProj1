@@ -14,7 +14,7 @@ draw_roc_plot <- function(real_classes, probabilities, name) {
     paste("AUC: ", auc_value)
     
     p <- ggplot(roc_df, aes(x = FPR, y = TPR)) +
-        geom_line(color = "#9798cd", linewidth = 1.5) +
+        geom_line(color = "#2166AC", linewidth = 1.5) +
         geom_abline(intercept = 0, slope = 1,
                     linetype = "dashed", color = "gray50") +
         ggtitle(paste("Krzywa ROC: ", name, " (AUC = ", auc_value, ")", sep="")) +

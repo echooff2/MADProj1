@@ -25,7 +25,9 @@ draw_k_accuracy_plot <- function(df, best_k) {
         theme(
             plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
             axis.title = element_text(size = 18),
-            axis.text = element_text(size = 18)
+            axis.text = element_text(size = 18),
+            legend.title = element_text(size = 18),
+            legend.text = element_text(size = 18)
         )
     
     print(p)
@@ -34,7 +36,7 @@ draw_k_accuracy_plot <- function(df, best_k) {
 }
 
 
-do_knn <- function(roc_plot = F, conf_mat = F, k_accuracy_plot = F) {
+do_knn <- function(draw_plots = F) {
     if (!exists("do_preliminary_analisys")) {
         source("PreliminaryAnalisys.R")
     }
@@ -167,15 +169,14 @@ do_knn <- function(roc_plot = F, conf_mat = F, k_accuracy_plot = F) {
     cat("Recall =", round(recall, 4), "\n")
     cat("Specificity =", round(specificity, 4), "\n")
     
-    if (conf_mat)
+    if (draw_plots)
         draw_confusion_matrix(TP, FN, TN, FP, "KNN")
-    
-    if (roc_plot)
         draw_roc_plot(test_labels, predicted_probabilities, "KNN")
+        draw_k_accuracy_plot(knn_cv$results, best_k)
     
     return(predicted_probabilities) # returns data for mixed model
 }
 
 if (sys.nframe() == 0L) {
-    do_knn(roc_plot = T, conf_mat = T, k_accuracy_plot = T)
+    do_knn(draw_plots = T)
 }
