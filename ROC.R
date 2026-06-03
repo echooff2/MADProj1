@@ -17,7 +17,7 @@ draw_roc_plot <- function(real_classes, probabilities, name) {
         geom_line(color = "#9798cd", linewidth = 1.5) +
         geom_abline(intercept = 0, slope = 1,
                     linetype = "dashed", color = "gray50") +
-        ggtitle(paste("Krzywa ROC:", name, "(AUC =", auc_value, ")")) +
+        ggtitle(paste("Krzywa ROC: ", name, " (AUC = ", auc_value, ")", sep="")) +
         labs(
             x = "False Positive Rate",
             y = "True Positive Rate"
@@ -32,7 +32,7 @@ draw_roc_plot <- function(real_classes, probabilities, name) {
     ggsave(
         paste0("Plots/roc_curves/roc_", name, ".png"),
         plot = p,
-        width = 7,
+        width = 7.5,
         height = 6,
         dpi = 80
     )
