@@ -118,7 +118,7 @@ do_preliminary_analisys <- function(to_draw_graphs = c(F, F, F), to_scale = T,
   }
   if(to_scale)
     df <- df %>%
-      mutate(across(where(~ is.numeric(.) && length(unique(.)) > 2), scale))
+      mutate(across(where(~ is.numeric(.) && !all(. %in% c(0, 1))), scale))
   
   return(df)
 }
