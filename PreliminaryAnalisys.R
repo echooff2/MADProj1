@@ -41,8 +41,11 @@ delete_outliers <- function(df){
 #   3) oznacza ryzowanie wykresów do analizy PCA
 # b) to_scale, zmienna True/False, oznaczająca, czy dopuszczamy skalowanie;
 #     brak skalowania oznacza brak pca
-# c) my_path pozwala przekazać ścieżkę do folderu, w którym pracujemy
-do_preliminary_analisys <- function(to_draw_graphs = c(F, F, F), to_scale = T, my_path = ""){
+# c) to_pca to_scale, zmienna True/False, oznaczająca, czy dopuszczamy analizę
+#     PCA
+# d) my_path pozwala przekazać ścieżkę do folderu, w którym pracujemy
+do_preliminary_analisys <- function(to_draw_graphs = c(F, F, F), to_scale = T, 
+                                    to_pca = T, my_path = ""){
   if( my_path != "")
     setwd(my_path)
   
@@ -89,7 +92,7 @@ do_preliminary_analisys <- function(to_draw_graphs = c(F, F, F), to_scale = T, m
     draw_corr_matrix(cor(df), 'WykresZ_KA.png')
   
   # Za pomocą PCA łączymy goldDiff i experienceDiff w jedną zmienną
-  if(to_scale){
+  if(to_scale && to_pca){
     if(!exists('reduce_dim_pca')){
       source('PCA.R')
     }
@@ -114,7 +117,8 @@ do_preliminary_analisys <- function(to_draw_graphs = c(F, F, F), to_scale = T, m
       draw_end_dataset_plots(df)
   }
   if(to_scale)
-    scale(df)
+    df <- df %>%
+      mutate(across(where(~ is.numeric(.) && length(unique(.)) > 2), scale))
   
   return(df)
 }
