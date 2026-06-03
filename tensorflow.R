@@ -10,7 +10,6 @@ df <- df |> select(!c('blueWins'))
 df <- as.matrix(df)
 blueWins<-as.matrix(blueWins)
 
-
 #test dla danych bez analizy wstępnej
 #df <- read.csv("lol.csv", header = T)
 #blueWins <- df |> select('blueWins')
@@ -18,43 +17,37 @@ blueWins<-as.matrix(blueWins)
 #  select(!c('blueWins', 'gameId'))
 #df<-scale(df)
 
-
 inp <- sample(2, nrow(df), replace = TRUE, prob = c(0.7, 0.3))
 training_df_data <- df[inp==1,]
 test_df_data <- df[inp==2, ] #
 training_df_class <- blueWins[inp==1,]
 test_df_class <- blueWins[inp==2,]
 
-score<-NULL
+#kompiluje, trenuje i zwraca wektor probabilistyczny ze testowego datasetu.
+do_tensor_flow_neuralNet<-function(train_df_data,train_df_class,test_df_data,test_df_class){
+  set.seed(69) 
+  library(keras3)    
+  library(tensorflow)
+  model <- keras_model_sequential() %>%                       #16 dla prelim, 38 dla raw
+    layer_dense(units = 128, activation = 'elu', input_shape = c(16)) %>%
+    layer_dropout(rate = 0.5) %>%
+    layer_dense(units = 64, activation = 'softplus') %>%
+    layer_dropout(rate = 0.5) %>%
+    layer_dense(units = 1, activation = 'sigmoid') %>%
+    compile(
+      loss = 'binary_crossentropy',
+      optimizer = 'rmsprop',
+      metrics = c('BinaryAccuracy')
+    )
+  
+  model %>% fit(train_df_data, train_df_class, epochs=50, batch_size=100)
+  probability_vector_test <- predict_on_batch(model, test_df_data)
+  summary(model)
+  return(probability_vector_test)
+}
 
-#for(x in 1:100){
-model <- keras_model_sequential() %>%                       #16 dla prelim, 38 dla raw
-  layer_dense(units = 128, activation = 'elu', input_shape = c(16)) %>%
-  layer_dropout(rate = 0.5) %>%
-#  layer_dense(units = 128, activation = 'relu') %>%
-#  layer_dropout(rate = 0.5) %>%
-  layer_dense(units = 64, activation = 'softplus') %>%
-  layer_dropout(rate = 0.5) %>%
-#  layer_dense(units = 8, activation = 'softmax') %>%
-#  layer_dropout(rate = 0.5) %>%
-  layer_dense(units = 1, activation = 'sigmoid') %>%
-  compile(
-    loss = 'binary_crossentropy',
-    optimizer = 'rmsprop',
-    metrics = c('BinaryAccuracy')
-  )
 
-
-#summary(model)
-#print(x)
-model %>% fit(training_df_data, training_df_class, epochs=50, batch_size=100)
-prob_vector_test <- predict_on_batch(model, test_df_data)
-prob_vector_entset <-predict_on_batch(model, df) 
-#  score_add = model %>%evaluate(test_df_data,test_df_class)
-#  score_add<-as.data.frame(score_add)
-#  score <-c(score,score_add$BinaryAccuracy)
-#}
-
+prob_vector_test <- do_tensor_flow_neuralNet(training_df_data,training_df_class,test_df_data,test_df_class)
 #mean(score)
 #summary(score)
 
