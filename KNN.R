@@ -169,10 +169,11 @@ do_knn <- function(draw_plots = F) {
     cat("Recall =", round(recall, 4), "\n")
     cat("Specificity =", round(specificity, 4), "\n")
     
-    if (draw_plots)
+    if (draw_plots) {
         draw_confusion_matrix(TP, FN, TN, FP, "KNN")
         draw_roc_plot(test_labels, predicted_probabilities, "KNN")
         draw_k_accuracy_plot(knn_cv$results, best_k)
+    }
     
     return(predicted_probabilities) # returns data for mixed model
 }
