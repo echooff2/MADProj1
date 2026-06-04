@@ -60,7 +60,7 @@ draw_tree_cv_plot <- function(tree_res.cv, tree_res) {
 }
 
 do_classification_tree <- function(draw_plots = F) {
-    set.seed(123)
+    set.seed(23)
     
     if (!exists("do_preliminary_analisys")) {
       source("PreliminaryAnalisys.R")

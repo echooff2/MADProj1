@@ -55,7 +55,7 @@ do_knn <- function(draw_plots = F) {
     library(caret)
     library(class)
     
-    set.seed(123)
+    set.seed(23)
     
     # =========================
     # Podział danych 80/20

@@ -49,7 +49,7 @@ test_class<- as.matrix(test_class)
 library(keras3)    
 library(tensorflow)
 
-set.seed(123)
+set.seed(23)
 Model <- keras_model_sequential() %>%                     
   layer_dense(units = 32, activation = 'elu', input_shape = c(3)) %>%
   layer_dropout(rate = 0.5) %>%

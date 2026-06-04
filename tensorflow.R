@@ -11,7 +11,7 @@ do_tensor_flow_neuralNet<-function(draw_plots = F){
   if (!exists("do_preliminary_analisys")) {
     source("PreliminaryAnalisys.R")
   }
-  set.seed(123) 
+  set.seed(23) 
   library(keras3)    
   library(tensorflow)
   
