@@ -60,7 +60,7 @@ draw_tree_cv_plot <- function(tree_res.cv, tree_res) {
 }
 
 do_classification_tree <- function(draw_plots = F) {
-    set.seed(23)
+    set.seed(123)
     
     if (!exists("do_preliminary_analisys")) {
       source("PreliminaryAnalisys.R")
@@ -140,7 +140,10 @@ do_classification_tree <- function(draw_plots = F) {
         draw_roc_plot(test$blueWins, predict_probs, "Drzewo klasyfikacyjne")
     }
     
-    return(predict_probs) # returns data for mixed model
+    output <- as.data.frame(predict_probs)
+    output$test_class_tree<-test$blueWins
+    
+    return(output) # returns data for mixed model
 }
 
 if (sys.nframe() == 0L) {

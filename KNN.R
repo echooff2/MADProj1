@@ -61,14 +61,18 @@ do_knn <- function(draw_plots = F) {
     # Podział danych 80/20
     # =========================
     
-    train_index <- createDataPartition(
-        df$blueWins,
-        p = 0.7,
-        list = FALSE
-    )
+    #train_index <- createDataPartition(
+    #    df$blueWins,
+    #    p = 0.7,
+    #    list = FALSE
+    #)
     
-    train_data <- df[train_index, ]
-    test_data  <- df[-train_index, ]
+    split <- sample(seq_len(nrow(df)), round(0.7 * nrow(df)))
+    train_data <- df[split, ]
+    test_data <- df[-split, ]
+    
+    #train_data <- df[train_index, ]
+    #test_data  <- df[-train_index, ]
     
     # =========================
     # Dobór najlepszego k
@@ -175,7 +179,11 @@ do_knn <- function(draw_plots = F) {
         draw_k_accuracy_plot(knn_cv$results, best_k)
     }
     
-    return(predicted_probabilities) # returns data for mixed model
+    #test na lable z danymi
+    output <- as.data.frame(predicted_probabilities)
+    output$test_class_knn<-test_labels
+    
+    return(output) # returns data for mixed model
 }
 
 if (sys.nframe() == 0L) {
