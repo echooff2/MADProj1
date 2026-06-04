@@ -70,7 +70,8 @@ Model <- keras_model_sequential() %>%
 
 # MACIERZ POMYLEK
 #pred_class <- ifelse(probability_vector_test >=0.5, 1, 0)  #<-nnet
-pred_class <- ifelse(Output$Sum >=1.5, 1, 0)    #<-śr ważona
+Output$Sum <-Output$Sum/3
+pred_class <- ifelse(Output$Sum >=0.5, 1, 0)    #<-śr ważona
 cm <- table(
   Predicted = pred_class,
   Actual = Output_class) #<-śr ważona
@@ -89,4 +90,4 @@ if (!exists("draw_roc_plot")) {
   source("ROC.R")
 }
 #draw_roc_plot(test_class, probability_vector_test, "Model hybrydowy") #<-nnet
-draw_roc_plot(Output_class, probability_vector_test, "Model hybrydowy") #<-śr.waż
+draw_roc_plot(Output_class, Output$Sum, "Model hybrydowy") #<-śr.waż
