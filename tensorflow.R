@@ -40,7 +40,7 @@ do_tensor_flow_neuralNet<-function(train_df_data,train_df_class,test_df_data,tes
       metrics = c('BinaryAccuracy')
     )
   
-  model %>% fit(train_df_data, train_df_class, epochs=50, batch_size=100)
+  model %>% fit(train_df_data, train_df_class, epochs=50, batch_size=100,shuffle = TRUE,validation_split = 0.20)
   probability_vector_test <- predict_on_batch(model, test_df_data)
   summary(model)
   return(probability_vector_test)
