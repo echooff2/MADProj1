@@ -2,7 +2,7 @@
 # TP - True Positive,   FN - False Negative,
 # TN - True Negative,   FP - False Positive,
 # name - nazwa bez rozszerzenia
-draw_confusion_matrix <- function(TP, FN, TN, FP, name){
+draw_confusion_matrix <- function(TP, FN, TN, FP, name, decimal_digits = 2){
   library(ggplot2)
   library(dplyr)
   library(ggtext)
@@ -22,11 +22,11 @@ draw_confusion_matrix <- function(TP, FN, TN, FP, name){
   # ============================================================
   # PARAMETRY PROCENTOWE
   # ============================================================
-  precision <- round(TP/(TP + FP), 2)
-  negative_pred_val <- round(TN/(TN + FN), 2)
-  sensitivity <- round(TP/(TP + FN), 2)
-  specificity <- round(TN/(TN + FP), 2)
-  accuracy <- round((TP + TN)/(TP + TN + FP + FN), 2)
+  precision <- round(TP/(TP + FP), decimal_digits)
+  negative_pred_val <- round(TN/(TN + FN), decimal_digits)
+  sensitivity <- round(TP/(TP + FN), decimal_digits)
+  specificity <- round(TN/(TN + FP), decimal_digits)
+  accuracy <- round((TP + TN)/(TP + TN + FP + FN), decimal_digits)
   
   # ============================================================
   # OBLICZANIE POZYCJI NA PODSTAWIE ROZMIARÓW (POPRAWIONE)
