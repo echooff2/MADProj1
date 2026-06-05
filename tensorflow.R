@@ -66,6 +66,20 @@ do_tensor_flow_neuralNet<-function(draw_plots = F){
   output <- as.data.frame(probability_vector_test)
   output <- output %>% rename_at('V1', ~'probability_vector')
   output$test_class_nn<-test_df_class
+   
+  plot(
+    model,
+    show_shapes = TRUE,
+    show_dtype = TRUE,
+    show_layer_names = TRUE,
+    rankdir = "TB",
+    expand_nested = FALSE,
+    dpi = getOption("keras.plot.model.dpi", 200L),
+    layer_range = NULL,
+    show_layer_activations = TRUE,
+    show_trainable = NA,
+    to_file = NULL
+  )
   
   return(output)
 }
