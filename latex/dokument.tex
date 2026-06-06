@@ -1,4 +1,4 @@
-\documentclass{customStyle}
+\documentclass[twoside]{customStyle}
 
 %% ---- Additional packages (add as needed) ----
 \usepackage{booktabs}      	% Professional tables (\toprule, \midrule, \bottomrule)
@@ -9,6 +9,7 @@
 \usepackage{hyperref}      % Clickable links in PDF (load last)
 \usepackage[polish]{babel}
 \usepackage{float}
+
 \hypersetup{
   colorlinks = true,
   linkcolor  = black,
@@ -87,15 +88,13 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras ex odio, elementum
 %%  SECTION 1: INTRODUCTION
 %% ============================================================
 \section{Wprowadzenie}
-[TODO][USUNAC]musi byc przynajmniej jedna cytacja zeby latex sie nie wywalil \cite{IEA2023} 
-
-League of Legends jest jedną z najpopularniejszych gier komputerowych typu MOBA (Multiplayer Online Battle Arena), w której dwie pięcioosobowe drużyny rywalizują ze sobą w celu zniszczenia głównej struktury przeciwnika, zwanej Nexusem. Rozgrywka opiera się na współpracy zespołowej, zdobywaniu zasobów oraz stopniowym budowaniu przewagi ekonomicznej i strategicznej nad drużyną przeciwną.
+League of Legends jest jedną z najpopularniejszych gier komputerowych typu MOBA (Multiplayer Online Battle Arena), w której dwie pięcioosobowe drużyny rywalizują ze sobą w celu zniszczenia głównej struktury przeciwnika, zwanej Nexusem. Rozgrywka opiera się na współpracy zespołowej, zdobywaniu zasobów oraz stopniowym budowaniu przewagi ekonomicznej i strategicznej nad drużyną przeciwną. Gra toczy się tak długo, aż jedna z drużyn wygra, w grze nie występują remisy.
 
 Na przebieg meczu wpływa wiele wzajemnie powiązanych czynników, takich jak liczba eliminacji, zdobywane złoto, doświadczenie bohaterów, kontrola mapy czy przejmowanie neutralnych obiektów. Szczególnie istotna jest początkowa faza rozgrywki, ponieważ to właśnie w pierwszych minutach meczu budowane są podstawy dalszej przewagi, które często mają wpływ na końcowy rezultat spotkania.
 
 Współczesne gry sieciowe generują duże ilości danych opisujących przebieg rozgrywek, co umożliwia wykorzystanie metod analizy danych oraz uczenia maszynowego do badania zależności występujących podczas meczu. Analiza statystyk z wczesnego etapu gry może dostarczyć informacji o typowych schematach prowadzących do zwycięstwa lub porażki drużyny.
 
-Problem badawczy poruszany w niniejszej pracy dotyczy możliwości przewidywania wyniku meczu rankingowego na podstawie statystyk z pierwszych 10 minut rozgrywki. W pracy wykorzystano dane dotyczące meczów rankingowych w celu zbadania, czy metody klasyfikacji pozwalają przewidywać zwycięstwo lub porażkę drużyny niebieskiej na podstawie cech opisujących początkową fazę meczu. Dodatkowym celem jest określenie, które zmienne mają największy wpływ na skuteczność modeli klasyfikacyjnych.
+Problem badawczy poruszany w niniejszej pracy dotyczy możliwości przewidywania wyniku meczu rankingowego na podstawie statystyk z pierwszych 10 minut rozgrywki, gdzie przecięty mecz trwa 30 minut. W pracy wykorzystano dane dotyczące meczów rankingowych w celu zbadania, czy metody klasyfikacji pozwalają przewidywać zwycięstwo lub porażkę drużyny niebieskiej na podstawie cech opisujących początkową fazę meczu. Dodatkowym celem jest określenie, które zmienne mają największy wpływ na skuteczność modeli klasyfikacyjnych.
 
 \subsection{Wyjaśnienie terminów}
 \begin{itemize}
@@ -149,7 +148,7 @@ Zakres badania obejmuje:
 
 Analizę danych oraz implementację modeli klasyfikacyjnych wykonano przy użyciu języka R. Obliczenia przeprowadzono w środowisku RStudio. Użyte biblioteki: [TODO][LISTA WSZYSTKICH BIBLIOTEK]
 
-\subsection{Źródło danych}
+\subsection{Zbiór danych}
 W pracy wykorzystano publicznie dostępny zbiór danych zawierający statystyki meczów rankingowych gry League of Legends. Dane pochodzą z serwisu Kaggle i zostały pozyskane przy użyciu oficjalnego API udostępnianego przez Riot Games.
 
 Zbiór obejmuje mecze rankingowe rozgrywane na wysokim poziomie rankingowym tj. od rangi Diamond wzwyż, co odpowiada około 5\% najlepszych graczy. Dane pochodzą z okresu sprzed około sześciu lat. Autor zbioru nie określa dokładnego regionu serwerowego, z którego zostały pobrane mecze.
@@ -166,16 +165,16 @@ Ze względu na ograniczoną liczbę prac dotyczących wczesnej fazy gry w League
 gends, przegląd oparto głównie na dwóch analizach z Kaggle wykorzystujących ten sam
 zbiór danych. 
 
-Pierwsza praca [?] pokazuje, że już w pierwszych 10 minutach meczu pojawiają się
+Pierwsza praca \cite{gasmi_lol_first10} pokazuje, że już w pierwszych 10 minutach meczu pojawiają się
 istotne różnice statystyczne między drużynami, które mogą wpływać na dalszy przebieg
 rozgrywki. Wyniki sugerują, że wczesna faza gry dostarcza informacji o potencjalnym
 wyniku meczu.
 
-Druga analiza [?] wskazuje, że takie zmienne jak liczba zabójstw, asyst, złoto, do-
+Druga analiza \cite{wang_lol_win} wskazuje, że takie zmienne jak liczba zabójstw, asyst, złoto, do-
 świadczenie i zabite stwory dobrze różnicują mecze wygrane i przegrane. Potwierdza to,
 że przewaga budowana na początku gry często przekłada się na końcowy rezultat.
 
-Trzecia praca [?] zawiera dokładną analizę wszystkich zmiennych oraz ich wpływu na
+Trzecia praca \cite{arancio_decisions_10min} zawiera dokładną analizę wszystkich zmiennych oraz ich wpływu na
 wynik meczu.
 
 Wnioski przedstawione w analizowanych pracach uzasadniają zastosowane w niniejszej pracy podejście badawcze. Dotychczasowe analizy wskazują, że dane z początkowej fazy rozgrywki zawierają istotną informację predykcyjną, a wykorzystanie metod klasyfikacji może umożliwić skuteczne przewidywanie wyniku meczu na podstawie ograniczonego zestawu cech opisujących pierwsze minuty gry.
@@ -707,7 +706,7 @@ Poniżej przedstawiono wizualizacje zmiennych po wstępnej analizie danych z pom
 
 \subsubsection{Opis}
 
-Sieci neuronowe są modelami uczenia maszynowego inspirowanymi działaniem biologicznych sieci neuronowych. Składają się z połączonych ze sobą neuronów tworzących kolejne warstwy przetwarzające dane wejściowe. Dzięki zastosowaniu nieliniowych funkcji aktywacji sieci neuronowe są zdolne do modelowania złożonych zależności pomiędzy zmiennymi.
+Sieci neuronowe \cite{NN} są modelami uczenia maszynowego inspirowanymi działaniem biologicznych sieci neuronowych. Składają się z połączonych ze sobą neuronów tworzących kolejne warstwy przetwarzające dane wejściowe. Dzięki zastosowaniu nieliniowych funkcji aktywacji sieci neuronowe są zdolne do modelowania złożonych zależności pomiędzy zmiennymi.
 
 W analizie wykorzystano wielowarstwową sieć neuronową typu MLP (Multi-Layer Perceptron) zaimplementowaną przy użyciu bibliotek \texttt{keras3} oraz \texttt{tensorflow}. Zadaniem modelu było przewidywanie wartości zmiennej \texttt{blueWins}, określającej końcowy wynik meczu z perspektywy drużyny niebieskiej.
 
@@ -777,7 +776,7 @@ Po zakończeniu procesu uczenia wyznaczono prawdopodobieństwa przynależności 
 
 \subsubsection{Opis}
 
-Drzewo decyzyjne [?] jest metodą klasyfikacji wykorzystującą strukturę hierarchiczną składającą się z węzłów decyzyjnych oraz liści reprezentujących klasy. Celem algorytmu jest podział przestrzeni cech na obszary możliwie jednorodne pod względem zmiennej decyzyjnej.
+Drzewo decyzyjne \cite{TREE} jest metodą klasyfikacji wykorzystującą strukturę hierarchiczną składającą się z węzłów decyzyjnych oraz liści reprezentujących klasy. Celem algorytmu jest podział przestrzeni cech na obszary możliwie jednorodne pod względem zmiennej decyzyjnej.
 
 Proces budowy drzewa rozpoczyna się od umieszczenia wszystkich obserwacji w węźle korzeniowym. Następnie wykonywane są kolejne podziały zbioru danych na podstawie wartości wybranych cech. W każdym kroku wybierany jest taki podział, który prowadzi do największego zwiększenia jednorodności klas w otrzymanych podzbiorach.
 
@@ -824,7 +823,7 @@ Przycinanie polega na usuwaniu części gałęzi, które nie wnoszą istotnej in
 
 \subsubsection{Opis}
 
-Metoda k najbliższych sąsiadów (ang. \textit{k-Nearest Neighbours}, KNN) należy do grupy metod klasyfikacji opartych na podobieństwie obserwacji. Klasyfikacja nowego obiektu odbywa się na podstawie klas przypisanych do $k$ najbardziej podobnych obserwacji ze zbioru treningowego.
+Metoda k najbliższych sąsiadów (ang. \textit{k-Nearest Neighbours}, KNN)  \cite{KNN} należy do grupy metod klasyfikacji opartych na podobieństwie obserwacji. Klasyfikacja nowego obiektu odbywa się na podstawie klas przypisanych do $k$ najbardziej podobnych obserwacji ze zbioru treningowego.
 
 Dla każdej obserwacji testowej wyznaczani są jej najbliżsi sąsiedzi w przestrzeni cech, a następnie przypisywana jest klasa najczęściej występująca wśród znalezionych sąsiadów. Metoda nie tworzy jawnego modelu podczas etapu uczenia, dlatego zaliczana jest do grupy metod leniwych (ang. \textit{lazy learning}).
 
@@ -1031,23 +1030,71 @@ Wartość AUC przyjmuje wartości z przedziału $[0,1]$, gdzie wartość 1 oznac
 
 \section{Podsumowanie}
 
-\section{Załączniki}
-Poniżej znajduje się lista załączonych plików do projektu:
+\section*{Załączniki}
+Poniżej znajduje się lista załączonych plików do projektu wraz z ich opisami:
 \begin{itemize}
-\item \textbf{lol.csv} --- 
-\item \textbf{ClassificationTree.R} --- 
-\item \textbf{CorrelationWisualization.R} --- 
-\item \textbf{endDatasetWisualization.R} --- 
-\item \textbf{KNN.R} --- 
-\item \textbf{PCA.R} --- 
-\item \textbf{PreliminaryAnalisys.R} --- 
-\item \textbf{ROC.R} --- 
-\item \textbf{TableWisualization.R} --- 
-\item \textbf{tensorflow.R} --- 
-\item \textbf{} --- 
+\item \textbf{lol.csv} --- Badany zbiór danych.
+\item \textbf{ClassificationTree.R} --- Implementacja drzewa klasyfikacyjnego wraz z oceną i wizualizacją wyników.
+\item \textbf{CorrelationWisualization.R} --- Analiza i wizualizacja korelacji oraz usuwanie silnie skorelowanych zmiennych.
+\item \textbf{endDatasetWisualization.R} --- Generowanie wykresów opisujących cechy końcowego zbioru danych.
+\item \textbf{KNN.R} --- Implementacja klasyfikatora KNN z doborem parametru k i oceną modelu.
+\item \textbf{MixedModel.R} --- Implementacja modelu mieszanego na bazie trzech modeli podstawowych oraz jego ocena. 
+\item \textbf{PCA.R} --- Redukcja wymiarowości danych metodą PCA wraz z wizualizacją wyników.
+\item \textbf{PreliminaryAnalisys.R} --- Wstępne przygotowanie i przetwarzanie danych.
+\item \textbf{ROC.R} --- Generowanie krzywych ROC i obliczanie wartości AUC.
+\item \textbf{TableWisualization.R} --- Wizualizacja macierzy pomyłek i miar jakości klasyfikacji.
+\item \textbf{tensorflow.R} --- Implementacja i trenowanie sieci neuronowej z oceną wyników.
 \end{itemize}
 
-\bibliographystyle{ieeetr}
-\bibliography{references}
+\bibliographystyle{IEEEtran}
+\begin{thebibliography}{9}
+% LOL 1
+\bibitem{gasmi_lol_first10}
+Mehdi Gasmi,
+\textit{League of Legends: what to do in first 10 min},
+Kaggle Notebook, 2020.  
+Dostęp: \url{https://www.kaggle.com/code/servietsky/league-of-legends-what-to-do-in-first-10-min}
+
+% LOL 2
+\bibitem{wang_lol_win}
+Xiyue Wang,
+\textit{LoL: How to Win},
+Kaggle Notebook, 2020.  
+Dostęp: \url{https://www.kaggle.com/code/xiyuewang/lol-how-to-win}
+
+% LOL 3
+\bibitem{arancio_decisions_10min}
+Jeremy Arancio,
+\textit{Which decisions before 10min lead to win?},
+Kaggle Notebook, 2022.  
+Dostęp: \url{https://www.kaggle.com/code/jeremyarancio/which-decisions-before-10min-lead-to-win}
+
+% NN
+\bibitem{NN}
+Albina Jegorowa, Jarosław Kurek, Michał Kruk, Jarosław Górski,
+\textit{Artykuł z Forests},
+Forests, vol. 13, no. 6, 2022, art. 933.  
+Dostęp: \url{https://doi.org/10.3390/f13060933}
+
+% TREE
+\bibitem{TREE}
+Krzysztof Gajowniczek, Marcin Dudziński,
+\textit{Artykuł z Entropy},
+Entropy, vol. 26, no. 12, 2024, art. 1020.  
+Dostęp: \url{https://doi.org/10.3390/e26121020}
+
+% KNN
+\bibitem{KNN}
+Tomasz Ząbkowski \textit{et al.},
+\textit{Artykuł z Energies},
+Energies, vol. 16, no. 19, 2023, art. 6853.  
+Dostęp: \url{https://doi.org/10.3390/en16196853}
+\end{thebibliography}
+
+\section*{Źródło danych}
+     Yi Lan Ma, \textit{League of Legends Diamond Ranked Games (10 min)}, Kaggle. \\
+    Dostęp online: \url{https://www.kaggle.com/datasets/bobbyscience/league-of-legends-diamond-ranked-games-10-min} \\
+    Data dostępu: 06.06.2026.
+
 
 \end{document}
