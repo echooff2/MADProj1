@@ -86,7 +86,7 @@ draw_confusion_matrix(TP, FN, TN, FP, "Mixed_NN_real_data")
 if (!exists("draw_roc_plot")) {
   source("ROC.R")
 }
-draw_roc_plot(test_class, probability_vector_test, "Model hybrydowy MLP (R)") #<-nnet
+draw_roc_plot(test_class, probability_vector_test, "Model hybrydowy MLP(R)") #<-nnet
 
 
 ### wykonaj poniższe by zrobić mix sieci na syntetycznych danych
@@ -122,7 +122,7 @@ draw_confusion_matrix(TP, FN, TN, FP, "Mixed_NN_synthetic_data")
 if (!exists("draw_roc_plot")) {
   source("ROC.R")
 }
-draw_roc_plot(synthetic_class, probability_vector_test, "Model hybrydowy MLP (S)") 
+draw_roc_plot(synthetic_class, probability_vector_test, "Model hybrydowy MLP(S)") 
 
 
 
