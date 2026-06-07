@@ -7,7 +7,7 @@ library(tensorflow)
 #ostatnia komenda wywołująca funkcję tym pliku jest zakomendowana atm. 
 
 #kompiluje, trenuje i zwraca wektor probabilistyczny ze testowego datasetu.
-do_tensor_flow_neuralNet<-function(draw_plots = F){
+do_tensor_flow_neuralNet<-function(draw_plots = F, use_synth_data=F){
   if (!exists("do_preliminary_analisys")) {
     source("PreliminaryAnalisys.R")
   }
@@ -39,14 +39,32 @@ do_tensor_flow_neuralNet<-function(draw_plots = F){
     )
   
   model %>% fit(train_df_data, train_df_class, epochs=100, batch_size=100,shuffle = TRUE,validation_split = 0.20)
+  if(use_synth_data){
+    df <- do_preliminary_analisys()
+    library(synthpop)
+    synth_data <- syn(df, method = "cart", cart.minbucket = 10, seed = 67)
+    test <- synth_data$syn
+    
+    test_df_class <- test |> select('blueWins')
+    test <- test |> select(!c('blueWins'))
+    test <- as.matrix(test)
+    probability_vector_test <- predict_on_batch(model, test)
+    probability_vector_test <- as.data.frame(probability_vector_test)
+    probability_vector_test <-probability_vector_test$V1
+  }
+  else
+  {
   probability_vector_test <- predict_on_batch(model, test_df_data)
+  test_df_class <- as.data.frame(test_df_class)
+  test_df_class <- test_df_class %>% rename_at('test_df_class', ~'blueWins')
+  }
   summary(model)
   if (draw_plots) {
     # MACIERZ POMYLEK
     pred_class <- ifelse(probability_vector_test > 0.5, 1, 0)
     cm <- table(
       Predicted = pred_class,
-      Actual = test_df_class
+      Actual = test_df_class$blueWins
     )
     TN <- cm["0","0"]
     FN <- cm["0","1"]
@@ -55,37 +73,41 @@ do_tensor_flow_neuralNet<-function(draw_plots = F){
     if (!exists("draw_confusion_matrix")) {
       source("TableWisualization.R")
     }
-    draw_confusion_matrix(TP, FN, TN, FP, "neural_network")
-    
-    #ROC
+    if(use_synth_data){
+    draw_confusion_matrix(TP, FN, TN, FP, "neural_network_synthetic_data")
     if (!exists("draw_roc_plot")) {
       source("ROC.R")
     }
-    draw_roc_plot(test_df_class, probability_vector_test, "Sieci neuronowe")
+      draw_roc_plot(test_df_class$blueWins, probability_vector_test, "Sieć MLP (S)")  
+    }
+    else{
+    draw_confusion_matrix(TP, FN, TN, FP, "neural_network_real_data")
+    if (!exists("draw_roc_plot")) {
+      source("ROC.R")
+    }
+    draw_roc_plot(test_df_class$blueWins, probability_vector_test, "Sieć MLP (R)") 
+    }
+    }
+  
+  #proszę nie pytać dlaczego tak jest, info o nazwach kolumn trzeba jakoś usunąć
+  if(use_synth_data){
+  output<-as.data.frame(probability_vector_test)
+  output$V1 <-probability_vector_test
+  output <- output %>% rename_at('probability_vector_test', ~'probability_vector')
+  output$test_class_nn<-test_df_class
   }
-  output <- as.data.frame(probability_vector_test)
+  else{
+  output<-as.data.frame(probability_vector_test)
   output <- output %>% rename_at('V1', ~'probability_vector')
   output$test_class_nn<-test_df_class
-   
-  plot(
-    model,
-    show_shapes = TRUE,
-    show_dtype = TRUE,
-    show_layer_names = TRUE,
-    rankdir = "TB",
-    expand_nested = FALSE,
-    dpi = getOption("keras.plot.model.dpi", 200L),
-    layer_range = NULL,
-    show_layer_activations = TRUE,
-    show_trainable = NA,
-    to_file = NULL
-  )
+  }
   
   return(output)
 }
 
 
-prob_vector_test <- do_tensor_flow_neuralNet(T)
+prob_vector_test <- do_tensor_flow_neuralNet(T,F) #<-realne
+prob_vector_test <- do_tensor_flow_neuralNet(T,T) #<-syntetyczne
 #mean(score)
 #summary(score)
 
