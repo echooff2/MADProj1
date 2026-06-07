@@ -74,6 +74,7 @@ do_classification_tree <- function(draw_plots = F) {
         source("ROC.R")
     }
     
+    ########## uruchomic przed całym skryptem ##############
     df <- do_preliminary_analisys()
     df$blueWins <- as.factor(df$blueWins)
     
@@ -83,6 +84,15 @@ do_classification_tree <- function(draw_plots = F) {
     split <- sample(seq_len(nrow(df)), round(0.7 * nrow(df)))
     train <- df[split, ]
     test <- df[-split, ]
+    ########## uruchomic przed całym skryptem ##############
+    
+    use_synth_data = F
+    if (use_synth_data){
+        library(synthpop)
+        synth_data <- syn(df, method = "cart", cart.minbucket = 10, seed = 42)
+        test <- synth_data$syn
+    }
+    
     summary(train)
     tree_res <- tree(blueWins ~ ., train)
     
@@ -135,9 +145,19 @@ do_classification_tree <- function(draw_plots = F) {
     fp <- confusion_matrix["0", "1"]
     fn <- confusion_matrix["1", "0"]
     
+    if (use_synth_data) {
+        conf_mat_name = "classification_tree_confusion_matrix_synth"
+        roc_plot_name = "Drzewo klas. synth"
+    }
+    else {
+        conf_mat_name = "classification_tree_confusion_matrix"
+        roc_plot_name = "Drzewo klasyfikacyjne"
+    }
+    
+    
     if (draw_plots) {
-        draw_confusion_matrix(tp, fn, tn, fp, "classification_tree_confusion_matrix")
-        draw_roc_plot(test$blueWins, predict_probs, "Drzewo klasyfikacyjne")
+        draw_confusion_matrix(tp, fn, tn, fp, conf_mat_name)
+        draw_roc_plot(test$blueWins, predict_probs, roc_plot_name)
     }
     
     output <- as.data.frame(predict_probs)

@@ -71,6 +71,14 @@ do_knn <- function(draw_plots = F) {
     train_data <- df[split, ]
     test_data <- df[-split, ]
     
+    use_synth_data = F
+    if (use_synth_data){
+        library(synthpop)
+        synth_data <- syn(df, method = "cart", cart.minbucket = 10, seed = 42)
+        test_data <- synth_data$syn
+    }
+    
+    
     #train_data <- df[train_index, ]
     #test_data  <- df[-train_index, ]
     
@@ -173,10 +181,19 @@ do_knn <- function(draw_plots = F) {
     cat("Recall =", round(recall, 4), "\n")
     cat("Specificity =", round(specificity, 4), "\n")
     
+    if (use_synth_data) {
+        conf_mat_name = "KNN_synth"
+        roc_plot_name = "KNN synth"
+    }
+    else {
+        conf_mat_name = "KNN"
+        roc_plot_name = "KNN"
+    }
+    
     if (draw_plots) {
-        draw_confusion_matrix(TP, FN, TN, FP, "KNN")
-        draw_roc_plot(test_labels, predicted_probabilities, "KNN")
-        draw_k_accuracy_plot(knn_cv$results, best_k)
+        draw_confusion_matrix(TP, FN, TN, FP, conf_mat_name)
+        draw_roc_plot(test_labels, predicted_probabilities, roc_plot_name)
+        #draw_k_accuracy_plot(knn_cv$results, best_k)
     }
     
     #test na lable z danymi
