@@ -75,13 +75,13 @@
 
 %% ---- Abstract (max 250 words, no citations) ----
 \begin{abstract}
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras ex odio, elementum sit amet quam ac, accumsan pharetra libero. Suspendisse odio nisi, consequat sed ornare sed, convallis sed nulla. Nunc nec enim ut nisi facilisis cursus. Cras nec enim neque. Quisque nec consectetur odio. Pellentesque eget euismod sapien. Cras urna urna, gravida a eros eget, tincidunt scelerisque metus. Ut eget mi vehicula augue bibendum dapibus. Ut tempus tellus eros, eu lobortis est dignissim sit amet. Integer id molestie dolor. Mauris tincidunt nunc erat, ut suscipit lacus pharetra varius. Sed quis neque ut ligula vestibulum egestas a sed felis. Quisque vulputate tincidunt metus. 
+W pracy przeanalizowano możliwość przewidywania wyniku meczów rankingowych gry League of Legends na podstawie danych dostępnych po pierwszych 10 minutach rozgrywki. Wykorzystano publiczny zbiór danych zawierający 9879 meczów oraz statystyki opisujące m.in. ekonomię drużyn, kontrolę mapy i przebieg walk. Przeprowadzono proces przygotowania danych obejmujący usuwanie wartości odstających, standaryzację zmiennych, redukcję cech silnie skorelowanych oraz agregację wybranych zmiennych z wykorzystaniem analizy PCA. Następnie zastosowano pięć metod klasyfikacji: sieć neuronową MLP, drzewo klasyfikacyjne, algorytm k najbliższych sąsiadów (KNN) oraz dwa modele hybrydowe. Skuteczność modeli oceniono za pomocą miar Accuracy i AUC. Najlepsze wyniki uzyskała sieć neuronowa, osiągając dokładność 73,31\% oraz AUC równe 0,811. Otrzymane rezultaty wskazują, że informacje dostępne we wczesnej fazie meczu pozwalają z dobrą skutecznością przewidywać jego końcowy wynik.
+
 \end{abstract}
-
-%% ---- Keywords (minimum 3, maximum 5) ----
-\keywords{League of Legends, LoL, klasyfikacja, predykcja wyniku meczu, sieci neuronowe, drzewo klasyfikacyjne, KNN}
-
+\keywords{League of Legends, LoL, klasyfikacja, predykcja wyniku meczu, sieci neuronowe, drzewo klasyfikacyjne, KNN, model hybrydowy}
+\small
 \tableofcontents
+\normalsize
 \newpage
 
 %% ============================================================
@@ -96,7 +96,7 @@ Współczesne gry sieciowe generują duże ilości danych opisujących przebieg 
 
 Problem badawczy poruszany w niniejszej pracy dotyczy możliwości przewidywania wyniku meczu rankingowego na podstawie statystyk z pierwszych 10 minut rozgrywki, gdzie przecięty mecz trwa 30 minut. W pracy wykorzystano dane dotyczące meczów rankingowych w celu zbadania, czy metody klasyfikacji pozwalają przewidywać zwycięstwo lub porażkę drużyny niebieskiej na podstawie cech opisujących początkową fazę meczu. Dodatkowym celem jest określenie, które zmienne mają największy wpływ na skuteczność modeli klasyfikacyjnych.
 
-\subsection{Wyjaśnienie terminów}
+Wyjaśnienie terminów:
 \begin{itemize}
 \item \textbf{Doświadczenie} --- Doświadczenie (experience, XP) jest zasobem zdobywanym przez bohaterów podczas rozgrywki głównie poprzez przebywanie w pobliżu eliminowanych przeciwników, takich jak miniony czy potwory z dżungli. Zdobywanie doświadczenia pozwala bohaterom awansować na kolejne poziomy, co zwiększa ich statystyki oraz umożliwia rozwijanie umiejętności.
 \item \textbf{Złoto}---- Złoto jest podstawową walutą występującą w grze. Może być zdobywane między innymi poprzez eliminowanie minionów, bohaterów przeciwnika, potworów z dżungli oraz niszczenie struktur. Zgromadzone złoto pozwala na zakup przedmiotów zwiększających siłę bohatera.
@@ -123,7 +123,7 @@ jako wygrana lub przegrana drużyny niebieskiej.
 
 Istotnym elementem pracy jest porównanie wyników uzyskanych za pomocą trzech
 metod klasyfikacji: sieci neuronowych, drzewa klasyfikacyjnego oraz KNN,
-a także metody mieszanej [TODO][NAZWA METODY MIESZANEJ], łączącej cechy wybranych podejść.
+a także dwóch metod mieszanych, łączących cechy wybranych podejść.
 Celem analizy jest wskazanie, które z zastosowanych rozwiązań najlepiej przewiduje wynik
 meczu na podstawie danych dostępnych na wczesnym etapie gry.
 
@@ -133,35 +133,17 @@ rezultatu.
 
 Zakres badania obejmuje:
 \begin{itemize}
-\item charakterystykę oraz analizę zbioru danych zawierającego statystyki meczów League of Legends,
-\item przeprowadzenie wstępnej analizy danych, obejmującej statystyki opisowe oraz analizę korelacji pomiędzy zmiennymi,
-\item przygotowanie danych do procesu uczenia modeli, w tym obsługę wartości odstających, analizę braków danych, skalowanie cech oraz usunięcie zbędnych zmiennych,
-\item analizę końcowego zbioru danych po przeprowadzeniu preprocessingu,
-\item przedstawienie teoretycznych podstaw zastosowanych metod klasyfikacji,
-\item implementację oraz zastosowanie metod klasyfikacji: sieci neuronowe, drzewo klasyfikacyjne, KNN oraz [TODO][NAZWA METODY HYBRYDOWEJ],
-\item ocenę skuteczności modeli przy użyciu wybranych miar jakości klasyfikacji,
-\item analizę i interpretację uzyskanych wyników,
-\item porównanie skuteczności zastosowanych metod klasyfikacji,
-\item wykorzystanie najlepszego modelu do klasyfikacji syntetycznie wygenerowanych danych testowych.
-\end{itemize}
-[TODO][zweryfikowac czy ta lista jest poprawna]
-
-Analizę danych oraz implementację modeli klasyfikacyjnych wykonano przy użyciu języka R. Obliczenia przeprowadzono w środowisku RStudio. Użyte biblioteki:
-\begin{itemize}
-    \item keras3
-    \item tensorflow
-    \item synthpop
-    \item dplyr
-    \item ggplot2
-    \item ggtext
-    \item factoextra
-    \item corrplot
-    \item psych
-    \item caret
-    \item tree
-    \item class
+\item analizę surowego zbioru danych,
+\item przygotowanie zbioru do modeli klasyfikacyjnych,
+\item analizę końcowego zgioru danych,
+\item zastosowanie wybranych modeli klasyfikacyjnych i ich walidacja,
+\item ocenienie i interpretacja wyników klasyfikatorów,
+\item porównanie skuteczności modeli,
+\item przetestowanie modeli na syntetycznych danych,
 \end{itemize}
 
+Analizę danych oraz implementację modeli klasyfikacyjnych wykonano przy użyciu języka R. Obliczenia przeprowadzono w środowisku RStudio. Użyte biblioteki: \textit{synthpop, psych, class, caret, keras3, ggplot2, tree, factoextra, corrplot, ggtext, dplyr} oraz \textit{tensorflow}.
+\newpage
 \subsection{Zbiór danych}
 W pracy wykorzystano publicznie dostępny zbiór danych zawierający statystyki meczów rankingowych gry League of Legends. Dane pochodzą z serwisu Kaggle i zostały pozyskane przy użyciu oficjalnego API udostępnianego przez Riot Games.
 
@@ -174,7 +156,6 @@ Zbiór danych składa się z 9879 rekordów oraz 40 zmiennych. Zmienną decyzyjn
 Klasy w zbiorze danych są w przybliżeniu zbalansowane, co oznacza, że liczba zwycięstw drużyny niebieskiej i czerwonej jest podobna.
 
 \subsection{Przeglad literatury}
-[TODO][DODAC CYTOWNIA DO PRAC Z KAGGLA][wspomniec czym sie zainspirowalismy z pracy francuza]
 Ze względu na ograniczoną liczbę prac dotyczących wczesnej fazy gry w League of Le-
 gends, przegląd oparto głównie na dwóch analizach z Kaggle wykorzystujących ten sam
 zbiór danych. 
@@ -283,7 +264,7 @@ x =
 Po oznaczeniu wartości odstających jako brakujące usuwano wszystkie rekordy zawierające przynajmniej jedną wartość \texttt{NA}. Ostatecznie ze zbioru danych usunięto 190 rekordów, co stanowiło w przybliżeniu 1.92\% wszystkich obserwacji.
 
 Zastosowana metoda pozwoliła ograniczyć wpływ skrajnych obserwacji na proces uczenia modeli oraz zmniejszyć ryzyko zaburzenia działania algorytmów przez nietypowe wartości.
-
+\newpage
 \subsection{Standaryzowanie danych}
 
 W celu ujednolicenia rozkładów oraz zakresów wartości poszczególnych cech zastosowano standaryzację danych z wykorzystaniem funkcji \texttt{scale()} dostępnej w języku R. Metoda ta polega na przekształceniu wartości zmiennych w taki sposób, aby każda cecha posiadała średnią równą 0 oraz odchylenie standardowe równe 1.
@@ -313,6 +294,7 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
 	\item redTowersDestroyed
 \end{itemize}
 \indent Otrzymaliśmy więc cechę "TowersDestroyed" dla obu drużyn. Dodatkowo z tabeli 1 wiemy, że ich mediany wynoszą 0. Nie powinno to zaskakiwać, jako że w pierwszych 10 minutach rozgrywki - względnie początkowej fazie - rzadko się zdarza zniszczenie wieży przeciwnika. W związku z powyższym usuwamy te 2 cechy z naszego data setu.
+\newpage
 \subsubsection{Skorelowane prosto, liniowo}
 \indent Cechy skorelowane prosto, liniowo, to takie, pomiędzy którymi istnieje korelacja cecha do cechy. Ergo w tej podsekcji zajmiemy się znajdowaniem takich par i usuwaniu jednej z cech na tej podstawie. Wykorzystamy do tego wbudowaną funkcję w R o nazwie "cor". Za jej pomocą stworzymy macierz korelacji. Wizualizacji dokonamy z wykorzystaniem funkcji "corrplot" z pakietu o tej samej nazwie.
 \begin{figure}[H]
@@ -322,7 +304,7 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
 	}
 	\caption{Macierz korelacji dla wszystkich zmiennych bez quasi stałych 1.}
 \end{figure}
-\begin{samepage}
+\newpage
 \indent Powyższa macierz przedstawia korelacje liniowe, proste pomiędzy wszystkimi zmiennymi, jakie nam zostały po usunięciu quasi stałych. Na jego postawie możemy znaleźć bardzo silnie skorelowane, czyli takie, których poziom korelacji jest większy bądź równy 0.9, pary cech:
 \begin{table}[H]
   \centering
@@ -345,8 +327,6 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
 \end{tabular}
 \caption{Tabela korelacji silnie skorelowanych zmiennych 1.}
 \end{table}
-\end{samepage}
-\begin{samepage}
 \indent Na podstawie powyższego możemy usunąć następujące cech;
 \begin{itemize}
 	\item blueFirstBlood
@@ -361,7 +341,6 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
 	\item redAvgLevel 
 	\item redTotalMinionsKilled 
 \end{itemize}
-\end{samepage}
 \begin{samepage}
 \subsubsection{Skorelowane wielokrotnie, liniowo}
 \indent \indent Dodatkowo, możemy, korzystając z definicji poszczególnych cech, zebrać korelacje wielokrotne, liniowe; innymi słowy takie korelacje, w których to jedna zmienna jest skorelowana liniowo z więcej niż jedną. Takich relacji mamy aż 6 i są one przedstawione poniżej:
@@ -382,7 +361,7 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
 	\item $blueTotalExperience$ i $redTotalExperience$ jako że uznajemy różnicę między nimi za istotniejszą od tych zmiennych samych w sobie
 \end{itemize}
 \end{samepage}
-
+\newpage
 \subsection{Łączenie zmiennych}
 \indent \indent Po porzedniej podsekcji zostały nam cechy przedstawione na narysowanej poniżej macierzy korelacji:
 \begin{figure}[H]
@@ -409,7 +388,7 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
 \end{tabular}
 \caption{Tabela korelacji silnie skorelowanych zmiennych 2.}
 \end{table}
-\indent Te cechy zagragujemy liniowo w jedną, dla każdej drużyny, wedle następującej reguły:
+\indent Te cechy zagragujemy liniowo w jedną, dla każdej drużyny, wedle następującej reguły \cite{arancio_decisions_10min}:
 \begin{equation}
 	KA = Kills + Assists
 \end{equation}
@@ -486,6 +465,7 @@ W skrypcie będziemy bazować na wbudowanej funkcji "prcomp" i do wizualizacji r
 \indent Po wykonaniu wszystkich kroków usuwania silnie i bardzo silnie skorelowanych cech możemy przedstawić jak ostatecznie wygląda macierz korelacji. Dodatkowo macierz uwzględnia cechę $blueWins$, aby dodatkowo ukazać jak silnie jest ona skorelowana ze zmiennymi, które ostatecznie zostały.
 
 \section{Analiza końcowego zbioru danych}
+Po wstępnym przetworzeniu zbioru danych zostało nam 9689 rekordów oraz 16 zmiennych (nie licząc zmiennej przewidywanej).
 \subsection{Wyjaśnienie zmiennych}
 \begin{itemize}
 	\item {\bf blueWardsPlaced} --- Ilość wardów postawionych przez druyżynę niebieską.
@@ -505,9 +485,9 @@ W skrypcie będziemy bazować na wbudowanej funkcji "prcomp" i do wizualizacji r
 	\item {\bf redKA} --- Łączna ilość zabójstw i asyst drużyny czerwonej.
 	\item {\bf diff\_PCA\_Component\_1} --- Nowa zmienna utworzona w procesie PCA ze zmiennych \textit{redGoldDiff} i \textit{redExperienceDiff}.
 \end{itemize}
-
+\newpage
 \subsection{Charakterystyka zmiennych}
-Zmienne opisujące opisujące ilość zabitych smoków i heroldów powinny być zmiennymi numerycznymi jednak przez ograniczoną naturę badanego zbioru danych przyjmują jedynie wartości 0 lub 1. Z tego powodu zostały one opisane jako zmienne binarne.
+Zmienne opisujące ilość zabitych smoków i heroldów powinny być zmiennymi numerycznymi jednak przez ograniczoną naturę badanego zbioru danych przyjmują jedynie wartości 0 lub 1. Z tego powodu zostały one opisane jako zmienne binarne.
 \begin{table}[H]
 \centering
 \begin{tabular}{l l l l}
@@ -564,9 +544,9 @@ Zmienne opisujące opisujące ilość zabitych smoków i heroldów powinny być 
 }
 \caption{Statystyki opisowe końcowych zmiennych.}
 \end{table}
-
+\newpage
 \subsection{Wizualizacja}
-Poniżej przedstawiono wizualizacje zmiennych po wstępnej analizie danych z pominięciem skalowania dla zachowania czytelności wykresów.
+Poniżej przedstawiono wizualizacje zmiennych po wstępnej analizie danych z pominięciem skalowania dla zachowania czytelności wykresów. Dla zmiennych skokowych posiadających więcej niż 55 unikatowych wartości wygenerowano histogramy zamiast barplotów.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure}[H]
 	\centering
@@ -894,10 +874,41 @@ gdzie:
     \item $I(\cdot)$ -- funkcja wskaźnikowa przyjmująca wartość 1, gdy warunek jest spełniony, oraz 0 w przeciwnym przypadku.
 \end{itemize}
 
-Oprócz przewidywanej klasy algorytm wyznacza również prawdopodobieństwo przynależności do klasy pozytywnej, obliczane jako udział sąsiadów należących do tej klasy.
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Opis metody hybrydowej}
+\subsection{Metoda hybrydowa - średnia arytmetyczna}
+W podejściu hybrydowym wykorzystano trzy modele predykcyjne: sieć neuronową, drzewo decyzyjne oraz algorytm $k$-NN. Każdy z modeli generuje prawdopodobieństwo przynależności do klasy pozytywnej. Następnie wyniki te są agregowane poprzez uśrednienie, co pozwala uzyskać końcową prognozę w postaci jednego wskaźnika decyzyjnego:
+
+\begin{equation}
+S = \frac{P_{NN} + P_{KNN} + P_{TREE}}{3}
+\end{equation}
+
+gdzie:
+\begin{itemize}
+	\item $P_{NN}$ --- prawdopodobieństwo uzyskane z sieci neuronowej,
+	\item $P_{KNN}$ --- prawdopodobieństwo uzyskane z KNN,
+	\item $P_{TREE}$ --- prawdopodobieństwo uzyskane z drzewa decyzyjnego.
+\end{itemize}
+
+Na podstawie wartości $S$ wyznaczana jest klasa predykcji z wykorzystaniem progu decyzyjnego $0.5$:
+
+\begin{equation}
+\hat{y} =
+\begin{cases}
+1 & \text{dla } S \geq 0.5 \\
+0 & \text{dla } S < 0.5
+\end{cases}
+\end{equation}
+
+W tym podejściu nie stosowano dodatkowego podziału na zbiór treningowy i testowy, ponieważ wszystkie modele bazowe były już wcześniej trenowane i oceniane na zbiorze testowym. W związku z tym, w metodzie hybrydowej cały dostępny zbiór traktowany jest jako zbiór testowy i wykorzystywany wyłącznie do agregacji wyników modeli składowych.
+
+\subsection{Metoda hybrydowa - sieć neuronowa}
+Model hybrydowy oparty na sieci neuronowej stanowi rozszerzenie bazowej sieci MLP. W przeciwieństwie do modelu bazowego, który wykorzystuje bezpośrednio cechy wejściowe zbioru danych, w podejściu hybrydowym jako dane wejściowe zastosowano prawdopodobieństwa klas wygenerowane przez trzy niezależne klasyfikatory: sieć neuronową MLP, algorytm k najbliższych sąsiadów (KNN) oraz drzewo klasyfikacyjne.
+
+Uzyskane wartości prawdopodobieństw zostały połączone w nowy zbiór cech, który następnie wykorzystano do trenowania końcowej sieci neuronowej pełniącej rolę klasyfikatora nadrzędnego. Takie podejście należy do metod typu \textit{stacking}, w których predykcje modeli bazowych stanowią wejście dla modelu wyższego poziomu.
+
+Pod względem architektury model hybrydowy zachowuje taką samą strukturę jak bazowa sieć neuronowa, tj. dwie warstwy ukryte oraz warstwę wyjściową. Ze względu na mniejszą liczbę cech wejściowych zmodyfikowano jednak liczbę neuronów w warstwach ukrytych. W modelu bazowym zastosowano odpowiednio 128 i 64 neurony, natomiast w modelu hybrydowym liczby te zredukowano do 32 i 8 neuronów. Pozostawiono te same funkcje aktywacji, warstwy regularyzacyjne typu \texttt{Dropout}, funkcję kosztu \texttt{binary\_crossentropy} oraz optymalizator \texttt{RMSprop}.
+
+W porównaniu z bazową siecią neuronową model hybrydowy operuje na trzech cechach wejściowych odpowiadających predykcjom modeli bazowych, zamiast na pełnym zbiorze cech opisujących obserwacje. Celem takiej konstrukcji jest połączenie mocnych stron różnych algorytmów klasyfikacyjnych i uzyskanie lepszej jakości predykcji niż w przypadku pojedynczego modelu.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Metody oceniania}
 
@@ -1038,9 +1049,75 @@ Wartość AUC przyjmuje wartości z przedziału $[0,1]$, gdzie wartość 1 oznac
         \label{fig:both_images}
     \end{figure}
 
-\subsection{Rezultat metody hybrydowej}
+\newpage
+\subsection{Metoda hybrydowa - średnia arytmetyczna}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\textwidth]{../Plots/confusion_matrixes/Mixed_AVG_real_data .png}
+	\caption{Macierz pomyłek dla metody mieszanej na bazie średniej arytmetycznej.}
+        \label{fig:both_images}
+    \end{figure}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.6\textwidth]{../Plots/roc_curves/roc_Model hybrydowy śr. (R).png}
+	\caption{Wykres krzywej ROC dla metody mieszanej na bazie średniej arytmetycznej.}
+        \label{fig:both_images}
+    \end{figure}
+
+
+\newpage
+\subsection{Metoda hybrydowa - sieć neuronowa}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\textwidth]{../Plots/confusion_matrixes/Mixed_NN_real_data.png}
+	\caption{Macierz pomyłek dla metody mieszanej na bazie sieci neuronowej.}
+        \label{fig:both_images}
+    \end{figure}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.6\textwidth]{../Plots/roc_curves/roc_Model hybrydowy MLP(R).png}
+	\caption{Wykres krzywej ROC dla metody mieszanej na bazie sieci neuronowej.}
+        \label{fig:both_images}
+    \end{figure}
+
+
+\newpage
 \subsection{Porównanie skuteczności metod}
-\subsection{Użycie najlepszego modelu na syntetycznych danych}
+
+\begin{table}[H]
+  \centering
+\begin{tabular}{l c c}
+	\toprule
+	\textbf{Model} & \textbf{Accuracy} &  \textbf{AUC}  \\
+	\midrule
+	Sieci Neuronowe & 73,31\% & 0,811 \\ 
+	Drzewo Klasyfikacyjne &  72,69\% & 0,782 \\
+	KNN  & 71,59\% & 0,793 \\
+	hybr. - Sieć neuronowa  & 71,67\% & 0,802 \\
+	hybr. Średnia & 72,96\%  & 0,808 \\
+	\bottomrule
+\end{tabular}
+\caption{Rezultaty modeli na danych testowych.}
+\end{table}
+
+\subsection{Użycie modeli na syntetycznych danych}
+W celu sprawdzenia działania modeli na nowych obserwacjach wygenerowano syntetyczny zbiór danych z wykorzystaniem pakietu \texttt{synthpop} w języku R. Do syntezy zastosowano metodę \texttt{CART} (\textit{Classification and Regression Trees}), która modeluje zależności między zmiennymi za pomocą drzew decyzyjnych i na ich podstawie generuje nowe rekordy. Wygenerowany zbiór zawierał 9689 syntetycznych obserwacji. Parametr \texttt{cart.minbucket = 10} ogranicza nadmierne dopasowanie modelu, natomiast \texttt{seed = 67} zapewnia powtarzalność wyników. Otrzymany zbiór syntetyczny został wykorzystany jako dane testowe dla opracowanych modeli predykcyjnych.
+
+\begin{table}[H]
+  \centering
+\begin{tabular}{l c c}
+	\toprule
+	\textbf{Model} & \textbf{Accuracy} &  \textbf{AUC}  \\
+	\midrule
+	Sieci Neuronowe & 72,82\% & 0,804 \\ 
+	Drzewo Klasyfikacyjne &  71,49\% & 0,769 \\
+	KNN  & 71,47\% & 0,789 \\
+	hybr. - Sieć neuronowa  & 72,69\% & 0,805 \\
+	hybr. - Średnia & 72,48\%  & 0,800 \\
+	\bottomrule
+\end{tabular}
+\caption{Rezultaty modeli na danych syntetycznych.}
+\end{table}
 
 \section{Podsumowanie}
 
@@ -1052,7 +1129,8 @@ Poniżej znajduje się lista załączonych plików do projektu wraz z ich opisam
 \item \textbf{CorrelationWisualization.R} --- Analiza i wizualizacja korelacji oraz usuwanie silnie skorelowanych zmiennych.
 \item \textbf{endDatasetWisualization.R} --- Generowanie wykresów opisujących cechy końcowego zbioru danych.
 \item \textbf{KNN.R} --- Implementacja klasyfikatora KNN z doborem parametru k i oceną modelu.
-\item \textbf{MixedModel.R} --- Implementacja modelu mieszanego na bazie trzech modeli podstawowych oraz jego ocena. 
+\item \textbf{MixedModel.R} --- Implementacja modelu mieszanego na bazie średniej arytmetycznej oraz jego ocena.
+\item \textbf{MixedModelNeural.R} --- Implementacja modelu mieszanego na bazie sieci nauronowych oraz jego ocena.
 \item \textbf{PCA.R} --- Redukcja wymiarowości danych metodą PCA wraz z wizualizacją wyników.
 \item \textbf{PreliminaryAnalisys.R} --- Wstępne przygotowanie i przetwarzanie danych.
 \item \textbf{ROC.R} --- Generowanie krzywych ROC i obliczanie wartości AUC.
@@ -1086,21 +1164,21 @@ Dostęp: \url{https://www.kaggle.com/code/jeremyarancio/which-decisions-before-1
 % NN
 \bibitem{NN}
 Albina Jegorowa, Jarosław Kurek, Michał Kruk, Jarosław Górski,
-\textit{Artykuł z Forests},
+\textit{The Use of Multilayer Perceptron (MLP) to Reduce Delamination during Drilling into Melamine Faced Chipboard},
 Forests, vol. 13, no. 6, 2022, art. 933.  
 Dostęp: \url{https://doi.org/10.3390/f13060933}
 
 % TREE
 \bibitem{TREE}
 Krzysztof Gajowniczek, Marcin Dudziński,
-\textit{Artykuł z Entropy},
+\textit{Influence of Explanatory Variable Distributions on the Behavior of the Impurity Measures Used in Classification Tree Learning},
 Entropy, vol. 26, no. 12, 2024, art. 1020.  
 Dostęp: \url{https://doi.org/10.3390/e26121020}
 
 % KNN
 \bibitem{KNN}
 Tomasz Ząbkowski \textit{et al.},
-\textit{Artykuł z Energies},
+\textit{Changing Electricity Tariff—An Empirical Analysis Based on Commercial Customers’ Data from Poland},
 Energies, vol. 16, no. 19, 2023, art. 6853.  
 Dostęp: \url{https://doi.org/10.3390/en16196853}
 \end{thebibliography}

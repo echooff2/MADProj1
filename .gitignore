@@ -62,3 +62,8 @@ rsconnect/
 
 # pycharm
 .idea
+
+# other
+*.zip
+test.R
+

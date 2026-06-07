@@ -74,14 +74,14 @@ do_tensor_flow_neuralNet<-function(draw_plots = F, use_synth_data=F){
       source("TableWisualization.R")
     }
     if(use_synth_data){
-    draw_confusion_matrix(TP, FN, TN, FP, "neural_network_synthetic_data")
+    draw_confusion_matrix(TP, FN, TN, FP, "neural_network_synthetic_data", decimal_digits = 4)
     if (!exists("draw_roc_plot")) {
       source("ROC.R")
     }
       draw_roc_plot(test_df_class$blueWins, probability_vector_test, "Sieć MLP (S)")  
     }
     else{
-    draw_confusion_matrix(TP, FN, TN, FP, "neural_network_real_data")
+    draw_confusion_matrix(TP, FN, TN, FP, "neural_network_real_data", decimal_digits = 4)
     if (!exists("draw_roc_plot")) {
       source("ROC.R")
     }

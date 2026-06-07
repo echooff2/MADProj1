@@ -90,7 +90,7 @@ do_classification_tree <- function(draw_plots = F) {
     use_synth_data = F
     if (use_synth_data){
         library(synthpop)
-        synth_data <- syn(df, method = "cart", cart.minbucket = 10, seed = 42)
+        synth_data <- syn(df, method = "cart", cart.minbucket = 10, seed = 67)
         test <- synth_data$syn
     }
     
@@ -149,15 +149,14 @@ do_classification_tree <- function(draw_plots = F) {
     if (use_synth_data) {
         conf_mat_name = "classification_tree_confusion_matrix_synth"
         roc_plot_name = "Drzewo klas. synth"
-    }
-    else {
+    } else {
         conf_mat_name = "classification_tree_confusion_matrix"
         roc_plot_name = "Drzewo klasyfikacyjne"
     }
     
     
     if (draw_plots) {
-        draw_confusion_matrix(tp, fn, tn, fp, conf_mat_name)
+        draw_confusion_matrix(tp, fn, tn, fp, conf_mat_name, decimal_digits = 4)
         draw_roc_plot(test$blueWins, predict_probs, roc_plot_name)
     }
     

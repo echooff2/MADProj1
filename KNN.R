@@ -74,7 +74,7 @@ do_knn <- function(draw_plots = F) {
     use_synth_data = F
     if (use_synth_data){
         library(synthpop)
-        synth_data <- syn(df, method = "cart", cart.minbucket = 10, seed = 42)
+        synth_data <- syn(df, method = "cart", cart.minbucket = 10, seed = 67)
         test_data <- synth_data$syn
     }
     
@@ -191,7 +191,7 @@ do_knn <- function(draw_plots = F) {
     }
     
     if (draw_plots) {
-        draw_confusion_matrix(TP, FN, TN, FP, conf_mat_name)
+        draw_confusion_matrix(TP, FN, TN, FP, conf_mat_name, decimal_digits = 4)
         draw_roc_plot(test_labels, predicted_probabilities, roc_plot_name)
         draw_k_accuracy_plot(knn_cv$results, best_k)
     }

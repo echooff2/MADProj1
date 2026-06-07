@@ -45,7 +45,7 @@ TP <- cm["1","1"]
 if (!exists("draw_confusion_matrix")) {
   source("TableWisualization.R")
 }
-draw_confusion_matrix(TP, FN, TN, FP, "Mixed_AVG_real_data ")
+draw_confusion_matrix(TP, FN, TN, FP, "Mixed_AVG_real_data ", decimal_digits = 4)
 
 #ROC
 if (!exists("draw_roc_plot")) {
@@ -76,7 +76,7 @@ TP <- cm["1","1"]
 if (!exists("draw_confusion_matrix")) {
   source("TableWisualization.R")
 }
-draw_confusion_matrix(TP, FN, TN, FP, "Mixed_AVG_synthetic_data ")
+draw_confusion_matrix(TP, FN, TN, FP, "Mixed_AVG_synthetic_data ", decimal_digits = 4)
 
 #ROC
 if (!exists("draw_roc_plot")) {
