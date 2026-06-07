@@ -34,7 +34,8 @@ draw_roc_plot <- function(real_classes, probabilities, name) {
         plot = p,
         width = 7.5,
         height = 6,
-        dpi = 80
+        dpi = 80,
+        create.dir = TRUE
     )
     
     return(p)

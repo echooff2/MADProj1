@@ -146,7 +146,21 @@ Zakres badania obejmuje:
 \end{itemize}
 [TODO][zweryfikowac czy ta lista jest poprawna]
 
-Analizę danych oraz implementację modeli klasyfikacyjnych wykonano przy użyciu języka R. Obliczenia przeprowadzono w środowisku RStudio. Użyte biblioteki: [TODO][LISTA WSZYSTKICH BIBLIOTEK]
+Analizę danych oraz implementację modeli klasyfikacyjnych wykonano przy użyciu języka R. Obliczenia przeprowadzono w środowisku RStudio. Użyte biblioteki:
+\begin{itemize}
+    \item keras3
+    \item tensorflow
+    \item synthpop
+    \item dplyr
+    \item ggplot2
+    \item ggtext
+    \item factoextra
+    \item corrplot
+    \item psych
+    \item caret
+    \item tree
+    \item class
+\end{itemize}
 
 \subsection{Zbiór danych}
 W pracy wykorzystano publicznie dostępny zbiór danych zawierający statystyki meczów rankingowych gry League of Legends. Dane pochodzą z serwisu Kaggle i zostały pozyskane przy użyciu oficjalnego API udostępnianego przez Riot Games.
@@ -966,13 +980,13 @@ Wartość AUC przyjmuje wartości z przedziału $[0,1]$, gdzie wartość 1 oznac
 \subsection{Sieci neuronowe}
     \begin{figure}[H]
         \centering
-        \includegraphics[width=0.7\textwidth]{../Plots/confusion_matrixes/neural_network.png}
+        \includegraphics[width=0.7\textwidth]{../Plots/confusion_matrixes/neural_network_real_data.png}
 	\caption{Macierz pomyłek dla metody sieci neuronowych.}
         \label{fig:both_images}
     \end{figure}
     \begin{figure}[H]
         \centering
-        \includegraphics[width=0.6\textwidth]{../Plots/roc_curves/roc_Sieci neuronowe.png}
+        \includegraphics[width=0.6\textwidth]{../Plots/roc_curves/roc_Sieć MLP (R).png}
 	\caption{Wykres krzywej ROC dla metody sieci neuronowych.}
         \label{fig:both_images}
     \end{figure}

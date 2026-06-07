@@ -12,7 +12,8 @@ draw_pca_graph <- function(pca_result, name){
          width = 10,     # Inches by default
          height = 10,    # Inches by default
          dpi = 150,      # Replaces 'res'
-         bg = "white")
+         bg = "white",
+         create.dir = TRUE)
   
   # Scree plot
   png(paste0('./Plots/PCA/screeplot_',name), width = 1500, height = 1500, res = 150, type = "cairo", bg="white")

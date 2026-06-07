@@ -30,7 +30,7 @@ draw_piechart <- function(df, feature, name){
             plot.title = element_text(size = 20, face = "bold", hjust=0.5), 
             text = element_text(size = 18)
         )
-    ggsave(paste0("Plots/piecharts/pie_", name, ".png"), width=8.5, height=6, dpi=80)
+    ggsave(paste0("Plots/piecharts/pie_", name, ".png"), width=8.5, height=6, dpi=80, create.dir = TRUE)
     
 }
 
@@ -47,7 +47,7 @@ draw_barplot <- function(df, feature, name){
             axis.title = element_text(size = 18),               
             axis.text = element_text(size = 18)    
         )
-    ggsave(paste0("Plots/histograms_and_barplots/bar_", name, ".png"), width=8.5, height=6, dpi=80)
+    ggsave(paste0("Plots/histograms_and_barplots/bar_", name, ".png"), width=8.5, height=6, dpi=80, create.dir = TRUE)
 }
 
 
@@ -66,7 +66,7 @@ draw_historgram <- function(df, feature, name){
             axis.title = element_text(size = 18),               
             axis.text = element_text(size = 16)    
         )
-    ggsave(paste0("Plots/histograms_and_barplots/hist_", name, ".png"), width=8.6, height=6, dpi=80)
+    ggsave(paste0("Plots/histograms_and_barplots/hist_", name, ".png"), width=8.6, height=6, dpi=80, create.dir = TRUE)
 }
 
 draw_boxplot <- function(df, feature, name){
@@ -82,7 +82,7 @@ draw_boxplot <- function(df, feature, name){
             axis.title = element_text(size = 18),               
             axis.text = element_text(size = 18)    
             )
-    ggsave(paste0("Plots/boxplots/box_", name, ".png"), width=8.5, height=6, dpi=80)
+    ggsave(paste0("Plots/boxplots/box_", name, ".png"), width=8.5, height=6, dpi=80, create.dir = TRUE)
 }
 
 draw_end_dataset_plots <- function(df){

@@ -82,7 +82,7 @@ draw_confusion_matrix <- function(TP, FN, TN, FP, name, decimal_digits = 2){
         row == 4 & col == 3 ~ paste0("", FN),
         row == 4 & col == 4 ~ paste0("", TN),
         
-        row == 5 & col == 3 ~ paste0("**Precisionl** <br>", precision * 100, "%"),
+        row == 5 & col == 3 ~ paste0("**Precision** <br>", precision * 100, "%"),
         row == 5 & col == 4 ~ paste0("**Negative Predictive<br>Value**<br>", negative_pred_val * 100, "%"),
         row == 3 & col == 5 ~ paste0("**Sensitivity** <br>", sensitivity * 100, "%"),
         row == 4 & col == 5 ~ paste0("**Specificity** <br>", specificity * 100, "%"),

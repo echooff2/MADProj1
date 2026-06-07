@@ -32,7 +32,7 @@ draw_k_accuracy_plot <- function(df, best_k) {
     
     print(p)
     ggsave("Plots/other/k_accuracy.png", plot = p,
-           width = 8, height = 6, dpi = 80)
+           width = 8, height = 6, dpi = 80, create.dir = TRUE)
 }
 
 
@@ -193,7 +193,7 @@ do_knn <- function(draw_plots = F) {
     if (draw_plots) {
         draw_confusion_matrix(TP, FN, TN, FP, conf_mat_name)
         draw_roc_plot(test_labels, predicted_probabilities, roc_plot_name)
-        #draw_k_accuracy_plot(knn_cv$results, best_k)
+        draw_k_accuracy_plot(knn_cv$results, best_k)
     }
     
     #test na lable z danymi

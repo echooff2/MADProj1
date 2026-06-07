@@ -55,7 +55,8 @@ draw_tree_cv_plot <- function(tree_res.cv, tree_res) {
         plot = p,
         width = 8.5,
         height = 6,
-        dpi = 80
+        dpi = 80,
+        create.dir = TRUE
     )
 }
 
@@ -82,7 +83,7 @@ do_classification_tree <- function(draw_plots = F) {
     tree(df)
     
     split <- sample(seq_len(nrow(df)), round(0.7 * nrow(df)))
-    train <- df[split, ]
+    train_data <- df[split, ]
     test <- df[-split, ]
     ########## uruchomic przed całym skryptem ##############
     
@@ -93,10 +94,10 @@ do_classification_tree <- function(draw_plots = F) {
         test <- synth_data$syn
     }
     
-    summary(train)
-    tree_res <- tree(blueWins ~ ., train)
+    summary(train_data)
+    tree_res <- tree(blueWins ~ ., data = train_data, model = TRUE)
     
-    tree_res2 <- tree(blueWins ~ ., train)
+    tree_res2 <- tree(blueWins ~ ., data = train_data, model = TRUE)
     tree_res.cv <- cv.tree(tree_res2, FUN = prune.tree)
     
     for (i in 2:5) {

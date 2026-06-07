@@ -125,5 +125,5 @@ do_preliminary_analisys <- function(to_draw_graphs = c(F, F, F), to_scale = T,
 
 if (sys.nframe() == 0L) {
   # histograms, corr_matrixes
-  do_preliminary_analisys(c(F, T, T))
+  do_preliminary_analisys(c(T, T, T))
 }
