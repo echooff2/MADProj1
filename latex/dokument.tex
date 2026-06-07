@@ -1121,6 +1121,27 @@ W celu sprawdzenia działania modeli na nowych obserwacjach wygenerowano syntety
 
 \section{Podsumowanie}
 
+Celem analizy było:
+\begin{enumerate}
+\item zweryfikowanie skuteczności metod klasyfikacji poprzez porównanie predykcji modeli z rzeczywistymi wynikami meczów na bazie danych z pierwszych 10 minut rozgrywki,
+\item weryfikacja charakterystyk drużyn wygranych i przegranych oraz określenie, które zmienne mają największy wpływ na końcowy rezultat meczu.
+\end{enumerate}
+
+Uprzednio przedstawione wyniki skuteczności zastosowanych metod wskazują, że udało nam się osiągnąć dokładność na poziomach odpowiednio: sieć neuronowa MLP = 73,31\%, drzewo klasyfikacyjne = 72,69\%, KNN = 71,59\%, model hybrydowy oparty na średniej arytmetycznej = 72,96\% oraz model hybrydowy oparty na sieci neuronowej = 71,67\%. Najlepszy wynik uzyskała sieć neuronowa, osiągając dodatkowo wartość AUC równą 0,811. Stanowi to dobry rezultat, potwierdzający, że dane z wczesnej fazy meczu zawierają istotną informację predykcyjną.
+
+Również w odniesieniu do innych prac na tym samym zbiorze danych, jak \textit{LoL: How to Win} \cite{wang_lol_win}, osiągnęliśmy porównywalnie dobry wynik, co autorzy korzystający z innych metod klasyfikacji. Dodatkowo nasza najskuteczniejsza metoda przewyższa wyniki uzyskane w analizie skupień na tym samym zbiorze danych, gdzie celność k-means wyniosła 72,46\%, a model mieszanin Gaussa estymowany algorytmem EM --- 70,88\%. Potwierdza to, że zastosowanie dedykowanych klasyfikatorów pozwala na skuteczniejsze przewidywanie wyniku meczu niż metody nienadzorowane.
+
+Wyniki przedstawione w formie tabelarycznej i graficznej, w tym macierz korelacji uwzględniająca zmienną \textit{blueWins}, potwierdzają, że zwycięstwo jest skorelowane znacząco z:
+\begin{itemize}
+\item dużą ilością zabójstw i asyst drużyny niebieskiej, wyrażoną zagregowaną cechą \textit{blueKA},
+\item małą ilością zabójstw i asyst drużyny przeciwnej, wyrażoną cechą \textit{redKA},
+\item przewagą ekonomiczną i doświadczeniową, odzwierciedloną w zmiennej \textit{diff\_PCA\_Component\_1},
+\item kontrolą neutralnych obiektów mapy, takich jak smoki i heroldy,
+\item wyższą efektywnością farmienia, mierzoną m.in. liczbą zabitych minionów z dżungli oraz wartością \textit{CSPerMin}.
+\end{itemize}
+
+Nasza analiza klasyfikacyjna potwierdza ogólnie przyjęte założenie, że do wygranej potrzeba dużo zabójstw, mało śmierci i dużo asyst, co dodatkowo uzupełnia analizy dokonane w innych publikacjach co do głównych determinant wygranej bądź porażki na podstawie danych z początku rozgrywki \cite{gasmi_lol_first10, wang_lol_win, arancio_decisions_10min}. Dodatkowo pokazuje, że metody klasyfikacji zapewniają zadowalające odzwierciedlenie faktycznego rezultatu meczu. Stabilność uzyskanych wyników potwierdza również test na danych syntetycznych, gdzie sieć neuronowa osiągnęła dokładność 72,82\%, co jest wartością zbliżoną do wyniku uzyskanego na zbiorze testowym.
+
 \section*{Załączniki}
 Poniżej znajduje się lista załączonych plików do projektu wraz z ich opisami:
 \begin{itemize}
