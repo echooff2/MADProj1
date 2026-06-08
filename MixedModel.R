@@ -1,87 +1,184 @@
-if (!exists("do_tensor_flow_neuralNet")) {
-  source("tensorflow.R")
-}
-if (!exists("do_classification_tree")) {
-  source("ClassificationTree.R")
-}
-if (!exists("do_knn")) {
-  source("KNN.R")
+flatten_class_column <- function(x) {
+  if (is.data.frame(x)) {
+    as.numeric(x[[1]])
+  } else {
+    as.numeric(x)
+  }
 }
 
 
+run_mixed_avg_once <- function(seed, use_synth_data = FALSE) {
+  if (!exists("do_tensor_flow_neuralNet")) {
+    source("tensorflow.R")
+  }
+  if (!exists("do_classification_tree")) {
+    source("ClassificationTree.R")
+  }
+  if (!exists("do_knn")) {
+    source("KNN.R")
+  }
 
-Tensor_prob <- do_tensor_flow_neuralNet()
-Classification_tree_prob <- do_classification_tree() #trzeba odpalić Train<-df[-split, ] w tamtym pliku, nwm dlaczego 
-Tensor_prob <- as.data.frame(Tensor_prob)           #od 77 lini do 84
-Classification_tree_prob <- as.data.frame(Classification_tree_prob)
-KNN_prob<-do_knn()
-KNN_prob<-as.data.frame(KNN_prob)      
+  if (!exists("do_preliminary_analisys")) {
+    source("PreliminaryAnalisys.R")
+  }
+  set.seed(seed)
+  df <- do_preliminary_analisys()
+  split <- sample(seq_len(nrow(df)), round(0.7 * nrow(df)))
 
-if (!exists("do_preliminary_analisys")) {
-  source("PreliminaryAnalisys.R")
+  Tensor_prob <- do_tensor_flow_neuralNet(seed = seed, split = split)
+  Classification_tree_prob <- do_classification_tree(seed = seed, split = split)
+  Tensor_prob <- as.data.frame(Tensor_prob)
+  Classification_tree_prob <- as.data.frame(Classification_tree_prob)
+  KNN_prob <- do_knn(seed = seed, split = split)
+  KNN_prob <- as.data.frame(KNN_prob)
+
+  library(dplyr)
+  Output <- cbind(Tensor_prob, KNN_prob)
+  Output <- cbind(Output, Classification_tree_prob)
+  Output_class <- flatten_class_column(Output$test_class_knn)
+  Output <- Output |> select(!c("test_class_nn", "test_class_tree", "test_class_knn"))
+  names(Output) <- c("probability_vector", "predicted_probabilities", "predict_probs")
+
+  Output$Sum <- Output$probability_vector + Output$predicted_probabilities + Output$probability_vector
+  Output$Sum <- Output$Sum / 3
+
+  if (use_synth_data) {
+    Output_for_synth <- cbind(Output |> select(!c("Sum")), test_class_knn = Output_class)
+
+    library(synthpop)
+    synth_data <- syn(Output_for_synth, method = "cart", cart.minbucket = 10, seed = 67)
+    test <- synth_data$syn
+    names(test) <- c("probability_vector", "predicted_probabilities", "predict_probs", "test_class_knn")
+    synthetic_class <- flatten_class_column(test$test_class_knn)
+    test <- test |> select(!c("test_class_knn"))
+    test$Sum <- test$probability_vector + test$predicted_probabilities + test$probability_vector
+    test$Sum <- test$Sum / 3
+
+    pred_class <- ifelse(test$Sum >= 0.5, 1, 0)
+    actual_class <- synthetic_class
+    probabilities <- test$Sum
+  } else {
+    pred_class <- ifelse(Output$Sum >= 0.5, 1, 0)
+    actual_class <- Output_class
+    probabilities <- Output$Sum
+  }
+
+  cm <- table(
+    Predicted = factor(pred_class, levels = c(0, 1)),
+    Actual = factor(actual_class, levels = c(0, 1))
+  )
+
+  TP <- ifelse(is.na(cm["1", "1"]), 0, as.numeric(cm["1", "1"]))
+  TN <- ifelse(is.na(cm["0", "0"]), 0, as.numeric(cm["0", "0"]))
+  FP <- ifelse(is.na(cm["1", "0"]), 0, as.numeric(cm["1", "0"]))
+  FN <- ifelse(is.na(cm["0", "1"]), 0, as.numeric(cm["0", "1"]))
+  accuracy <- (TP + TN) / (TP + TN + FP + FN)
+
+  list(
+    TP = TP,
+    TN = TN,
+    FP = FP,
+    FN = FN,
+    accuracy = accuracy,
+    test_class = actual_class,
+    probabilities = probabilities
+  )
 }
 
-library(dplyr)
-Output <- cbind(Tensor_prob,KNN_prob)
-Output <- cbind(Output,Classification_tree_prob)
-Output_class<- Output |> select('test_class_knn')
-Output <- Output |> select(!c('test_class_nn'))
-Output <- Output |> select(!c('test_class_tree'))
-Output <- Output |> select(!c('test_class_knn'))
 
-Output$Sum<-Output$probability_vector+Output$predicted_probabilities+Output$probability_vector
+do_mixed_model_avg <- function(draw_plots = TRUE) {
+  if (!exists("do_preliminary_analisys")) {
+    source("PreliminaryAnalisys.R")
+  }
+  if (!exists("draw_confusion_matrix")) {
+    source("TableWisualization.R")
+  }
+  if (!exists("draw_averaged_roc_plot")) {
+    source("ROC.R")
+  }
 
+  n_runs <- if (draw_plots) 5 else 1
+  seeds <- if (draw_plots) c(23, 67, 69, 123, 98) else 23
 
-# MACIERZ POMYLEK
-Output$Sum <-Output$Sum/3
-pred_class <- ifelse(Output$Sum >=0.5, 1, 0)    #<-śr ważona
-cm <- table(
-  Predicted = pred_class,
-  Actual = Output_class$test_class_knn) #<-śr ważona
-TN <- cm["0","0"]
-FN <- cm["0","1"]
-FP <- cm["1","0"]
-TP <- cm["1","1"]
-if (!exists("draw_confusion_matrix")) {
-  source("TableWisualization.R")
+  real_runs <- lapply(seeds, function(seed) {
+    run_mixed_avg_once(seed, use_synth_data = FALSE)
+  })
+
+  if (draw_plots) {
+    TP <- mean(vapply(real_runs, `[[`, numeric(1), "TP"))
+    TN <- mean(vapply(real_runs, `[[`, numeric(1), "TN"))
+    FP <- mean(vapply(real_runs, `[[`, numeric(1), "FP"))
+    FN <- mean(vapply(real_runs, `[[`, numeric(1), "FN"))
+    accuracy <- mean(vapply(real_runs, `[[`, numeric(1), "accuracy"))
+
+    cat("Wyniki uśrednione z", n_runs, "uruchomień modelu hybrydowego śr. (dane rzeczywiste)\n")
+    cat("TP =", round(TP, 2), "\n")
+    cat("TN =", round(TN, 2), "\n")
+    cat("FP =", round(FP, 2), "\n")
+    cat("FN =", round(FN, 2), "\n")
+    cat("Accuracy =", round(accuracy, 4), "\n")
+
+    draw_confusion_matrix(
+      round(TP), round(FN), round(TN), round(FP),
+      "Mixed_AVG_real_data", decimal_digits = 4
+    )
+
+    roc_runs <- lapply(real_runs, function(run) {
+      list(
+        real_classes = run$test_class,
+        probabilities = run$probabilities
+      )
+    })
+    draw_averaged_roc_plot(roc_runs, "Model hybrydowy śr. (R)")
+
+    synth_runs <- lapply(seeds, function(seed) {
+      run_mixed_avg_once(seed, use_synth_data = TRUE)
+    })
+
+    TP_synth <- mean(vapply(synth_runs, `[[`, numeric(1), "TP"))
+    TN_synth <- mean(vapply(synth_runs, `[[`, numeric(1), "TN"))
+    FP_synth <- mean(vapply(synth_runs, `[[`, numeric(1), "FP"))
+    FN_synth <- mean(vapply(synth_runs, `[[`, numeric(1), "FN"))
+    accuracy_synth <- mean(vapply(synth_runs, `[[`, numeric(1), "accuracy"))
+
+    cat("Wyniki uśrednione z", n_runs, "uruchomień modelu hybrydowego śr. (dane syntetyczne)\n")
+    cat("TP =", round(TP_synth, 2), "\n")
+    cat("TN =", round(TN_synth, 2), "\n")
+    cat("FP =", round(FP_synth, 2), "\n")
+    cat("FN =", round(FN_synth, 2), "\n")
+    cat("Accuracy =", round(accuracy_synth, 4), "\n")
+
+    draw_confusion_matrix(
+      round(TP_synth), round(FN_synth), round(TN_synth), round(FP_synth),
+      "Mixed_AVG_synthetic_data", decimal_digits = 4
+    )
+
+    roc_synth_runs <- lapply(synth_runs, function(run) {
+      list(
+        real_classes = run$test_class,
+        probabilities = run$probabilities
+      )
+    })
+    draw_averaged_roc_plot(roc_synth_runs, "Model hybrydowy śr. (S)")
+  } else {
+    result <- real_runs[[1]]
+    pred_class <- ifelse(result$probabilities >= 0.5, 1, 0)
+    cm <- table(
+      Predicted = pred_class,
+      Actual = result$test_class
+    )
+    print(cm)
+    cat("TP =", result$TP, "\n")
+    cat("TN =", result$TN, "\n")
+    cat("FP =", result$FP, "\n")
+    cat("FN =", result$FN, "\n")
+    cat("Accuracy =", round(result$accuracy, 4), "\n")
+  }
+
+  invisible(real_runs)
 }
-draw_confusion_matrix(TP, FN, TN, FP, "Mixed_AVG_real_data ", decimal_digits = 4)
 
-#ROC
-if (!exists("draw_roc_plot")) {
-  source("ROC.R")
+
+if (sys.nframe() == 0L) {
+  do_mixed_model_avg(draw_plots = TRUE)
 }
-draw_roc_plot(Output_class$test_class_knn, Output$Sum, "Model hybrydowy śr. (R)") #<-śr.waż
-
-
-### wykonaj poniższe by zrobić mix sr.ważonej na syntetycznych danych
-Output <- Output |> select(!c('Sum'))
-Output<-cbind(Output,Output_class)
-library(synthpop)
-synth_data <- syn(Output, method = "cart", cart.minbucket = 10, seed = 67)
-test <- synth_data$syn
-synthetic_class <- test |> select('test_class_knn')
-test <- test |> select(!c('test_class_knn'))
-test$Sum<-test$probability_vector+test$predicted_probabilities+test$probability_vector
-
-test$Sum <-test$Sum/3
-pred_class <- ifelse(test$Sum >=0.5, 1, 0)    #<-śr ważona
-cm <- table(
-  Predicted = pred_class,
-  Actual = synthetic_class$test_class_knn) #<-śr ważona
-TN <- cm["0","0"]
-FN <- cm["0","1"]
-FP <- cm["1","0"]
-TP <- cm["1","1"]
-if (!exists("draw_confusion_matrix")) {
-  source("TableWisualization.R")
-}
-draw_confusion_matrix(TP, FN, TN, FP, "Mixed_AVG_synthetic_data ", decimal_digits = 4)
-
-#ROC
-if (!exists("draw_roc_plot")) {
-  source("ROC.R")
-}
-draw_roc_plot(synthetic_class$test_class_knn, test$Sum, "Model hybrydowy śr. (S)") #<-śr.waż
-
-

@@ -60,8 +60,8 @@ draw_tree_cv_plot <- function(tree_res.cv, tree_res) {
     )
 }
 
-do_classification_tree <- function(draw_plots = F) {
-    set.seed(23)
+do_classification_tree <- function(draw_plots = F, seed = 23, split = NULL) {
+    set.seed(seed)
     
     if (!exists("do_preliminary_analisys")) {
       source("PreliminaryAnalisys.R")
@@ -82,7 +82,9 @@ do_classification_tree <- function(draw_plots = F) {
     library(tree)
     tree(df)
     
-    split <- sample(seq_len(nrow(df)), round(0.7 * nrow(df)))
+    if (is.null(split)) {
+      split <- sample(seq_len(nrow(df)), round(0.7 * nrow(df)))
+    }
     train_data <- df[split, ]
     test <- df[-split, ]
     ########## uruchomic przed całym skryptem ##############
@@ -120,7 +122,9 @@ do_classification_tree <- function(draw_plots = F) {
     library(caret)
     confusionMatrix(predict_test, test$blueWins)
     
-    small_tree <- prune.tree(tree_res2, best = 2)
+    best_size <- tree_res.cv$size[which.min(tree_res.cv$dev)]
+    small_tree <- prune.tree(tree_res2, best = best_size)
+    cat(paste0("Wybrany rozmiar drzewa (min. CV deviance): ", best_size, " liści\n"))
     if (draw_plots) {
         draw_tree_plot(small_tree, "Przycięte drzewo klasyfikacyjne", "trimmed_classification_tree")
     }

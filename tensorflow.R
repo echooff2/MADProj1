@@ -6,26 +6,27 @@ library(tensorflow)
 
 #ostatnia komenda wywołująca funkcję tym pliku jest zakomendowana atm. 
 
-#kompiluje, trenuje i zwraca wektor probabilistyczny ze testowego datasetu.
-do_tensor_flow_neuralNet<-function(draw_plots = F, use_synth_data=F, seed=23){
+run_tf_once <- function(seed, use_synth_data = FALSE, split = NULL) {
   if (!exists("do_preliminary_analisys")) {
     source("PreliminaryAnalisys.R")
   }
   set.seed(seed)
-  library(keras3)    
+  library(keras3)
   library(tensorflow)
-  
+
   df <- do_preliminary_analisys()
   blueWins <- df |> select('blueWins')
   df <- df |> select(!c('blueWins'))
   df <- as.matrix(df)
-  
-  split <- sample(seq_len(nrow(df)), round(0.7 * nrow(df)))
+
+  if (is.null(split)) {
+    split <- sample(seq_len(nrow(df)), round(0.7 * nrow(df)))
+  }
   train_df_data <- df[split, ]
   train_df_class <- blueWins[split, ]
   test_df_data <- df[-split, ]
-  test_df_class<- blueWins[-split, ]
-  
+  test_df_class <- blueWins[-split, ]
+
   model <- keras_model_sequential() %>%                       #16 dla prelim, 38 dla raw
     layer_dense(units = 128, activation = 'elu', input_shape = c(16)) %>%
     layer_dropout(rate = 0.5) %>%
@@ -37,109 +38,116 @@ do_tensor_flow_neuralNet<-function(draw_plots = F, use_synth_data=F, seed=23){
       optimizer = 'rmsprop',
       metrics = c('BinaryAccuracy')
     )
-  
-  model %>% fit(train_df_data, train_df_class, epochs=100, batch_size=100,shuffle = TRUE,validation_split = 0.20)
-  if(use_synth_data){
+
+  model %>% fit(train_df_data, train_df_class, epochs = 100, batch_size = 100,
+                shuffle = TRUE, validation_split = 0.20)
+
+  if (use_synth_data) {
     df <- do_preliminary_analisys()
     library(synthpop)
     synth_data <- syn(df, method = "cart", cart.minbucket = 10, seed = 67)
     test <- synth_data$syn
-    
+
     test_df_class <- test |> select('blueWins')
     test <- test |> select(!c('blueWins'))
     test <- as.matrix(test)
     probability_vector_test <- predict_on_batch(model, test)
-    probability_vector_test <- as.data.frame(probability_vector_test)
-    probability_vector_test <-probability_vector_test$V1
+    probability_vector_test <- as.data.frame(probability_vector_test)$V1
+  } else {
+    probability_vector_test <- predict_on_batch(model, test_df_data)
+    test_df_class <- as.data.frame(test_df_class)
+    if (!"blueWins" %in% names(test_df_class)) {
+      names(test_df_class) <- "blueWins"
+    }
+    probability_vector_test <- as.numeric(probability_vector_test)
   }
-  else
-  {
-  probability_vector_test <- predict_on_batch(model, test_df_data)
-  test_df_class <- as.data.frame(test_df_class)
-  test_df_class <- test_df_class %>% rename_at('test_df_class', ~'blueWins')
-  }
-  summary(model)
+
+  pred_class <- ifelse(probability_vector_test > 0.5, 1, 0)
+  cm <- table(
+    Predicted = factor(pred_class, levels = c(0, 1)),
+    Actual = factor(test_df_class$blueWins, levels = c(0, 1))
+  )
+
+  TP <- ifelse(is.na(cm["1", "1"]), 0, as.numeric(cm["1", "1"]))
+  TN <- ifelse(is.na(cm["0", "0"]), 0, as.numeric(cm["0", "0"]))
+  FP <- ifelse(is.na(cm["1", "0"]), 0, as.numeric(cm["1", "0"]))
+  FN <- ifelse(is.na(cm["0", "1"]), 0, as.numeric(cm["0", "1"]))
+  accuracy <- (TP + TN) / (TP + TN + FP + FN)
+
+  list(
+    model = model,
+    probability_vector_test = probability_vector_test,
+    test_df_class = test_df_class,
+    TP = TP,
+    TN = TN,
+    FP = FP,
+    FN = FN,
+    accuracy = accuracy
+  )
+}
+
+#kompiluje, trenuje i zwraca wektor probabilistyczny ze testowego datasetu.
+do_tensor_flow_neuralNet <- function(draw_plots = F, use_synth_data = F, seed = 23, split = NULL) {
+  n_runs <- if (draw_plots) 5 else 1
+  seeds <- if (draw_plots) c(23, 67, 69, 123, 98) else seed
+
+  runs <- lapply(seeds, function(s) {
+    run_tf_once(s, use_synth_data, split = if (n_runs == 1) split else NULL)
+  })
+
+  result <- runs[[1]]
+  summary(result$model)
+
   if (draw_plots) {
-    # MACIERZ POMYLEK
-    pred_class <- ifelse(probability_vector_test > 0.5, 1, 0)
-    cm <- table(
-      Predicted = pred_class,
-      Actual = test_df_class$blueWins
-    )
-    TN <- cm["0","0"]
-    FN <- cm["0","1"]
-    FP <- cm["1","0"]
-    TP <- cm["1","1"]
+    TP <- mean(vapply(runs, `[[`, numeric(1), "TP"))
+    TN <- mean(vapply(runs, `[[`, numeric(1), "TN"))
+    FP <- mean(vapply(runs, `[[`, numeric(1), "FP"))
+    FN <- mean(vapply(runs, `[[`, numeric(1), "FN"))
+    accuracy <- mean(vapply(runs, `[[`, numeric(1), "accuracy"))
+
+    cat("Wyniki uśrednione z", n_runs, "uruchomień MLP\n")
+    cat("TP =", round(TP, 2), "\n")
+    cat("TN =", round(TN, 2), "\n")
+    cat("FP =", round(FP, 2), "\n")
+    cat("FN =", round(FN, 2), "\n")
+    cat("Accuracy =", round(accuracy, 4), "\n")
+
     if (!exists("draw_confusion_matrix")) {
       source("TableWisualization.R")
     }
-    if(use_synth_data){
-    draw_confusion_matrix(TP, FN, TN, FP, "neural_network_synthetic_data", decimal_digits = 4)
     if (!exists("draw_roc_plot")) {
       source("ROC.R")
     }
-      draw_roc_plot(test_df_class$blueWins, probability_vector_test, "Sieć MLP (S)")  
+
+    if (use_synth_data) {
+      draw_confusion_matrix(
+        round(TP), round(FN), round(TN), round(FP),
+        "neural_network_synthetic_data", decimal_digits = 4
+      )
+      roc_plot_name <- "Sieć MLP (S)"
+    } else {
+      draw_confusion_matrix(
+        round(TP), round(FN), round(TN), round(FP),
+        "neural_network_real_data", decimal_digits = 4
+      )
+      roc_plot_name <- "Sieć MLP (R)"
     }
-    else{
-    draw_confusion_matrix(TP, FN, TN, FP, "neural_network_real_data", decimal_digits = 4)
-    if (!exists("draw_roc_plot")) {
-      source("ROC.R")
-    }
-    draw_roc_plot(test_df_class$blueWins, probability_vector_test, "Sieć MLP (R)") 
-    }
-    }
-  
-  #proszę nie pytać dlaczego tak jest, info o nazwach kolumn trzeba jakoś usunąć
-  if(use_synth_data){
-  output<-as.data.frame(probability_vector_test)
-  output$V1 <-probability_vector_test
-  output <- output %>% rename_at('probability_vector_test', ~'probability_vector')
-  output$test_class_nn<-test_df_class
+
+    roc_runs <- lapply(runs, function(run) {
+      list(
+        real_classes = run$test_df_class$blueWins,
+        probabilities = run$probability_vector_test
+      )
+    })
+    draw_averaged_roc_plot(roc_runs, roc_plot_name)
   }
-  else{
-  output<-as.data.frame(probability_vector_test)
-  output <- output %>% rename_at('V1', ~'probability_vector')
-  output$test_class_nn<-test_df_class
-  }
-  
+
+  output <- data.frame(probability_vector = result$probability_vector_test)
+  output$test_class_nn <- result$test_df_class
+
   return(output)
 }
-
-do_tf_valcycle<-function(synthetic=F,seed){
-  if(synthetic)
-  {prob_vector_test_1 <- do_tensor_flow_neuralNet(F,T,seed)} #<-Syntetyczne
-  else
-  {prob_vector_test_1 <- do_tensor_flow_neuralNet(F,F,seed)} #<-realne
-  prob_vector_test_1$probability_vector <- ifelse(prob_vector_test_1$probability_vector >=0.5, 1, 0)
-  prob_vector_test_1$accuracy <- ifelse(prob_vector_test_1$probability_vector ==prob_vector_test_1$test_class_nn, 1, 0)
-  acc_1 <-sum(prob_vector_test_1$accuracy)/length(prob_vector_test_1$accuracy)  
- }
-
-##dane realne, + walidacja, okropne wiem
-acc_1<-do_tf_valcycle(F,23)
-acc_2<-do_tf_valcycle(F,67)
-acc_3<-do_tf_valcycle(F,69)
-acc_4<-do_tf_valcycle(F,123)
-acc_5<-do_tf_valcycle(F,98)
-total_acc<-(acc_1+acc_2+acc_3+acc_4+acc_5)/5
-print(total_acc) #<- to po cv-kfolds 
-
-
-##dane syntetyczne
-acc_1<-do_tf_valcycle(T,23)
-acc_2<-do_tf_valcycle(T,67)
-acc_3<-do_tf_valcycle(T,69)
-acc_4<-do_tf_valcycle(T,123)
-acc_5<-do_tf_valcycle(T,98)
-total_acc<-(acc_1+acc_2+acc_3+acc_4+acc_5)/5
-print(total_acc) #<- to po cv-kfolds 
-
-prob_vector_test <- do_tensor_flow_neuralNet(T,T,F) #<-syntetyczne
-#mean(score)
-#summary(score)
-
 
 if (sys.nframe() == 0L) {
   do_tensor_flow_neuralNet(draw_plots = T)
 }
-

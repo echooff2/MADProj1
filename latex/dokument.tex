@@ -1090,11 +1090,11 @@ Wartość AUC przyjmuje wartości z przedziału $[0,1]$, gdzie wartość 1 oznac
 	\toprule
 	\textbf{Model} & \textbf{Accuracy} &  \textbf{AUC}  \\
 	\midrule
-	Sieci Neuronowe & 73,31\% & 0,811 \\ 
+	Sieci Neuronowe & 72,87\% & 0,806 \\ 
 	Drzewo Klasyfikacyjne &  72,69\% & 0,782 \\
-	KNN  & 71,59\% & 0,793 \\
+	KNN  & 71,54\% & 0,795 \\
 	hybr. - Sieć neuronowa  & 71,67\% & 0,802 \\
-	hybr. Średnia & 72,96\%  & 0,808 \\
+	hybr. Średnia & 72,65\%  & 0,805 \\
 	\bottomrule
 \end{tabular}
 \caption{Rezultaty modeli na danych testowych.}
@@ -1112,8 +1112,8 @@ W celu sprawdzenia działania modeli na nowych obserwacjach wygenerowano syntety
 	Sieci Neuronowe & 72,82\% & 0,804 \\ 
 	Drzewo Klasyfikacyjne &  71,49\% & 0,769 \\
 	KNN  & 71,47\% & 0,789 \\
-	hybr. - Sieć neuronowa  & 72,69\% & 0,805 \\
-	hybr. - Średnia & 72,48\%  & 0,800 \\
+	hybr. - Sieć neuronowa  & 72,48\% & 0,801 \\
+	hybr. - Średnia & 72,65\%  & 0,800 \\
 	\bottomrule
 \end{tabular}
 \caption{Rezultaty modeli na danych syntetycznych.}
@@ -1127,7 +1127,10 @@ Celem analizy było:
 \item weryfikacja charakterystyk drużyn wygranych i przegranych oraz określenie, które zmienne mają największy wpływ na końcowy rezultat meczu.
 \end{enumerate}
 
-Uprzednio przedstawione wyniki skuteczności zastosowanych metod wskazują, że udało nam się osiągnąć dokładność na poziomach odpowiednio: sieć neuronowa MLP = 73,31\%, drzewo klasyfikacyjne = 72,69\%, KNN = 71,59\%, model hybrydowy oparty na średniej arytmetycznej = 72,96\% oraz model hybrydowy oparty na sieci neuronowej = 71,67\%. Najlepszy wynik uzyskała sieć neuronowa, osiągając dodatkowo wartość AUC równą 0,811. Stanowi to dobry rezultat, potwierdzający, że dane z wczesnej fazy meczu zawierają istotną informację predykcyjną.
+Uprzednio przedstawione wyniki skuteczności zastosowanych metod wskazują, że udało nam się osiągnąć dokładność na poziomach odpowiednio: 
+sieć neuronowa MLP = 72,82\%, drzewo klasyfikacyjne = 72,69\%, KNN = 71,49\%, model hybrydowy oparty na średniej arytmetycznej = 72,48\%
+oraz model hybrydowy oparty na sieci neuronowej = 72,65\%. Najlepszy wynik uzyskała sieć neuronowa, osiągając dodatkowo wartość AUC równą 0,804.
+Stanowi to dobry rezultat, potwierdzający, że dane z wczesnej fazy meczu zawierają istotną informację predykcyjną.
 
 Również w odniesieniu do innych prac na tym samym zbiorze danych, jak \textit{LoL: How to Win} \cite{wang_lol_win}, osiągnęliśmy porównywalnie dobry wynik, co autorzy korzystający z innych metod klasyfikacji. Dodatkowo nasza najskuteczniejsza metoda przewyższa wyniki uzyskane w analizie skupień na tym samym zbiorze danych, gdzie celność k-means wyniosła 72,46\%, a model mieszanin Gaussa estymowany algorytmem EM --- 70,88\%. Potwierdza to, że zastosowanie dedykowanych klasyfikatorów pozwala na skuteczniejsze przewidywanie wyniku meczu niż metody nienadzorowane.
 
