@@ -11,7 +11,7 @@ do_tensor_flow_neuralNet<-function(draw_plots = F, use_synth_data=F, random_seed
   if (!exists("do_preliminary_analisys")) {
     source("PreliminaryAnalisys.R")
   }
-  if(random_seed){
+  if(!random_seed){
   set.seed(23)}
   library(keras3)    
   library(tensorflow)
