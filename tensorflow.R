@@ -7,11 +7,12 @@ library(tensorflow)
 #ostatnia komenda wywołująca funkcję tym pliku jest zakomendowana atm. 
 
 #kompiluje, trenuje i zwraca wektor probabilistyczny ze testowego datasetu.
-do_tensor_flow_neuralNet<-function(draw_plots = F, use_synth_data=F){
+do_tensor_flow_neuralNet<-function(draw_plots = F, use_synth_data=F, random_seed=F){
   if (!exists("do_preliminary_analisys")) {
     source("PreliminaryAnalisys.R")
   }
-  set.seed(23) 
+  if(random_seed){
+  set.seed(23)}
   library(keras3)    
   library(tensorflow)
   
@@ -105,9 +106,36 @@ do_tensor_flow_neuralNet<-function(draw_plots = F, use_synth_data=F){
   return(output)
 }
 
+do_tf_valcycle<-function(synthetic=F){
+  if(synthetic)
+  {prob_vector_test_1 <- do_tensor_flow_neuralNet(F,T,T)} #<-Syntetyczne
+  else
+  {prob_vector_test_1 <- do_tensor_flow_neuralNet(F,F,T)} #<-realne
+  prob_vector_test_1$probability_vector <- ifelse(prob_vector_test_1$probability_vector >=0.5, 1, 0)
+  prob_vector_test_1$accuracy <- ifelse(prob_vector_test_1$probability_vector ==prob_vector_test_1$test_class_nn, 1, 0)
+  acc_1 <-sum(prob_vector_test_1$accuracy)/length(prob_vector_test_1$accuracy)  
+ }
 
-prob_vector_test <- do_tensor_flow_neuralNet(T,F) #<-realne
-prob_vector_test <- do_tensor_flow_neuralNet(T,T) #<-syntetyczne
+##dane realne, + walidacja, okropne wiem
+acc_1<-do_tf_valcycle(F)
+acc_2<-do_tf_valcycle(F)
+acc_3<-do_tf_valcycle(F)
+acc_4<-do_tf_valcycle(F)
+acc_5<-do_tf_valcycle(F)
+total_acc<-(acc_1+acc_2+acc_3+acc_4+acc_5)/5
+print(total_acc) #<- to po cv-kfolds 
+
+
+##dane syntetyczne
+acc_1<-do_tf_valcycle(T)
+acc_2<-do_tf_valcycle(T)
+acc_3<-do_tf_valcycle(T)
+acc_4<-do_tf_valcycle(T)
+acc_5<-do_tf_valcycle(T)
+total_acc<-(acc_1+acc_2+acc_3+acc_4+acc_5)/5
+print(total_acc) #<- to po cv-kfolds 
+
+prob_vector_test <- do_tensor_flow_neuralNet(T,T,F) #<-syntetyczne
 #mean(score)
 #summary(score)
 
