@@ -7,12 +7,11 @@ library(tensorflow)
 #ostatnia komenda wywołująca funkcję tym pliku jest zakomendowana atm. 
 
 #kompiluje, trenuje i zwraca wektor probabilistyczny ze testowego datasetu.
-do_tensor_flow_neuralNet<-function(draw_plots = F, use_synth_data=F, random_seed=F){
+do_tensor_flow_neuralNet<-function(draw_plots = F, use_synth_data=F, seed=23){
   if (!exists("do_preliminary_analisys")) {
     source("PreliminaryAnalisys.R")
   }
-  if(!random_seed){
-  set.seed(23)}
+  set.seed(seed)
   library(keras3)    
   library(tensorflow)
   
@@ -106,32 +105,32 @@ do_tensor_flow_neuralNet<-function(draw_plots = F, use_synth_data=F, random_seed
   return(output)
 }
 
-do_tf_valcycle<-function(synthetic=F){
+do_tf_valcycle<-function(synthetic=F,seed){
   if(synthetic)
-  {prob_vector_test_1 <- do_tensor_flow_neuralNet(F,T,T)} #<-Syntetyczne
+  {prob_vector_test_1 <- do_tensor_flow_neuralNet(F,T,seed)} #<-Syntetyczne
   else
-  {prob_vector_test_1 <- do_tensor_flow_neuralNet(F,F,T)} #<-realne
+  {prob_vector_test_1 <- do_tensor_flow_neuralNet(F,F,seed)} #<-realne
   prob_vector_test_1$probability_vector <- ifelse(prob_vector_test_1$probability_vector >=0.5, 1, 0)
   prob_vector_test_1$accuracy <- ifelse(prob_vector_test_1$probability_vector ==prob_vector_test_1$test_class_nn, 1, 0)
   acc_1 <-sum(prob_vector_test_1$accuracy)/length(prob_vector_test_1$accuracy)  
  }
 
 ##dane realne, + walidacja, okropne wiem
-acc_1<-do_tf_valcycle(F)
-acc_2<-do_tf_valcycle(F)
-acc_3<-do_tf_valcycle(F)
-acc_4<-do_tf_valcycle(F)
-acc_5<-do_tf_valcycle(F)
+acc_1<-do_tf_valcycle(F,23)
+acc_2<-do_tf_valcycle(F,67)
+acc_3<-do_tf_valcycle(F,69)
+acc_4<-do_tf_valcycle(F,123)
+acc_5<-do_tf_valcycle(F,98)
 total_acc<-(acc_1+acc_2+acc_3+acc_4+acc_5)/5
 print(total_acc) #<- to po cv-kfolds 
 
 
 ##dane syntetyczne
-acc_1<-do_tf_valcycle(T)
-acc_2<-do_tf_valcycle(T)
-acc_3<-do_tf_valcycle(T)
-acc_4<-do_tf_valcycle(T)
-acc_5<-do_tf_valcycle(T)
+acc_1<-do_tf_valcycle(T,23)
+acc_2<-do_tf_valcycle(T,67)
+acc_3<-do_tf_valcycle(T,69)
+acc_4<-do_tf_valcycle(T,123)
+acc_5<-do_tf_valcycle(T,98)
 total_acc<-(acc_1+acc_2+acc_3+acc_4+acc_5)/5
 print(total_acc) #<- to po cv-kfolds 
 
