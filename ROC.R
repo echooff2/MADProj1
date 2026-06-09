@@ -93,7 +93,7 @@ draw_averaged_roc_plot <- function(roc_runs, name) {
   ggsave(
     paste0("Plots/roc_curves/roc_", name, ".png"),
     plot = p,
-    width = 8,
+    width = 8.5,
     height = 6,
     dpi = 80,
     create.dir = TRUE

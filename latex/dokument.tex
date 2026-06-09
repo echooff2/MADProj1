@@ -17,6 +17,20 @@
   urlcolor   = black
 }
 
+%% accuracy
+\newcommand{\getAccuracyKnn}{71,54}
+\newcommand{\getAccuracyTree}{72,69}
+\newcommand{\getAccuracyNn}{72,87}
+\newcommand{\getAccuracyMixednn}{72,48}
+\newcommand{\getaccuracyMixedsr}{72,65}
+
+%% AUC
+\newcommand{\getAucKnn}{0,795}
+\newcommand{\getAucTree}{0,782}
+\newcommand{\getAucNn}{0,806}
+\newcommand{\getAucMixedNn}{0,80}
+\newcommand{\getAucMixedSr}{0,805}
+
 %% ============================================================
 %%  TITLE BLOCK INFORMATION
 %% ============================================================
@@ -721,17 +735,41 @@ gdzie:
 Funkcja sigmoidalna przyjmuje postać:
 
 \begin{equation}
-\sigma(z)=\frac{1}{1+e^{-z}}
+    \sigma(x)=\frac{1}{1+e^{-x}}
 \end{equation}
 
 i zwraca wartość z przedziału $[0,1]$, interpretowaną jako prawdopodobieństwo przynależności do klasy pozytywnej.
 
+Nasza funkcja ostatecznie przyjmuje postać:
+\begin{equation}
+    \large p = P(Y \mid X_1 = x_1, ..., X_{n} = x_{n} ) 
+    = \frac{1}{1+e^{-(\theta_0 + \Sigma_{i=1}^{n} \theta_i x_i)}}
+\end{equation}
+
+Gdzie:
+\begin{itemize}
+    \item $p$ -- predykcja wygranej,
+    \item $n$ -- ilość cech.
+\end{itemize}
+
 Zastosowana architektura składała się z czterech warstw:
 \begin{itemize}
-\item warstwy wejściowej zawierającej 16 cech,
-\item pierwszej warstwy ukrytej zawierającej 128 neuronów z funkcją aktywacji ELU,
-\item drugiej warstwy ukrytej zawierającej 64 neurony z funkcją aktywacji Softplus,
-\item warstwy wyjściowej zawierającej jeden neuron z funkcją sigmoidalną.
+    \item warstwy wejściowej zawierającej 16 cech,
+    \item pierwszej warstwy ukrytej zawierającej 128 neuronów z funkcją aktywacji ELU, \\
+    gdzie funkcja aktywacji ELU to:
+    \begin{equation}
+        f(x) =
+        \begin{cases}
+            e^x - 1 & x \le 0 \\
+            x & x > 0
+        \end{cases}
+    \end{equation}
+    \item drugiej warstwy ukrytej zawierającej 64 neurony z funkcją aktywacji Softplus, \\
+    gdzie funkcja aktywacji Softplus to:
+        \begin{equation}
+            f(x) = \text{ln}(1 + e^x)
+        \end{equation}
+    \item warstwy wyjściowej zawierającej jeden neuron z funkcją sigmoidalną.
 \end{itemize}
 
 W celu ograniczenia zjawiska przeuczenia pomiędzy warstwami zastosowano mechanizm \textit{dropout} z parametrem $p=0.5$, polegający na losowym wyłączaniu części neuronów podczas procesu uczenia.
@@ -1090,11 +1128,11 @@ Wartość AUC przyjmuje wartości z przedziału $[0,1]$, gdzie wartość 1 oznac
 	\toprule
 	\textbf{Model} & \textbf{Accuracy} &  \textbf{AUC}  \\
 	\midrule
-	Sieci Neuronowe & 72,87\% & 0,806 \\ 
-	Drzewo Klasyfikacyjne &  72,69\% & 0,782 \\
-	KNN  & 71,54\% & 0,795 \\
-	hybr. - Sieć neuronowa  & 71,67\% & 0,802 \\
-	hybr. Średnia & 72,65\%  & 0,805 \\
+	Sieci Neuronowe & \getAccuracyNn\% & \getAucNn \\ 
+	Drzewo Klasyfikacyjne & \getAccuracyTree\% & \getAucTree \\
+	KNN  & \getAccuracyKnn\% & \getAucKnn \\
+	hybr. - Sieć neuronowa  & \getAccuracyMixednn\% & \getAccuracyMixednn\\
+    hybr. Średnia & \getaccuracyMixedsr\% & \getAucMixedSr \\
 	\bottomrule
 \end{tabular}
 \caption{Rezultaty modeli na danych testowych.}
@@ -1113,7 +1151,7 @@ W celu sprawdzenia działania modeli na nowych obserwacjach wygenerowano syntety
 	Drzewo Klasyfikacyjne &  71,49\% & 0,769 \\
 	KNN  & 71,47\% & 0,789 \\
 	hybr. - Sieć neuronowa  & 72,48\% & 0,801 \\
-	hybr. - Średnia & 72,65\%  & 0,800 \\
+	hybr. - Średnia & 72,65\% & 0,800 \\
 	\bottomrule
 \end{tabular}
 \caption{Rezultaty modeli na danych syntetycznych.}
@@ -1128,8 +1166,8 @@ Celem analizy było:
 \end{enumerate}
 
 Uprzednio przedstawione wyniki skuteczności zastosowanych metod wskazują, że udało nam się osiągnąć dokładność na poziomach odpowiednio: 
-sieć neuronowa MLP = 72,82\%, drzewo klasyfikacyjne = 72,69\%, KNN = 71,49\%, model hybrydowy oparty na średniej arytmetycznej = 72,48\%
-oraz model hybrydowy oparty na sieci neuronowej = 72,65\%. Najlepszy wynik uzyskała sieć neuronowa, osiągając dodatkowo wartość AUC równą 0,804.
+sieć neuronowa MLP = \getAccuracyNn\%, drzewo klasyfikacyjne = \getAccuracyTree\%, KNN = \getAccuracyKnn\%, model hybrydowy oparty na średniej arytmetycznej = \getaccuracyMixedsr\%
+oraz model hybrydowy oparty na sieci neuronowej = \getAccuracyMixednn\%. Najlepszy wynik uzyskała sieć neuronowa, osiągając dodatkowo wartość AUC równą \getAucNn.
 Stanowi to dobry rezultat, potwierdzający, że dane z wczesnej fazy meczu zawierają istotną informację predykcyjną.
 
 Również w odniesieniu do innych prac na tym samym zbiorze danych, jak \textit{LoL: How to Win} \cite{wang_lol_win}, osiągnęliśmy porównywalnie dobry wynik, co autorzy korzystający z innych metod klasyfikacji. Dodatkowo nasza najskuteczniejsza metoda przewyższa wyniki uzyskane w analizie skupień na tym samym zbiorze danych, gdzie celność k-means wyniosła 72,46\%, a model mieszanin Gaussa estymowany algorytmem EM --- 70,88\%. Potwierdza to, że zastosowanie dedykowanych klasyfikatorów pozwala na skuteczniejsze przewidywanie wyniku meczu niż metody nienadzorowane.
@@ -1205,12 +1243,19 @@ Tomasz Ząbkowski \textit{et al.},
 \textit{Changing Electricity Tariff—An Empirical Analysis Based on Commercial Customers’ Data from Poland},
 Energies, vol. 16, no. 19, 2023, art. 6853.  
 Dostęp: \url{https://doi.org/10.3390/en16196853}
+
+% Źródło danych
+\bibitem{Source Data}
+Yi Lan Ma,
+\textit{League of Legends Diamond Ranked Games (10 min)},
+Kaggle, 2020.
+Dostęp: \url{https://www.kaggle.com/datasets/bobbyscience/league-of-legends-diamond-ranked-games-10-min}
 \end{thebibliography}
 
-\section*{Źródło danych}
-     Yi Lan Ma, \textit{League of Legends Diamond Ranked Games (10 min)}, Kaggle. \\
-    Dostęp online: \url{https://www.kaggle.com/datasets/bobbyscience/league-of-legends-diamond-ranked-games-10-min} \\
-    Data dostępu: 06.06.2026.
+% \section*{Źródło danych}
+%      Yi Lan Ma, \textit{League of Legends Diamond Ranked Games (10 min)}, Kaggle.
+%     Dostęp online: \url{} \\
+%     Data dostępu: 06.06.2026.
 
 
 \end{document}

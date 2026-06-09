@@ -88,7 +88,7 @@ do_classification_tree <- function(draw_plots = F, seed = 23, split = NULL) {
   test <- df[-split, ]
   ########## uruchomic przed całym skryptem ##############
 
-  use_synth_data <- F
+  use_synth_data <- TRUE
   if (use_synth_data) {
     library(synthpop)
     synth_data <- syn(df, method = "cart", cart.minbucket = 10, seed = 67)
@@ -131,6 +131,12 @@ do_classification_tree <- function(draw_plots = F, seed = 23, split = NULL) {
   # 2. Robimy prognozy dla obu modeli na zbiorze testowym
   pred_small <- predict(small_tree, newdata = test, type = "class")
   pred_large <- predict(tree_res2, newdata = test, type = "class")
+
+  if (use_synth_data) {
+    t <- synth_data
+    t$PredictedBlueWins <= pred_small
+    write.csv(t)
+  }
 
   # 3. Liczymy Accuracy dla obu
   acc_small <- mean(pred_small == test$blueWins)
