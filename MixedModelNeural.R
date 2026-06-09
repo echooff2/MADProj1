@@ -168,7 +168,8 @@ do_mixed_model_neural <- function(draw_plots = FALSE) {
 
     draw_confusion_matrix(
       round(TP), round(FN), round(TN), round(FP),
-      "Mixed_NN_real_data", decimal_digits = 4
+      "Mixed_NN_real_data",
+      decimal_digits = 4
     )
 
     roc_runs <- lapply(real_runs, function(run) {
@@ -198,7 +199,8 @@ do_mixed_model_neural <- function(draw_plots = FALSE) {
 
     draw_confusion_matrix(
       round(TP_synth), round(FN_synth), round(TN_synth), round(FP_synth),
-      "Mixed_NN_synthetic_data", decimal_digits = 4
+      "Mixed_NN_synthetic_data",
+      decimal_digits = 4
     )
 
     roc_synth_runs <- lapply(synth_runs, function(run) {

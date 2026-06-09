@@ -1,10 +1,10 @@
-                   #keras i tensorflow nie wspierają najnowszych wersji py:
-library(keras3)    #3.11 działa i na tym testuje
+# keras i tensorflow nie wspierają najnowszych wersji py:
+library(keras3) # 3.11 działa i na tym testuje
 library(tensorflow)
-#install_tensorflow()       #<-obie poniższe instrukcje do utworzenia pakietów py
-#keras3::install_keras()    #(może zajęć im trochę czasu, tak kilka minut na jedną, może dosłownie wyglądać jakby padło)
+# install_tensorflow()       #<-obie poniższe instrukcje do utworzenia pakietów py
+# keras3::install_keras()    #(może zajęć im trochę czasu, tak kilka minut na jedną, może dosłownie wyglądać jakby padło)
 
-#ostatnia komenda wywołująca funkcję tym pliku jest zakomendowana atm. 
+# ostatnia komenda wywołująca funkcję tym pliku jest zakomendowana atm.
 
 run_tf_once <- function(seed, use_synth_data = FALSE, split = NULL) {
   if (!exists("do_preliminary_analisys")) {
@@ -15,8 +15,8 @@ run_tf_once <- function(seed, use_synth_data = FALSE, split = NULL) {
   library(tensorflow)
 
   df <- do_preliminary_analisys()
-  blueWins <- df |> select('blueWins')
-  df <- df |> select(!c('blueWins'))
+  blueWins <- df |> select("blueWins")
+  df <- df |> select(!c("blueWins"))
   df <- as.matrix(df)
 
   if (is.null(split)) {
@@ -27,20 +27,22 @@ run_tf_once <- function(seed, use_synth_data = FALSE, split = NULL) {
   test_df_data <- df[-split, ]
   test_df_class <- blueWins[-split, ]
 
-  model <- keras_model_sequential() %>%                       #16 dla prelim, 38 dla raw
-    layer_dense(units = 128, activation = 'elu', input_shape = c(16)) %>%
+  model <- keras_model_sequential() %>% # 16 dla prelim, 38 dla raw
+    layer_dense(units = 128, activation = "elu", input_shape = c(16)) %>%
     layer_dropout(rate = 0.5) %>%
-    layer_dense(units = 64, activation = 'softplus') %>%
+    layer_dense(units = 64, activation = "softplus") %>%
     layer_dropout(rate = 0.5) %>%
-    layer_dense(units = 1, activation = 'sigmoid') %>%
+    layer_dense(units = 1, activation = "sigmoid") %>%
     compile(
-      loss = 'binary_crossentropy',
-      optimizer = 'rmsprop',
-      metrics = c('BinaryAccuracy')
+      loss = "binary_crossentropy",
+      optimizer = "rmsprop",
+      metrics = c("BinaryAccuracy")
     )
 
-  model %>% fit(train_df_data, train_df_class, epochs = 100, batch_size = 100,
-                shuffle = TRUE, validation_split = 0.20)
+  model %>% fit(train_df_data, train_df_class,
+    epochs = 100, batch_size = 100,
+    shuffle = TRUE, validation_split = 0.20
+  )
 
   if (use_synth_data) {
     df <- do_preliminary_analisys()
@@ -48,8 +50,8 @@ run_tf_once <- function(seed, use_synth_data = FALSE, split = NULL) {
     synth_data <- syn(df, method = "cart", cart.minbucket = 10, seed = 67)
     test <- synth_data$syn
 
-    test_df_class <- test |> select('blueWins')
-    test <- test |> select(!c('blueWins'))
+    test_df_class <- test |> select("blueWins")
+    test <- test |> select(!c("blueWins"))
     test <- as.matrix(test)
     probability_vector_test <- predict_on_batch(model, test)
     probability_vector_test <- as.data.frame(probability_vector_test)$V1
@@ -86,7 +88,7 @@ run_tf_once <- function(seed, use_synth_data = FALSE, split = NULL) {
   )
 }
 
-#kompiluje, trenuje i zwraca wektor probabilistyczny ze testowego datasetu.
+# kompiluje, trenuje i zwraca wektor probabilistyczny ze testowego datasetu.
 do_tensor_flow_neuralNet <- function(draw_plots = F, use_synth_data = F, seed = 23, split = NULL) {
   n_runs <- if (draw_plots) 5 else 1
   seeds <- if (draw_plots) c(23, 67, 69, 123, 98) else seed
@@ -122,13 +124,15 @@ do_tensor_flow_neuralNet <- function(draw_plots = F, use_synth_data = F, seed = 
     if (use_synth_data) {
       draw_confusion_matrix(
         round(TP), round(FN), round(TN), round(FP),
-        "neural_network_synthetic_data", decimal_digits = 4
+        "neural_network_synthetic_data",
+        decimal_digits = 4
       )
       roc_plot_name <- "Sieć MLP (S)"
     } else {
       draw_confusion_matrix(
         round(TP), round(FN), round(TN), round(FP),
-        "neural_network_real_data", decimal_digits = 4
+        "neural_network_real_data",
+        decimal_digits = 4
       )
       roc_plot_name <- "Sieć MLP (R)"
     }

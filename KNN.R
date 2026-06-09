@@ -1,38 +1,40 @@
 draw_k_accuracy_plot <- function(df, best_k) {
-  ver_line_name = paste("k:", best_k)
+  ver_line_name <- paste("k:", best_k)
   p <- ggplot(df, aes(x = k, y = Accuracy)) +
-      ggtitle("Zależność accuracy od parametru k") +
-      geom_line(
-        aes(color = "Accuracy", linetype = "Accuracy"),
-        linewidth = 1.1
-      ) +
-      geom_vline(
-        aes(
-          xintercept = best_k,
-          color = "k = 79",
-          linetype = "k = 79"
-        ),
-        linewidth = 1.1
-      ) +
-      scale_color_manual(
-        name = "Legenda",
-        values = c("Accuracy" = "#2166AC", "k = 79" = "#B2182B")
-      ) +
-      scale_linetype_manual(
-        values = c("Accuracy" = "solid", "k = 79" = "dashed")
-      ) +
-      guides(linetype = "none") +
-      theme(
-        plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
-        axis.title = element_text(size = 18),
-        axis.text = element_text(size = 18),
-        legend.title = element_text(size = 18),
-        legend.text = element_text(size = 18)
-      )
+    ggtitle("Zależność accuracy od parametru k") +
+    geom_line(
+      aes(color = "Accuracy", linetype = "Accuracy"),
+      linewidth = 1.1
+    ) +
+    geom_vline(
+      aes(
+        xintercept = best_k,
+        color = "k = 79",
+        linetype = "k = 79"
+      ),
+      linewidth = 1.1
+    ) +
+    scale_color_manual(
+      name = "Legenda",
+      values = c("Accuracy" = "#2166AC", "k = 79" = "#B2182B")
+    ) +
+    scale_linetype_manual(
+      values = c("Accuracy" = "solid", "k = 79" = "dashed")
+    ) +
+    guides(linetype = "none") +
+    theme(
+      plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+      axis.title = element_text(size = 18),
+      axis.text = element_text(size = 18),
+      legend.title = element_text(size = 18),
+      legend.text = element_text(size = 18)
+    )
 
   print(p)
-  ggsave("Plots/other/k_accuracy.png", plot = p,
-         width = 8, height = 6, dpi = 80, create.dir = TRUE)
+  ggsave("Plots/other/k_accuracy.png",
+    plot = p,
+    width = 8, height = 6, dpi = 80, create.dir = TRUE
+  )
 }
 
 
@@ -158,7 +160,7 @@ do_knn <- function(draw_plots = F, seed = 23, split = NULL) {
   library(caret)
   library(class)
 
-  use_synth_data = F
+  use_synth_data <- F
   n_runs <- if (draw_plots) 5 else 1
   seeds <- 23 + seq_len(n_runs) - 1
 
@@ -216,17 +218,18 @@ do_knn <- function(draw_plots = F, seed = 23, split = NULL) {
   }
 
   if (use_synth_data) {
-    conf_mat_name = "KNN_synth"
-    roc_plot_name = "KNN synth"
+    conf_mat_name <- "KNN_synth"
+    roc_plot_name <- "KNN synth"
   } else {
-    conf_mat_name = "KNN"
-    roc_plot_name = "KNN"
+    conf_mat_name <- "KNN"
+    roc_plot_name <- "KNN"
   }
 
   if (draw_plots) {
     draw_confusion_matrix(
       round(TP), round(FN), round(TN), round(FP),
-      conf_mat_name, decimal_digits = 4
+      conf_mat_name,
+      decimal_digits = 4
     )
 
     roc_runs <- lapply(runs, function(run) {
