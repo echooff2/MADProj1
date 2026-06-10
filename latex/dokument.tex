@@ -159,13 +159,13 @@ Zakres badania obejmuje:
 Analizę danych oraz implementację modeli klasyfikacyjnych wykonano przy użyciu języka R. Obliczenia przeprowadzono w środowisku RStudio. Użyte biblioteki: \textit{synthpop, psych, class, caret, keras3, ggplot2, tree, factoextra, corrplot, ggtext, dplyr} oraz \textit{tensorflow}.
 \newpage
 \subsection{Zbiór danych}
-W pracy wykorzystano publicznie dostępny zbiór danych zawierający statystyki meczów rankingowych gry League of Legends. Dane pochodzą z serwisu Kaggle i zostały pozyskane przy użyciu oficjalnego API udostępnianego przez Riot Games.
+W pracy wykorzystano publicznie dostępny zbiór danych \cite{Source Data} zawierający statystyki meczów rankingowych gry League of Legends. Dane pochodzą z serwisu Kaggle i zostały pozyskane przy użyciu oficjalnego API udostępnianego przez Riot Games.
 
-Zbiór obejmuje mecze rankingowe rozgrywane na wysokim poziomie rankingowym tj. od rangi Diamond wzwyż, co odpowiada około 5\% najlepszych graczy. Dane pochodzą z okresu sprzed około sześciu lat. Autor zbioru nie określa dokładnego regionu serwerowego, z którego zostały pobrane mecze.
+Zbiór \cite{Source Data} obejmuje mecze rankingowe rozgrywane na wysokim poziomie rankingowym tj. od rangi Diamond wzwyż, co odpowiada około 5\% najlepszych graczy. Dane pochodzą z okresu sprzed około sześciu lat. Autor zbioru nie określa dokładnego regionu serwerowego, z którego zostały pobrane mecze.
 
 Pojedynczy rekord reprezentuje statystyki obu drużyn po upływie pierwszych 10 minut pojedynczego meczu. Dane opisują sytuację ekonomiczną drużyn, przebieg walk, kontrolę mapy oraz realizację celów neutralnych we wczesnej fazie rozgrywki.
 
-Zbiór danych składa się z 9879 rekordów oraz 40 zmiennych. Zmienną decyzyjną jest blueWins, określająca końcowy wynik meczu z perspektywy drużyny niebieskiej. Wartość zmiennej informuje, czy drużyna niebieska odniosła zwycięstwo.
+Zbiór danych \cite{Source Data} składa się z 9879 rekordów oraz 40 zmiennych. Zmienną decyzyjną jest blueWins, określająca końcowy wynik meczu z perspektywy drużyny niebieskiej. Wartość zmiennej informuje, czy drużyna niebieska odniosła zwycięstwo.
 
 Klasy w zbiorze danych są w przybliżeniu zbalansowane, co oznacza, że liczba zwycięstw drużyny niebieskiej i czerwonej jest podobna.
 
@@ -245,7 +245,7 @@ redGoldPerMin & 1648.90 & 1637.8 & 1121.2 & 2273.2 & 149.09 & 0.41 \\
 W analizowanym zbiorze danych nie stwierdzono braków danych.
 
 \subsection{Wartości odstające}
-Badany zbiór danych z racji bycia pobranym przez API bezpośrednio z serwerów gry nie zawiera błędnych danych, aczkolwiek w celu ograniczenia wpływu wartości odstających na działanie modeli klasyfikacyjnych przeprowadzono proces oczyszczania danych. Za wartości odstające uznano jedynie 1\% najwyższych wartości zmiennych:
+Badany zbiór danych z racji bycia pobranym przez API bezpośrednio z serwerów gry nie zawiera błędnych danych, aczkolwiek w celu ograniczenia wpływu wartości odstających na działanie modeli klasyfikacyjnych przeprowadzono proces oczyszczania danych. Za wartości odstające uznano jedynie 1\% najwyższych wartości zmiennych \cite{arancio_decisions_10min}:
 \begin{itemize}
 	\item blueWardsPlaced
 	\item redWardsPlaced
@@ -798,10 +798,9 @@ Minimalizacja funkcji straty była realizowana przy użyciu algorytmu RMSprop, k
 
 \subsubsection{Proces uczenia}
 
-Dane zostały losowo podzielone na zbiór treningowy (70\% obserwacji) oraz testowy (30\% obserwacji). Model trenowano przez 50 epok przy wielkości batcha wynoszącej 100 obserwacji.
+Dane zostały losowo podzielone na zbiór treningowy (80\% obserwacji) oraz testowy (20\% obserwacji). Model trenowano przez 100 epok przy wielkości batcha wynoszącej 100 obserwacji. Co każdą epokę ponownie dzielimy zbiór na podzbiór testowy i uczący.
 
 Po zakończeniu procesu uczenia wyznaczono prawdopodobieństwa przynależności do klasy pozytywnej dla obserwacji ze zbioru testowego. Otrzymane wartości zostały następnie wykorzystane do oceny jakości klasyfikacji przy użyciu miar opisanych w sekcji dotyczącej metod oceniania.
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Drzewo klasyfikacyjne}
@@ -859,7 +858,7 @@ Metoda k najbliższych sąsiadów (ang. \textit{k-Nearest Neighbours}, KNN)  \ci
 
 Dla każdej obserwacji testowej wyznaczani są jej najbliżsi sąsiedzi w przestrzeni cech, a następnie przypisywana jest klasa najczęściej występująca wśród znalezionych sąsiadów. Metoda nie tworzy jawnego modelu podczas etapu uczenia, dlatego zaliczana jest do grupy metod leniwych (ang. \textit{lazy learning}).
 
-W analizie wykorzystano algorytm KNN zaimplementowany w bibliotekach \texttt{caret} oraz \texttt{class}. Dane zostały losowo podzielone na zbiór treningowy (70\% obserwacji) oraz testowy (30\% obserwacji). Model został zbudowany na zbiorze treningowym, natomiast jego skuteczność oceniono na niezależnym zbiorze testowym.
+W analizie wykorzystano algorytm KNN zaimplementowany w bibliotekach \texttt{caret} oraz \texttt{class}. 
 
 \subsubsection{Miara odległości}
 
@@ -913,7 +912,7 @@ gdzie:
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Metoda hybrydowa - średnia arytmetyczna}
+\subsection{Metoda hybrydowa na bazie średnia arytmetyczna}
 W podejściu hybrydowym wykorzystano trzy modele predykcyjne: sieć neuronową, drzewo decyzyjne oraz algorytm $k$-NN. Każdy z modeli generuje prawdopodobieństwo przynależności do klasy pozytywnej. Następnie wyniki te są agregowane poprzez uśrednienie, co pozwala uzyskać końcową prognozę w postaci jednego wskaźnika decyzyjnego:
 
 \begin{equation}
@@ -939,7 +938,7 @@ Na podstawie wartości $S$ wyznaczana jest klasa predykcji z wykorzystaniem prog
 
 W tym podejściu nie stosowano dodatkowego podziału na zbiór treningowy i testowy, ponieważ wszystkie modele bazowe były już wcześniej trenowane i oceniane na zbiorze testowym. W związku z tym, w metodzie hybrydowej cały dostępny zbiór traktowany jest jako zbiór testowy i wykorzystywany wyłącznie do agregacji wyników modeli składowych.
 
-\subsection{Metoda hybrydowa - sieć neuronowa}
+\subsection{Metoda hybrydowa na bazie sieci neuronowej}
 Model hybrydowy oparty na sieci neuronowej stanowi rozszerzenie bazowej sieci MLP. W przeciwieństwie do modelu bazowego, który wykorzystuje bezpośrednio cechy wejściowe zbioru danych, w podejściu hybrydowym jako dane wejściowe zastosowano prawdopodobieństwa klas wygenerowane przez trzy niezależne klasyfikatory: sieć neuronową MLP, algorytm k najbliższych sąsiadów (KNN) oraz drzewo klasyfikacyjne.
 
 Uzyskane wartości prawdopodobieństw zostały połączone w nowy zbiór cech, który następnie wykorzystano do trenowania końcowej sieci neuronowej pełniącej rolę klasyfikatora nadrzędnego. Takie podejście należy do metod typu \textit{stacking}, w których predykcje modeli bazowych stanowią wejście dla modelu wyższego poziomu.
@@ -947,10 +946,13 @@ Uzyskane wartości prawdopodobieństw zostały połączone w nowy zbiór cech, k
 Pod względem architektury model hybrydowy zachowuje taką samą strukturę jak bazowa sieć neuronowa, tj. dwie warstwy ukryte oraz warstwę wyjściową. Ze względu na mniejszą liczbę cech wejściowych zmodyfikowano jednak liczbę neuronów w warstwach ukrytych. W modelu bazowym zastosowano odpowiednio 128 i 64 neurony, natomiast w modelu hybrydowym liczby te zredukowano do 32 i 8 neuronów. Pozostawiono te same funkcje aktywacji, warstwy regularyzacyjne typu \texttt{Dropout}, funkcję kosztu \texttt{binary\_crossentropy} oraz optymalizator \texttt{RMSprop}.
 
 W porównaniu z bazową siecią neuronową model hybrydowy operuje na trzech cechach wejściowych odpowiadających predykcjom modeli bazowych, zamiast na pełnym zbiorze cech opisujących obserwacje. Celem takiej konstrukcji jest połączenie mocnych stron różnych algorytmów klasyfikacyjnych i uzyskanie lepszej jakości predykcji niż w przypadku pojedynczego modelu.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%
 \subsection{Metody oceniania}
 
-Ocena jakości modeli klasyfikacyjnych stanowi istotny element analizy, ponieważ pozwala na porównanie skuteczności zastosowanych metod oraz określenie ich przydatności w kontekście rozważanego problemu predykcji wyniku meczu. W niniejszej pracy wykorzystano miary oparte na macierzy pomyłek oraz krzywą ROC wraz z polem pod krzywą AUC.
+Ocena jakości modeli klasyfikacyjnych stanowi istotny element analizy, ponieważ pozwala na porównanie skuteczności zastosowanych metod oraz określenie ich przydatności w kontekście rozważanego problemu predykcji wyniku meczu. 
+
+Pierwszym etapem oceny będzie walidacja medeli. W tym celu zastosujemy pięciokrotną walidację krzyżową Monte Carlo za każdym razem dzieląc zbiór na dwie grupy: 70\% - ucząca, 30\% - testowa. Następnie uśredniamy otrzymane wyniki i dla nich sporządzamy macierz pomyłek oraz krzywą ROC wraz z polem pod krzywą AUC.
 
 \subsubsection{Macierz pomyłek i miary klasyfikacji}
 
@@ -1088,7 +1090,7 @@ Wartość AUC przyjmuje wartości z przedziału $[0,1]$, gdzie wartość 1 oznac
     \end{figure}
 
 \newpage
-\subsection{Metoda hybrydowa - średnia arytmetyczna}
+\subsection{Metoda hybrydowa na bazie średniej arytmetycznej}
     \begin{figure}[H]
         \centering
         \includegraphics[width=0.7\textwidth]{../Plots/confusion_matrixes/Mixed_AVG_real_data .png}
@@ -1104,7 +1106,7 @@ Wartość AUC przyjmuje wartości z przedziału $[0,1]$, gdzie wartość 1 oznac
 
 
 \newpage
-\subsection{Metoda hybrydowa - sieć neuronowa}
+\subsection{Metoda hybrydowa na bazie sieci neuronowej}
     \begin{figure}[H]
         \centering
         \includegraphics[width=0.7\textwidth]{../Plots/confusion_matrixes/Mixed_NN_real_data.png}
