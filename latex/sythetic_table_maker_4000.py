@@ -3,7 +3,7 @@ from ctypes import c_wchar
 
 import pandas as pd
 
-repo_path = r"../SyntheticRecords/"
+repo_path = r"../csv/"
 
 csv_files = os.listdir(repo_path)
 

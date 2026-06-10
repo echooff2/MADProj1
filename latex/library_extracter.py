@@ -1,7 +1,7 @@
 import os
 import re
 
-repo_path = r"C:\Users\rysio\Desktop\Informatyka\R\MetodyAnalizyDanych\Projekt2-Klasyfikacja"
+repo_path = r"../"
 
 r_files = []
 for file in os.listdir(repo_path):
