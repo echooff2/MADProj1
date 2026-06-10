@@ -10,6 +10,7 @@ for file in os.listdir(repo_path):
 
 libraries = []
 
+string= ""
 for file in r_files:
     file_path = repo_path + "\\" + file
     print(file_path)
