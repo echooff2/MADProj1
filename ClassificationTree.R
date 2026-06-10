@@ -32,6 +32,7 @@ draw_tree_cv_plot <- function(tree_res.cv, tree_res) {
     size = tree_res.cv$size,
     deviance = tree_res.cv$dev
   )
+  print(df)
 
   p <- ggplot(df, aes(x = size, y = deviance)) +
     geom_line(color = "#2166AC", linewidth = 1) +
@@ -98,7 +99,11 @@ do_classification_tree <- function(draw_plots = F, seed = 23, split = NULL, use_
 
   tree_res2 <- tree(blueWins ~ ., data = train_data, model = TRUE)
   tree_res.cv <- cv.tree(tree_res2, FUN = prune.misclass, K = 10)
-  
+
+  for (i in 2:5) {
+    tree_res.cv$dev <- tree_res.cv$dev + cv.tree(tree_res2, FUN = prune.misclass, K = 10)$dev
+  }
+  print(tree_res.cv)
   tree_res.cv$dev <- tree_res.cv$dev / 5
   if (draw_plots) {
     draw_tree_cv_plot(tree_res.cv, tree_res)
@@ -116,7 +121,8 @@ do_classification_tree <- function(draw_plots = F, seed = 23, split = NULL, use_
   library(caret)
   confusionMatrix(predict_test, test$blueWins)
 
-  best_size <- tree_res.cv$size[which.min(tree_res.cv$dev)]
+  min_dev_indices <- which(tree_res.cv$dev == min(tree_res.cv$dev))
+  best_size <- min(tree_res.cv$size[min_dev_indices])
   small_tree <- prune.tree(tree_res2, best = best_size)
   cat(paste0("Wybrany rozmiar drzewa (min. CV deviance): ", best_size, " liści\n"))
   if (draw_plots) {
@@ -171,5 +177,5 @@ do_classification_tree <- function(draw_plots = F, seed = 23, split = NULL, use_
 }
 
 if (sys.nframe() == 0L) {
-  do_classification_tree(draw_plots = T)
+  t <- do_classification_tree(draw_plots = TRUE)
 }
