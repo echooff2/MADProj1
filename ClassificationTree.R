@@ -177,5 +177,5 @@ do_classification_tree <- function(draw_plots = F, seed = 23, split = NULL, use_
 }
 
 if (sys.nframe() == 0L) {
-  t <- do_classification_tree(draw_plots = TRUE, use_synth_data = TRUE)
+  t <- do_classification_tree(draw_plots = TRUE)
 }
