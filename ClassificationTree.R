@@ -59,7 +59,7 @@ draw_tree_cv_plot <- function(tree_res.cv, tree_res) {
   )
 }
 
-do_classification_tree <- function(draw_plots = F, seed = 23, split = NULL) {
+do_classification_tree <- function(draw_plots = F, seed = 23, split = NULL, use_synth_data = F) {
   set.seed(seed)
 
   if (!exists("do_preliminary_analisys")) {
@@ -87,8 +87,6 @@ do_classification_tree <- function(draw_plots = F, seed = 23, split = NULL) {
   train_data <- df[split, ]
   test <- df[-split, ]
   ########## uruchomic przed całym skryptem ##############
-
-  use_synth_data <- TRUE
   if (use_synth_data) {
     library(synthpop)
     synth_data <- syn(df, method = "cart", cart.minbucket = 10, seed = 67)
@@ -99,11 +97,8 @@ do_classification_tree <- function(draw_plots = F, seed = 23, split = NULL) {
   tree_res <- tree(blueWins ~ ., data = train_data, model = TRUE)
 
   tree_res2 <- tree(blueWins ~ ., data = train_data, model = TRUE)
-  tree_res.cv <- cv.tree(tree_res2, FUN = prune.tree)
-
-  for (i in 2:5) {
-    tree_res.cv$dev <- tree_res.cv$dev + cv.tree(tree_res2, FUN = prune.tree)$dev
-  }
+  tree_res.cv <- cv.tree(tree_res2, FUN = prune.misclass, K = 10)
+  
   tree_res.cv$dev <- tree_res.cv$dev / 5
   if (draw_plots) {
     draw_tree_cv_plot(tree_res.cv, tree_res)

@@ -39,7 +39,7 @@ run_mixed_avg_once <- function(seed, use_synth_data = FALSE) {
   Output <- Output |> select(!c("test_class_nn", "test_class_tree", "test_class_knn"))
   names(Output) <- c("probability_vector", "predicted_probabilities", "predict_probs")
 
-  Output$Sum <- Output$probability_vector + Output$predicted_probabilities + Output$probability_vector
+  Output$Sum <- Output$probability_vector + Output$predicted_probabilities + Output$predict_probs
   Output$Sum <- Output$Sum / 3
 
   if (use_synth_data) {
