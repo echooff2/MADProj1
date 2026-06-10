@@ -76,7 +76,12 @@ do_classification_tree <- function(draw_plots = F, seed = 23, split = NULL, use_
   }
 
   ########## uruchomic przed całym skryptem ##############
-  df <- do_preliminary_analisys()
+  synth_data <- NULL
+  if (use_synth_data) {
+    dfnt <- do_preliminary_analisys(generate_syntetic_data = use_synth_data)
+    df <- dfnt$real
+    synth_data <- dfnt$synth
+  }
   df$blueWins <- as.factor(df$blueWins)
 
   library(tree)
@@ -88,11 +93,11 @@ do_classification_tree <- function(draw_plots = F, seed = 23, split = NULL, use_
   train_data <- df[split, ]
   test <- df[-split, ]
   ########## uruchomic przed całym skryptem ##############
-  if (use_synth_data) {
-    library(synthpop)
-    synth_data <- syn(df, method = "cart", cart.minbucket = 10, seed = 67)
-    test <- synth_data$syn
-  }
+  # if (use_synth_data) {
+  #   # library(synthpop)
+  #   # synth_data <- syn(df, method = "cart", cart.minbucket = 10, seed = 67)
+  #   test <- synth_data$syn
+  # }
 
   summary(train_data)
   tree_res <- tree(blueWins ~ ., data = train_data, model = TRUE)
@@ -112,6 +117,24 @@ do_classification_tree <- function(draw_plots = F, seed = 23, split = NULL, use_
 
   summary(tree_res)
 
+  min_dev_indices <- which(tree_res.cv$dev == min(tree_res.cv$dev))
+  best_size <- min(tree_res.cv$size[min_dev_indices])
+  small_tree <- prune.tree(tree_res2, best = best_size)
+
+  if (use_synth_data) {
+    synth_data$blueWins <- as.factor(synth_data$blueWins)
+
+    predict_probs <- predict(tree_res, newdata = synth_data)[, 2]
+    predict_test <- predict(tree_res, newdata = synth_data, type = "class")
+
+    dir.create("csv", showWarnings = FALSE, recursive = TRUE)
+    write.csv(predict_test, "csv/synth_data_tree.csv")
+
+    output <- as.data.frame(predict_probs)
+    output$test_class_tree <- synth_data$blueWins
+    return(output)
+  }
+
   predict_probs <- predict(tree_res, newdata = test)[, 2]
   predict_test <- predict(tree_res, newdata = test, type = "class")
   confusion_matrix <- table(Predicted = predict_test, Actual = test$blueWins)
@@ -121,9 +144,6 @@ do_classification_tree <- function(draw_plots = F, seed = 23, split = NULL, use_
   library(caret)
   confusionMatrix(predict_test, test$blueWins)
 
-  min_dev_indices <- which(tree_res.cv$dev == min(tree_res.cv$dev))
-  best_size <- min(tree_res.cv$size[min_dev_indices])
-  small_tree <- prune.tree(tree_res2, best = best_size)
   cat(paste0("Wybrany rozmiar drzewa (min. CV deviance): ", best_size, " liści\n"))
   if (draw_plots) {
     draw_tree_plot(small_tree, "Przycięte drzewo klasyfikacyjne", "trimmed_classification_tree")
@@ -136,7 +156,8 @@ do_classification_tree <- function(draw_plots = F, seed = 23, split = NULL, use_
   if (use_synth_data) {
     t <- synth_data$syn
     t$PredictedBlueWins <- pred_small
-    write.csv(t, file = "synth_data_tree.csv")
+    dir.create("csv", recursive = TRUE, showWarnings = FALSE)
+    write.csv(t, file = "csv/synth_data_tree.csv")
   }
 
   # 3. Liczymy Accuracy dla obu
@@ -177,5 +198,5 @@ do_classification_tree <- function(draw_plots = F, seed = 23, split = NULL, use_
 }
 
 if (sys.nframe() == 0L) {
-  t <- do_classification_tree(draw_plots = TRUE)
+  t <- do_classification_tree(draw_plots = TRUE, use_synth_data = TRUE)
 }

@@ -88,6 +88,14 @@ run_knn_once <- function(df, seed, use_synth_data = FALSE, split = NULL) {
   )
 
   predicted_classes <- as.numeric(as.character(knn_pred))
+
+  if (use_synth_data) {
+    t <- test_data
+    t$PredictedBlueWins <- predicted_classes
+    dir.create("csv", recursive = TRUE, showWarnings = FALSE)
+    write.csv(t, file = "csv/synth_data_knn.csv")
+  }
+
   raw_prob <- attr(knn_pred, "prob")
 
   predicted_probabilities <- ifelse(
@@ -142,7 +150,7 @@ average_knn_cv_results <- function(runs) {
 }
 
 
-do_knn <- function(draw_plots = F, seed = 23, split = NULL) {
+do_knn <- function(draw_plots = F, seed = 23, split = NULL, use_synth_data = FALSE) {
   if (!exists("do_preliminary_analisys")) {
     source("PreliminaryAnalisys.R")
   }
@@ -160,7 +168,6 @@ do_knn <- function(draw_plots = F, seed = 23, split = NULL) {
   library(caret)
   library(class)
 
-  use_synth_data <- F
   n_runs <- if (draw_plots) 5 else 1
   seeds <- 23 + seq_len(n_runs) - 1
 
@@ -249,5 +256,5 @@ do_knn <- function(draw_plots = F, seed = 23, split = NULL) {
 }
 
 if (sys.nframe() == 0L) {
-  do_knn(draw_plots = T)
+  do_knn(draw_plots = TRUE, use_synth_data = TRUE)
 }

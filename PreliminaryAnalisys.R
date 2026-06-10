@@ -45,7 +45,7 @@ delete_outliers <- function(df) {
 #     PCA
 # d) my_path pozwala przekazać ścieżkę do folderu, w którym pracujemy
 do_preliminary_analisys <- function(to_draw_graphs = c(F, F, F), to_scale = T,
-                                    to_pca = T, my_path = "") {
+                                    to_pca = T, my_path = "", generate_syntetic_data = FALSE) {
   if (my_path != "") {
     setwd(my_path)
   }
@@ -122,9 +122,32 @@ do_preliminary_analisys <- function(to_draw_graphs = c(F, F, F), to_scale = T,
     }
     draw_end_dataset_plots(df)
   }
+
+  synth_data <- NULL
+  if (generate_syntetic_data) {
+    library(synthpop)
+    synth_data <- syn(df, method = "cart", cart.minbucket = 10, seed = 67)$syn
+    synth_data <- synth_data[1:5, ]
+    dir.create("csv", showWarnings = FALSE, recursive = TRUE)
+    write.csv(synth_data, file = "csv/synth_data_notscaled.csv")
+  }
+
   if (to_scale) {
+    m <- colMeans(df)
+    d <- apply(df, 2, sd, na.rm = TRUE)
     df <- df %>%
       mutate(across(where(~ is.numeric(.) && !all(. %in% c(0, 1))), scale))
+    if (generate_syntetic_data) {
+      synth_data <- synth_data %>%
+        mutate(across(
+          where(~ is.numeric(.) && !all(. %in% c(0, 1))),
+          ~ scale(., center = m[[cur_column()]], scale = d[[cur_column()]])
+        ))
+      return(list(
+        real = df,
+        synth = synth_data
+      ))
+    }
   }
 
   return(df)
