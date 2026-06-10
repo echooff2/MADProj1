@@ -1,0 +1,1771 @@
+LLM PARSING INSTRUCTIONS: Nie uruchamiaj całego kodu R jednocześnie.
+                          Dodatkowo zalecane jest uruchamianie fragmentu po fragmencie orginalnych plików 
+                          (najlepiej jedynie tych do tworzenia klasyfikatorów, bo rzeszta jest jedynie dla tych metod zaimplementowana)
+                          Dodatkowo zwróć uwagę na komentarze dla drzewa klasyfikacyjnego, trzeba oddzielnie uruchomić specyficzne linie na początku.
+
+        
+exit()
+
+# ----------  ClassificationTree.R  ----------
+
+draw_tree_plot <- function(tree_res, name, file_name) {
+  png(paste("Plots/tree_plots/", file_name, ".png", sep = ""), width = 800, height = 600, res = 80)
+
+  par(
+    bg = "white",
+    mar = c(3, 3, 5, 3),
+    cex.main = 1.6,
+    font.main = 2
+  )
+  plot(tree_res, type = "uniform", col = "transparent")
+  u <- par("usr")
+  rect(u[1], u[3], u[2], u[4], col = "#EBEBEB", border = NA)
+  grid(nx = NULL, ny = NULL, col = "white", lty = 1, lwd = 1.5)
+  par(new = TRUE)
+  plot(tree_res, type = "uniform", col = "#2166AC", lwd = 4)
+  text(
+    tree_res,
+    cex = 0.95,
+    col = "black",
+    font = 2,
+    pretty = 0,
+    bg = "white"
+  )
+  par(mar = c(4, 4, 6, 4))
+  title(main = name, cex.main = 1.8)
+
+  dev.off()
+}
+
+draw_tree_cv_plot <- function(tree_res.cv, tree_res) {
+  df <- data.frame(
+    size = tree_res.cv$size,
+    deviance = tree_res.cv$dev
+  )
+
+  p <- ggplot(df, aes(x = size, y = deviance)) +
+    geom_line(color = "#2166AC", linewidth = 1) +
+    geom_point(color = "#2166AC", size = 3) +
+    ggtitle("Błąd CV dla różnych rozmiarów drzewa") +
+    labs(
+      x = "Tree size",
+      y = "Deviance"
+    ) +
+    theme(
+      plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+      axis.title = element_text(size = 18),
+      axis.text = element_text(size = 18)
+    )
+
+  print(tree_res)
+
+  ggsave(
+    "Plots/tree_plots/tree_cv.png",
+    plot = p,
+    width = 8.5,
+    height = 6,
+    dpi = 80,
+    create.dir = TRUE
+  )
+}
+
+do_classification_tree <- function(draw_plots = F, seed = 23, split = NULL, use_synth_data = F) {
+  set.seed(seed)
+
+  if (!exists("do_preliminary_analisys")) {
+    source("PreliminaryAnalisys.R")
+  }
+
+  if (!exists("draw_confusion_matrix")) {
+    source("TableWisualization.R")
+  }
+
+  if (!exists("draw_roc_plot")) {
+    source("ROC.R")
+  }
+
+  ########## uruchomic przed całym skryptem ##############
+  df <- do_preliminary_analisys()
+  df$blueWins <- as.factor(df$blueWins)
+
+  library(tree)
+  tree(df)
+
+  if (is.null(split)) {
+    split <- sample(seq_len(nrow(df)), round(0.7 * nrow(df)))
+  }
+  train_data <- df[split, ]
+  test <- df[-split, ]
+  ########## uruchomic przed całym skryptem ##############
+  if (use_synth_data) {
+    library(synthpop)
+    synth_data <- syn(df, method = "cart", cart.minbucket = 10, seed = 67)
+    test <- synth_data$syn
+  }
+
+  summary(train_data)
+  tree_res <- tree(blueWins ~ ., data = train_data, model = TRUE)
+
+  tree_res2 <- tree(blueWins ~ ., data = train_data, model = TRUE)
+  tree_res.cv <- cv.tree(tree_res2, FUN = prune.misclass, K = 10)
+  
+  tree_res.cv$dev <- tree_res.cv$dev / 5
+  if (draw_plots) {
+    draw_tree_cv_plot(tree_res.cv, tree_res)
+    draw_tree_plot(tree_res, "Drzewo klasyfikacyjne", "classification_tree")
+  }
+
+  summary(tree_res)
+
+  predict_probs <- predict(tree_res, newdata = test)[, 2]
+  predict_test <- predict(tree_res, newdata = test, type = "class")
+  confusion_matrix <- table(Predicted = predict_test, Actual = test$blueWins)
+  confusion_matrix
+  summary(predict_test)
+
+  library(caret)
+  confusionMatrix(predict_test, test$blueWins)
+
+  best_size <- tree_res.cv$size[which.min(tree_res.cv$dev)]
+  small_tree <- prune.tree(tree_res2, best = best_size)
+  cat(paste0("Wybrany rozmiar drzewa (min. CV deviance): ", best_size, " liści\n"))
+  if (draw_plots) {
+    draw_tree_plot(small_tree, "Przycięte drzewo klasyfikacyjne", "trimmed_classification_tree")
+  }
+
+  # 2. Robimy prognozy dla obu modeli na zbiorze testowym
+  pred_small <- predict(small_tree, newdata = test, type = "class")
+  pred_large <- predict(tree_res2, newdata = test, type = "class")
+
+  if (use_synth_data) {
+    t <- synth_data
+    t$PredictedBlueWins <= pred_small
+    write.csv(t)
+  }
+
+  # 3. Liczymy Accuracy dla obu
+  acc_small <- mean(pred_small == test$blueWins)
+  acc_large <- mean(pred_large == test$blueWins)
+  acc_normal <- mean(predict_test == test$blueWins)
+
+  # 4. Wyświetlamy wynik starcia
+  cat(paste0(
+    "Accuracy przyciętego tree_res2 drzewa: ", round(acc_small * 100, 2), "%\n",
+    "Accuracy tree_res2 drzewa: ", round(acc_large * 100, 2), "%\n",
+    "Accuracy tree_res drzewa: ", round(acc_normal * 100, 2), "%\n"
+  ))
+
+  tn <- confusion_matrix["0", "0"]
+  tp <- confusion_matrix["1", "1"]
+  fp <- confusion_matrix["0", "1"]
+  fn <- confusion_matrix["1", "0"]
+
+  if (use_synth_data) {
+    conf_mat_name <- "classification_tree_confusion_matrix_synth"
+    roc_plot_name <- "Drzewo klas. synth"
+  } else {
+    conf_mat_name <- "classification_tree_confusion_matrix"
+    roc_plot_name <- "Drzewo klasyfikacyjne"
+  }
+
+
+  if (draw_plots) {
+    draw_confusion_matrix(tp, fn, tn, fp, conf_mat_name, decimal_digits = 4)
+    draw_roc_plot(test$blueWins, predict_probs, roc_plot_name)
+  }
+
+  output <- as.data.frame(predict_probs)
+  output$test_class_tree <- test$blueWins
+
+  return(output) # returns data for mixed model
+}
+
+if (sys.nframe() == 0L) {
+  do_classification_tree(draw_plots = T)
+}
+
+# ----------  CorrelationWisualization.R  ----------
+
+library(corrplot)
+
+draw_corr_matrix <- function(M, filename) {
+  # Porządkujemy macierz (ważne: zrób to przed definiowaniem kolorów!)
+  # corrplot domyślnie robi hclust wewnątrz, ale lepiej mieć posortowaną macierz M
+  ord <- corrMatOrder(M, order = "hclust")
+  M_ord <- M[ord, ord]
+
+  # Definiujemy kolory tekstów TYLKO dla górnego trójkąta (w tym przekątna)
+  # Musimy użyć tej samej logiki, której używa corrplot przy rysowaniu
+  text_colors_vector <- ifelse(abs(M_ord) > 0.6, "white", "black")
+  upper_text_colors <- text_colors_vector[upper.tri(M_ord, diag = TRUE)]
+
+  # Rysujemy wykres
+  my_colors <- colorRampPalette(c("#B2182B", "#F7F7F7", "#2166AC"))(200)
+
+  png(paste0("./Plots/corrmatrixes/", filename), width = 1500, height = 1500, res = 150, type = "cairo", bg = "white")
+
+  # Rysujemy GÓRĘ (kwadraty z liczbami)
+  corrplot(M_ord,
+    type = "upper",
+    method = "color",
+    col = my_colors,
+    addCoef.col = upper_text_colors,
+    tl.pos = "lt",
+    number.cex = 1 - dim(M)[1] / 60,
+    number.digits = 2,
+    tl.cex = 0.6,
+    tl.col = "black",
+    diag = TRUE
+  ) # Diagonala z kolorem
+
+  # Nakładamy DÓŁ (elipsy bez liczb)
+  corrplot(M_ord,
+    type = "lower",
+    method = "ellipse",
+    col = my_colors,
+    add = TRUE, # KLUCZ: nakłada na istniejący wykres
+    diag = FALSE, # Nie rysuj drugi raz diagonali
+    tl.pos = "n"
+  ) # Nie rysuj drugi raz nazw
+  dev.off()
+}
+
+read_correlated <- function(M) {
+  n <- dim(M)[1]
+  coll_names <- c()
+  for (i in 2:(n - 1)) {
+    for (j in (i + 1):n) {
+      if (abs(M[i, j]) >= 0.9) {
+        coll_names <- c(coll_names, rownames(M)[i])
+        cat(rownames(M)[i], " ", colnames(M)[j], " ", M[i, j], "\n")
+      }
+    }
+  }
+  return(unique(coll_names))
+}
+
+delete_correlated_draw_corr_matrixes <- function(df, to_draw_graphs = T, name = "WykresKorelacji", extension = ".png") {
+  count <- 1
+  M <- cor(df, method = "pearson")
+  if (to_draw_graphs) {
+    draw_corr_matrix(M, paste0(name, toString(count), extension))
+  }
+  count <- count + 1
+  df <- df |>
+    select(!unique(gsub(
+      "redKills", "blueDeaths",
+      gsub("blueKills", "redDeaths", read_correlated(M))
+    )))
+
+  M <- cor(df, method = "pearson")
+  if (to_draw_graphs) {
+    draw_corr_matrix(M, paste0(name, toString(count), extension))
+  }
+  return(df)
+}
+
+# ----------  endDatasetWisualization.R  ----------
+
+draw_piechart <- function(df, feature, name) {
+  counts <- as.data.frame(table(feature))
+  colnames(counts) <- c("Wartość", "Count")
+  counts$Percent <- round(100 * counts$Count / sum(counts$Count), 1)
+  p <- ggplot(counts, aes(x = "", y = Count, fill = Wartość)) +
+    ggtitle(paste("Piechart: ", name)) +
+    geom_col(width = 1) +
+    coord_polar(theta = "y") +
+    geom_text(
+      aes(
+        label = paste0(
+          # Wartość,
+          "\nN=", Count,
+          "\n", Percent, "%"
+        )
+      ),
+      position = position_stack(vjust = 0.5),
+      size = 6
+    ) +
+    scale_fill_manual(values = c(
+      "0" = "#cdcc97",
+      "1" = "#9798cd"
+    )) +
+    theme(
+      axis.title = element_blank(),
+      axis.text = element_blank(),
+      axis.ticks = element_blank(),
+      panel.grid = element_blank(),
+      panel.background = element_blank(),
+      plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+      text = element_text(size = 18)
+    )
+  ggsave(paste0("Plots/piecharts/pie_", name, ".png"), width = 8.5, height = 6, dpi = 80, create.dir = TRUE)
+}
+
+draw_barplot <- function(df, feature, name) {
+  p <- ggplot(data.frame(feature), aes(x = feature)) +
+    geom_bar(colour = 1, fill = "#9798cd") +
+    ggtitle(paste("Barplot: ", name)) +
+    labs(
+      x = paste("Wartość zmiennej", name),
+      y = "Częstość"
+    ) +
+    theme(
+      plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+      axis.title = element_text(size = 18),
+      axis.text = element_text(size = 18)
+    )
+  ggsave(paste0("Plots/histograms_and_barplots/bar_", name, ".png"), width = 8.5, height = 6, dpi = 80, create.dir = TRUE)
+}
+
+
+draw_historgram <- function(df, feature, name) {
+  bin_count <- if (grepl("KA", name, fixed = TRUE)) (max(feature) - min(feature)) %/% 2 + 1 else 30
+  p <- ggplot(data.frame(feature), aes(x = feature)) +
+    geom_histogram(aes(y = ..density..), colour = 1, fill = "#9798cd", bins = bin_count) +
+    geom_density(color = "#001287", lwd = 1.5) +
+    ggtitle(paste("Histogram i wykres gęstości:", name)) +
+    labs(
+      x = paste("Wartość zmiennej", name),
+      y = "Gęstość prawdopodobieństwa"
+    ) +
+    theme(
+      plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+      axis.title = element_text(size = 18),
+      axis.text = element_text(size = 16)
+    )
+  ggsave(paste0("Plots/histograms_and_barplots/hist_", name, ".png"), width = 8.6, height = 6, dpi = 80, create.dir = TRUE)
+}
+
+draw_boxplot <- function(df, feature, name) {
+  p <- ggplot(data.frame(feature), aes(x = feature)) +
+    geom_boxplot(colour = 1, fill = "#cdcc97") +
+    ggtitle(paste("Boxplot:", name)) +
+    labs(
+      x = paste("Wartość zmiennej", name),
+      y = name
+    ) +
+    theme(
+      plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+      axis.title = element_text(size = 18),
+      axis.text = element_text(size = 18)
+    )
+  ggsave(paste0("Plots/boxplots/box_", name, ".png"), width = 8.5, height = 6, dpi = 80, create.dir = TRUE)
+}
+
+draw_end_dataset_plots <- function(df) {
+  for (col_nr in 1:ncol(df)) {
+    feature <- df[, col_nr]
+    name <- names(df)[col_nr]
+
+    if (max(feature) > 55 || grepl("PCA", name, fixed = TRUE) || grepl("CSPerMin", name, fixed = TRUE)) {
+      draw_historgram(df, feature, name)
+      draw_boxplot(df, feature, name)
+    } else if (max(feature) > 1) {
+      draw_barplot(df, feature, name)
+      draw_boxplot(df, feature, name)
+    } else {
+      # draw_barplot(df, feature, name)
+      draw_piechart(df, feature, name)
+    }
+  }
+}
+
+# ----------  KNN.R  ----------
+
+draw_k_accuracy_plot <- function(df, best_k) {
+  ver_line_name <- paste("k:", best_k)
+  p <- ggplot(df, aes(x = k, y = Accuracy)) +
+    ggtitle("Zależność accuracy od parametru k") +
+    geom_line(
+      aes(color = "Accuracy", linetype = "Accuracy"),
+      linewidth = 1.1
+    ) +
+    geom_vline(
+      aes(
+        xintercept = best_k,
+        color = "k = 79",
+        linetype = "k = 79"
+      ),
+      linewidth = 1.1
+    ) +
+    scale_color_manual(
+      name = "Legenda",
+      values = c("Accuracy" = "#2166AC", "k = 79" = "#B2182B")
+    ) +
+    scale_linetype_manual(
+      values = c("Accuracy" = "solid", "k = 79" = "dashed")
+    ) +
+    guides(linetype = "none") +
+    theme(
+      plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+      axis.title = element_text(size = 18),
+      axis.text = element_text(size = 18),
+      legend.title = element_text(size = 18),
+      legend.text = element_text(size = 18)
+    )
+
+  print(p)
+  ggsave("Plots/other/k_accuracy.png",
+    plot = p,
+    width = 8, height = 6, dpi = 80, create.dir = TRUE
+  )
+}
+
+
+run_knn_once <- function(df, seed, use_synth_data = FALSE, split = NULL) {
+  set.seed(seed)
+
+  if (is.null(split)) {
+    split <- sample(seq_len(nrow(df)), round(0.7 * nrow(df)))
+  }
+  train_data <- df[split, ]
+  test_data <- df[-split, ]
+
+  if (use_synth_data) {
+    library(synthpop)
+    synth_data <- syn(df, method = "cart", cart.minbucket = 10, seed = 67)
+    test_data <- synth_data$syn
+  }
+
+  train_data_cv <- train_data
+  train_data_cv$blueWins <- factor(train_data_cv$blueWins)
+
+  ctrl <- trainControl(
+    method = "cv",
+    number = 10
+  )
+
+  knn_cv <- caret::train(
+    blueWins ~ .,
+    data = train_data_cv,
+    method = "knn",
+    tuneGrid = data.frame(k = seq(1, 101, by = 2)),
+    trControl = ctrl
+  )
+
+  best_k <- knn_cv$bestTune$k
+
+  train_labels <- train_data$blueWins
+  test_labels <- test_data$blueWins
+
+  train_features <- subset(train_data, select = -blueWins)
+  test_features <- subset(test_data, select = -blueWins)
+
+  train_labels_factor <- factor(train_labels, levels = c(0, 1))
+
+  knn_pred <- knn(
+    train = train_features,
+    test = test_features,
+    cl = train_labels_factor,
+    k = best_k,
+    prob = TRUE
+  )
+
+  predicted_classes <- as.numeric(as.character(knn_pred))
+  raw_prob <- attr(knn_pred, "prob")
+
+  predicted_probabilities <- ifelse(
+    knn_pred == "1",
+    raw_prob,
+    1 - raw_prob
+  )
+
+  conf_matrix <- table(
+    Actual = test_labels,
+    Predicted = predicted_classes
+  )
+
+  TP <- sum(test_labels == 1 & predicted_classes == 1)
+  TN <- sum(test_labels == 0 & predicted_classes == 0)
+  FP <- sum(test_labels == 0 & predicted_classes == 1)
+  FN <- sum(test_labels == 1 & predicted_classes == 0)
+
+  accuracy <- (TP + TN) / (TP + TN + FP + FN)
+  precision <- TP / (TP + FP)
+  recall <- TP / (TP + FN)
+  specificity <- TN / (TN + FP)
+
+  list(
+    best_k = best_k,
+    knn_cv_results = knn_cv$results,
+    conf_matrix = conf_matrix,
+    TP = TP,
+    TN = TN,
+    FP = FP,
+    FN = FN,
+    accuracy = accuracy,
+    precision = precision,
+    recall = recall,
+    specificity = specificity,
+    test_labels = test_labels,
+    predicted_probabilities = predicted_probabilities,
+    predicted_classes = predicted_classes
+  )
+}
+
+
+average_knn_cv_results <- function(runs) {
+  all_results <- do.call(rbind, lapply(runs, `[[`, "knn_cv_results"))
+  averaged <- aggregate(
+    cbind(Accuracy, Kappa) ~ k,
+    data = all_results,
+    FUN = mean
+  )
+  best_k <- averaged$k[which.max(averaged$Accuracy)]
+  list(results = averaged, best_k = best_k)
+}
+
+
+do_knn <- function(draw_plots = F, seed = 23, split = NULL) {
+  if (!exists("do_preliminary_analisys")) {
+    source("PreliminaryAnalisys.R")
+  }
+
+  if (!exists("draw_confusion_matrix")) {
+    source("TableWisualization.R")
+  }
+
+  if (!exists("draw_roc_plot")) {
+    source("ROC.R")
+  }
+
+  df <- do_preliminary_analisys(c(F, F, F))
+
+  library(caret)
+  library(class)
+
+  use_synth_data <- F
+  n_runs <- if (draw_plots) 5 else 1
+  seeds <- 23 + seq_len(n_runs) - 1
+
+  runs <- lapply(seeds, function(seed) {
+    run_knn_once(df, seed, use_synth_data, split = if (n_runs == 1) split else NULL)
+  })
+
+  result <- runs[[1]]
+
+  if (draw_plots) {
+    TP <- mean(vapply(runs, `[[`, numeric(1), "TP"))
+    TN <- mean(vapply(runs, `[[`, numeric(1), "TN"))
+    FP <- mean(vapply(runs, `[[`, numeric(1), "FP"))
+    FN <- mean(vapply(runs, `[[`, numeric(1), "FN"))
+
+    accuracy <- mean(vapply(runs, `[[`, numeric(1), "accuracy"))
+    precision <- mean(vapply(runs, `[[`, numeric(1), "precision"))
+    recall <- mean(vapply(runs, `[[`, numeric(1), "recall"))
+    specificity <- mean(vapply(runs, `[[`, numeric(1), "specificity"))
+
+    cv_avg <- average_knn_cv_results(runs)
+    best_k <- cv_avg$best_k
+
+    cat("Wyniki uśrednione z", n_runs, "uruchomień KNN\n")
+    cat("Najlepsze k (średnia CV) =", best_k, "\n")
+    cat("TP =", round(TP, 2), "\n")
+    cat("TN =", round(TN, 2), "\n")
+    cat("FP =", round(FP, 2), "\n")
+    cat("FN =", round(FN, 2), "\n")
+    cat("Accuracy =", round(accuracy, 4), "\n")
+    cat("Precision =", round(precision, 4), "\n")
+    cat("Recall =", round(recall, 4), "\n")
+    cat("Specificity =", round(specificity, 4), "\n")
+  } else {
+    TP <- result$TP
+    TN <- result$TN
+    FP <- result$FP
+    FN <- result$FN
+    accuracy <- result$accuracy
+    precision <- result$precision
+    recall <- result$recall
+    specificity <- result$specificity
+    best_k <- result$best_k
+
+    print(result$conf_matrix)
+    cat("Najlepsze k =", best_k, "\n")
+    cat("TP =", TP, "\n")
+    cat("TN =", TN, "\n")
+    cat("FP =", FP, "\n")
+    cat("FN =", FN, "\n")
+    cat("Accuracy =", round(accuracy, 4), "\n")
+    cat("Precision =", round(precision, 4), "\n")
+    cat("Recall =", round(recall, 4), "\n")
+    cat("Specificity =", round(specificity, 4), "\n")
+  }
+
+  if (use_synth_data) {
+    conf_mat_name <- "KNN_synth"
+    roc_plot_name <- "KNN synth"
+  } else {
+    conf_mat_name <- "KNN"
+    roc_plot_name <- "KNN"
+  }
+
+  if (draw_plots) {
+    draw_confusion_matrix(
+      round(TP), round(FN), round(TN), round(FP),
+      conf_mat_name,
+      decimal_digits = 4
+    )
+
+    roc_runs <- lapply(runs, function(run) {
+      list(
+        real_classes = run$test_labels,
+        probabilities = run$predicted_probabilities
+      )
+    })
+    draw_averaged_roc_plot(roc_runs, roc_plot_name)
+    draw_k_accuracy_plot(cv_avg$results, best_k)
+  }
+
+  output <- as.data.frame(result$predicted_probabilities)
+  output$test_class_knn <- result$test_labels
+
+  return(output)
+}
+
+if (sys.nframe() == 0L) {
+  do_knn(draw_plots = T)
+}
+
+# ----------  MixedModel.R  ----------
+
+flatten_class_column <- function(x) {
+  if (is.data.frame(x)) {
+    as.numeric(x[[1]])
+  } else {
+    as.numeric(x)
+  }
+}
+
+
+run_mixed_avg_once <- function(seed, use_synth_data = FALSE) {
+  if (!exists("do_tensor_flow_neuralNet")) {
+    source("tensorflow.R")
+  }
+  if (!exists("do_classification_tree")) {
+    source("ClassificationTree.R")
+  }
+  if (!exists("do_knn")) {
+    source("KNN.R")
+  }
+
+  if (!exists("do_preliminary_analisys")) {
+    source("PreliminaryAnalisys.R")
+  }
+  set.seed(seed)
+  df <- do_preliminary_analisys()
+  split <- sample(seq_len(nrow(df)), round(0.7 * nrow(df)))
+
+  Tensor_prob <- do_tensor_flow_neuralNet(seed = seed, split = split)
+  Classification_tree_prob <- do_classification_tree(seed = seed, split = split)
+  Tensor_prob <- as.data.frame(Tensor_prob)
+  Classification_tree_prob <- as.data.frame(Classification_tree_prob)
+  KNN_prob <- do_knn(seed = seed, split = split)
+  KNN_prob <- as.data.frame(KNN_prob)
+
+  library(dplyr)
+  Output <- cbind(Tensor_prob, KNN_prob)
+  Output <- cbind(Output, Classification_tree_prob)
+  Output_class <- flatten_class_column(Output$test_class_knn)
+  Output <- Output |> select(!c("test_class_nn", "test_class_tree", "test_class_knn"))
+  names(Output) <- c("probability_vector", "predicted_probabilities", "predict_probs")
+
+  Output$Sum <- Output$probability_vector + Output$predicted_probabilities + Output$predict_probs
+  Output$Sum <- Output$Sum / 3
+
+  if (use_synth_data) {
+    Output_for_synth <- cbind(Output |> select(!c("Sum")), test_class_knn = Output_class)
+
+    library(synthpop)
+    synth_data <- syn(Output_for_synth, method = "cart", cart.minbucket = 10, seed = 67)
+    test <- synth_data$syn
+    names(test) <- c("probability_vector", "predicted_probabilities", "predict_probs", "test_class_knn")
+    synthetic_class <- flatten_class_column(test$test_class_knn)
+    test <- test |> select(!c("test_class_knn"))
+    test$Sum <- test$probability_vector + test$predicted_probabilities + test$probability_vector
+    test$Sum <- test$Sum / 3
+
+    pred_class <- ifelse(test$Sum >= 0.5, 1, 0)
+    actual_class <- synthetic_class
+    probabilities <- test$Sum
+  } else {
+    pred_class <- ifelse(Output$Sum >= 0.5, 1, 0)
+    actual_class <- Output_class
+    probabilities <- Output$Sum
+  }
+
+  cm <- table(
+    Predicted = factor(pred_class, levels = c(0, 1)),
+    Actual = factor(actual_class, levels = c(0, 1))
+  )
+
+  TP <- ifelse(is.na(cm["1", "1"]), 0, as.numeric(cm["1", "1"]))
+  TN <- ifelse(is.na(cm["0", "0"]), 0, as.numeric(cm["0", "0"]))
+  FP <- ifelse(is.na(cm["1", "0"]), 0, as.numeric(cm["1", "0"]))
+  FN <- ifelse(is.na(cm["0", "1"]), 0, as.numeric(cm["0", "1"]))
+  accuracy <- (TP + TN) / (TP + TN + FP + FN)
+
+  list(
+    TP = TP,
+    TN = TN,
+    FP = FP,
+    FN = FN,
+    accuracy = accuracy,
+    test_class = actual_class,
+    probabilities = probabilities
+  )
+}
+
+
+do_mixed_model_avg <- function(draw_plots = TRUE) {
+  if (!exists("do_preliminary_analisys")) {
+    source("PreliminaryAnalisys.R")
+  }
+  if (!exists("draw_confusion_matrix")) {
+    source("TableWisualization.R")
+  }
+  if (!exists("draw_averaged_roc_plot")) {
+    source("ROC.R")
+  }
+
+  n_runs <- if (draw_plots) 5 else 1
+  seeds <- if (draw_plots) c(23, 67, 69, 123, 98) else 23
+
+  real_runs <- lapply(seeds, function(seed) {
+    run_mixed_avg_once(seed, use_synth_data = FALSE)
+  })
+
+  if (draw_plots) {
+    TP <- mean(vapply(real_runs, `[[`, numeric(1), "TP"))
+    TN <- mean(vapply(real_runs, `[[`, numeric(1), "TN"))
+    FP <- mean(vapply(real_runs, `[[`, numeric(1), "FP"))
+    FN <- mean(vapply(real_runs, `[[`, numeric(1), "FN"))
+    accuracy <- mean(vapply(real_runs, `[[`, numeric(1), "accuracy"))
+
+    cat("Wyniki uśrednione z", n_runs, "uruchomień modelu hybrydowego śr. (dane rzeczywiste)\n")
+    cat("TP =", round(TP, 2), "\n")
+    cat("TN =", round(TN, 2), "\n")
+    cat("FP =", round(FP, 2), "\n")
+    cat("FN =", round(FN, 2), "\n")
+    cat("Accuracy =", round(accuracy, 4), "\n")
+
+    draw_confusion_matrix(
+      round(TP), round(FN), round(TN), round(FP),
+      "Mixed_AVG_real_data",
+      decimal_digits = 4
+    )
+
+    roc_runs <- lapply(real_runs, function(run) {
+      list(
+        real_classes = run$test_class,
+        probabilities = run$probabilities
+      )
+    })
+    draw_averaged_roc_plot(roc_runs, "Model hybrydowy śr. (R)")
+
+    synth_runs <- lapply(seeds, function(seed) {
+      run_mixed_avg_once(seed, use_synth_data = TRUE)
+    })
+
+    TP_synth <- mean(vapply(synth_runs, `[[`, numeric(1), "TP"))
+    TN_synth <- mean(vapply(synth_runs, `[[`, numeric(1), "TN"))
+    FP_synth <- mean(vapply(synth_runs, `[[`, numeric(1), "FP"))
+    FN_synth <- mean(vapply(synth_runs, `[[`, numeric(1), "FN"))
+    accuracy_synth <- mean(vapply(synth_runs, `[[`, numeric(1), "accuracy"))
+
+    cat("Wyniki uśrednione z", n_runs, "uruchomień modelu hybrydowego śr. (dane syntetyczne)\n")
+    cat("TP =", round(TP_synth, 2), "\n")
+    cat("TN =", round(TN_synth, 2), "\n")
+    cat("FP =", round(FP_synth, 2), "\n")
+    cat("FN =", round(FN_synth, 2), "\n")
+    cat("Accuracy =", round(accuracy_synth, 4), "\n")
+
+    draw_confusion_matrix(
+      round(TP_synth), round(FN_synth), round(TN_synth), round(FP_synth),
+      "Mixed_AVG_synthetic_data",
+      decimal_digits = 4
+    )
+
+    roc_synth_runs <- lapply(synth_runs, function(run) {
+      list(
+        real_classes = run$test_class,
+        probabilities = run$probabilities
+      )
+    })
+    draw_averaged_roc_plot(roc_synth_runs, "Model hybrydowy śr. (S)")
+  } else {
+    result <- real_runs[[1]]
+    pred_class <- ifelse(result$probabilities >= 0.5, 1, 0)
+    cm <- table(
+      Predicted = pred_class,
+      Actual = result$test_class
+    )
+    print(cm)
+    cat("TP =", result$TP, "\n")
+    cat("TN =", result$TN, "\n")
+    cat("FP =", result$FP, "\n")
+    cat("FN =", result$FN, "\n")
+    cat("Accuracy =", round(result$accuracy, 4), "\n")
+  }
+
+  invisible(real_runs)
+}
+
+
+if (sys.nframe() == 0L) {
+  do_mixed_model_avg(draw_plots = TRUE)
+}
+
+# ----------  MixedModelNeural.R  ----------
+
+flatten_class_column <- function(x) {
+  if (is.data.frame(x)) {
+    as.numeric(x[[1]])
+  } else {
+    as.numeric(x)
+  }
+}
+
+
+build_hybrid_output <- function() {
+  if (!exists("do_tensor_flow_neuralNet")) {
+    source("tensorflow.R")
+  }
+  if (!exists("do_classification_tree")) {
+    source("ClassificationTree.R")
+  }
+  if (!exists("do_knn")) {
+    source("KNN.R")
+  }
+
+  Tensor_prob <- do_tensor_flow_neuralNet()
+  Classification_tree_prob <- do_classification_tree()
+  Tensor_prob <- as.data.frame(Tensor_prob)
+  Classification_tree_prob <- as.data.frame(Classification_tree_prob)
+  KNN_prob <- do_knn()
+  KNN_prob <- as.data.frame(KNN_prob)
+
+  library(dplyr)
+  Output <- cbind(Tensor_prob, KNN_prob)
+  Output <- cbind(Output, Classification_tree_prob)
+  Output_class <- data.frame(
+    test_class_nn = flatten_class_column(Output$test_class_nn)
+  )
+  Output <- Output |> select(!c("test_class_nn", "test_class_tree", "test_class_knn"))
+  names(Output) <- c("prob_nn", "prob_knn", "prob_tree")
+
+  list(
+    output = as.matrix(Output),
+    output_class = as.matrix(Output_class),
+    output_df = Output,
+    output_class_df = Output_class
+  )
+}
+
+
+create_mixed_model <- function() {
+  keras_model_sequential() %>%
+    layer_dense(units = 32, activation = "elu", input_shape = c(3)) %>%
+    layer_dropout(rate = 0.5) %>%
+    layer_dense(units = 8, activation = "softplus") %>%
+    layer_dropout(rate = 0.5) %>%
+    layer_dense(units = 1, activation = "sigmoid") %>%
+    compile(
+      loss = "binary_crossentropy",
+      optimizer = "rmsprop",
+      metrics = c("BinaryAccuracy")
+    )
+}
+
+
+run_mixed_nn_once <- function(hybrid_data, seed, use_synth_data = FALSE) {
+  set.seed(seed)
+  library(keras3)
+  library(tensorflow)
+
+  output <- hybrid_data$output
+  output_class <- hybrid_data$output_class
+
+  split <- sample(seq_len(nrow(output)), round(0.7 * nrow(output)))
+  train_data <- as.matrix(output[split, ])
+  train_class <- as.matrix(output_class[split, ])
+  test_data <- as.matrix(output[-split, ])
+  test_class <- as.matrix(output_class[-split, ])
+
+  model <- create_mixed_model()
+  model %>% fit(
+    train_data,
+    train_class,
+    epochs = 150,
+    batch_size = 50,
+    shuffle = TRUE,
+    validation_split = 0.10
+  )
+
+  if (use_synth_data) {
+    output_df <- hybrid_data$output_df
+    output_class_df <- hybrid_data$output_class_df
+    combined <- cbind(output_df, output_class_df)
+
+    library(synthpop)
+    synth_data <- syn(combined, method = "cart", cart.minbucket = 10, seed = 67)
+    test_synth <- synth_data$syn
+
+    synthetic_class <- test_synth |> dplyr::select("test_class_nn")
+    test_synth <- test_synth |> dplyr::select(!c("test_class_nn"))
+    test_synth <- as.matrix(test_synth)
+    synthetic_class <- as.matrix(synthetic_class)
+
+    probability_vector_test <- predict_on_batch(model, test_synth)
+    test_class <- synthetic_class
+  } else {
+    probability_vector_test <- predict_on_batch(model, test_data)
+  }
+
+  probability_vector_test <- as.numeric(probability_vector_test)
+  pred_class <- ifelse(probability_vector_test >= 0.5, 1, 0)
+
+  cm <- table(
+    Predicted = factor(pred_class, levels = c(0, 1)),
+    Actual = factor(test_class, levels = c(0, 1))
+  )
+
+  TP <- ifelse(is.na(cm["1", "1"]), 0, as.numeric(cm["1", "1"]))
+  TN <- ifelse(is.na(cm["0", "0"]), 0, as.numeric(cm["0", "0"]))
+  FP <- ifelse(is.na(cm["1", "0"]), 0, as.numeric(cm["1", "0"]))
+  FN <- ifelse(is.na(cm["0", "1"]), 0, as.numeric(cm["0", "1"]))
+  accuracy <- (TP + TN) / (TP + TN + FP + FN)
+
+  list(
+    model = model,
+    probability_vector_test = probability_vector_test,
+    test_class = test_class,
+    TP = TP,
+    TN = TN,
+    FP = FP,
+    FN = FN,
+    accuracy = accuracy
+  )
+}
+
+
+do_mixed_model_neural <- function(draw_plots = FALSE) {
+  if (!exists("do_preliminary_analisys")) {
+    source("PreliminaryAnalisys.R")
+  }
+  if (!exists("draw_confusion_matrix")) {
+    source("TableWisualization.R")
+  }
+  if (!exists("draw_averaged_roc_plot")) {
+    source("ROC.R")
+  }
+
+  hybrid_data <- build_hybrid_output()
+
+  n_runs <- if (draw_plots) 5 else 1
+  seeds <- if (draw_plots) c(23, 67, 69, 123, 98) else 23
+
+  real_runs <- lapply(seeds, function(seed) {
+    run_mixed_nn_once(hybrid_data, seed, use_synth_data = FALSE)
+  })
+
+  result <- real_runs[[1]]
+  summary(result$model)
+
+  if (draw_plots) {
+    TP <- mean(vapply(real_runs, `[[`, numeric(1), "TP"))
+    TN <- mean(vapply(real_runs, `[[`, numeric(1), "TN"))
+    FP <- mean(vapply(real_runs, `[[`, numeric(1), "FP"))
+    FN <- mean(vapply(real_runs, `[[`, numeric(1), "FN"))
+    accuracy <- mean(vapply(real_runs, `[[`, numeric(1), "accuracy"))
+
+    cat("Wyniki uśrednione z", n_runs, "uruchomień modelu hybrydowego MLP (dane rzeczywiste)\n")
+    cat("TP =", round(TP, 2), "\n")
+    cat("TN =", round(TN, 2), "\n")
+    cat("FP =", round(FP, 2), "\n")
+    cat("FN =", round(FN, 2), "\n")
+    cat("Accuracy =", round(accuracy, 4), "\n")
+
+    draw_confusion_matrix(
+      round(TP), round(FN), round(TN), round(FP),
+      "Mixed_NN_real_data",
+      decimal_digits = 4
+    )
+
+    roc_runs <- lapply(real_runs, function(run) {
+      list(
+        real_classes = run$test_class,
+        probabilities = run$probability_vector_test
+      )
+    })
+    draw_averaged_roc_plot(roc_runs, "Model hybrydowy MLP(R)")
+
+    synth_runs <- lapply(seeds, function(seed) {
+      run_mixed_nn_once(hybrid_data, seed, use_synth_data = TRUE)
+    })
+
+    TP_synth <- mean(vapply(synth_runs, `[[`, numeric(1), "TP"))
+    TN_synth <- mean(vapply(synth_runs, `[[`, numeric(1), "TN"))
+    FP_synth <- mean(vapply(synth_runs, `[[`, numeric(1), "FP"))
+    FN_synth <- mean(vapply(synth_runs, `[[`, numeric(1), "FN"))
+    accuracy_synth <- mean(vapply(synth_runs, `[[`, numeric(1), "accuracy"))
+
+    cat("Wyniki uśrednione z", n_runs, "uruchomień modelu hybrydowego MLP (dane syntetyczne)\n")
+    cat("TP =", round(TP_synth, 2), "\n")
+    cat("TN =", round(TN_synth, 2), "\n")
+    cat("FP =", round(FP_synth, 2), "\n")
+    cat("FN =", round(FN_synth, 2), "\n")
+    cat("Accuracy =", round(accuracy_synth, 4), "\n")
+
+    draw_confusion_matrix(
+      round(TP_synth), round(FN_synth), round(TN_synth), round(FP_synth),
+      "Mixed_NN_synthetic_data",
+      decimal_digits = 4
+    )
+
+    roc_synth_runs <- lapply(synth_runs, function(run) {
+      list(
+        real_classes = run$test_class,
+        probabilities = run$probability_vector_test
+      )
+    })
+    draw_averaged_roc_plot(roc_synth_runs, "Model hybrydowy MLP(S)")
+  } else {
+    pred_class <- ifelse(result$probability_vector_test >= 0.5, 1, 0)
+    cm <- table(
+      Predicted = pred_class,
+      Actual = result$test_class
+    )
+    print(cm)
+    cat("TP =", result$TP, "\n")
+    cat("TN =", result$TN, "\n")
+    cat("FP =", result$FP, "\n")
+    cat("FN =", result$FN, "\n")
+    cat("Accuracy =", round(result$accuracy, 4), "\n")
+  }
+
+  invisible(result)
+}
+
+
+if (sys.nframe() == 0L) {
+  do_mixed_model_neural(draw_plots = TRUE)
+}
+
+# ----------  PCA.R  ----------
+
+library(factoextra)
+
+draw_pca_graph <- function(pca_result, name) {
+  # add file extension
+  name <- paste0(name, ".png")
+  p <- fviz_pca_biplot(pca_result,
+    geom.ind = "point",
+    col.ind = "#2166AC",
+    col.var = "#B2182B"
+  )
+  ggsave(
+    filename = paste0("./Plots/PCA/biplot_", name),
+    plot = p,
+    width = 10, # Inches by default
+    height = 10, # Inches by default
+    dpi = 150, # Replaces 'res'
+    bg = "white",
+    create.dir = TRUE
+  )
+
+  # Scree plot
+  png(paste0("./Plots/PCA/screeplot_", name), width = 1500, height = 1500, res = 150, type = "cairo", bg = "white")
+  screeplot(pca_result, type = "lines", main = "Scree Plot")
+  dev.off()
+
+  # Calculate explained variance
+  std_dev <- pca_result$sdev
+  pr_var <- std_dev^2
+  prop_variance <- pr_var / sum(pr_var)
+
+  # Plot cumulative variance to find the threshold
+  png(paste0("./Plots/PCA/CumulativeVar_", name), width = 1500, height = 1500, res = 150, type = "cairo", bg = "white")
+  plot(cumsum(prop_variance),
+    xlab = "Principal Component",
+    ylab = "Cumulative Proportion of Variance Explained",
+    ylim = c(min(prop_variance[1], 0.9), 1), # force seing min line of 0.9
+    type = "b"
+  )
+  abline(h = 0.90, col = "red", lty = 2) # Reference line at 90%
+  dev.off()
+}
+
+# Omówienie zmiennych:
+# a) df reprezentuje data frame
+# b) cols_to_del reprezentuje nazwy zmiennych, które chcemy połaczyć przez PCA
+# c) n ilość wektorów, które chcemy otrzymać po zastosowaniu PCA
+# d) name to przedrostek nazwy kolumn powstałych po PCA
+# e) to_draw_graphs zmienna True/False; mówi, czy rysować wykresy
+reduce_dim_pca <- function(df, cols_to_del, n, name = "", to_draw_graphs = T) {
+  if (n > dim(df)[1]) {
+    error("Ilość kolumn po PCA (parametr n) nie może być większa od ilości
+          kolumn przekazanych do PCA")
+  }
+
+  pca_result <- prcomp(df |> select(cols_to_del), center = TRUE, scale. = TRUE)
+
+  # View summary of importance
+  print(summary(pca_result))
+
+  if (to_draw_graphs) {
+    draw_pca_graph(pca_result, name)
+  }
+
+  # 1. Assign names to the PCA matrix columns first
+  if (name != "") {
+    if (!endsWith(name, "_")) {
+      name <- paste0(name, "_")
+    }
+  }
+  colnames(pca_result$x)[1:n] <- paste0(name, "PCA_Component_", 1:n)
+
+  df <- cbind(
+    df |> select(!all_of(cols_to_del)),
+    pca_result$x[, 1:n, drop = FALSE]
+  )
+
+  return(df)
+}
+
+# ----------  PreliminaryAnalisys.R  ----------
+
+delete_quasi_const <- function(df) {
+  nzv_cols <- nearZeroVar(df)
+  print(colnames(df)[nzv_cols])
+
+  df <- df |>
+    select(!colnames(df)[nzv_cols])
+
+  return(df)
+}
+
+delete_outliers <- function(df) {
+  # Funkcja zastępująca skrajne wartości na podstawie percentyla
+  czysc_skrajne <- function(x, p) {
+    gorny_prog <- quantile(x, probs = 1 - (p / 100), na.rm = TRUE)
+
+    ifelse(x > gorny_prog, NA, x)
+  }
+  percentage <- 1
+
+  # Zastosowanie dla wszystkich kolumn z wardami
+  df <- df %>%
+    mutate(
+      across(
+        c(
+          blueWardsPlaced, redWardsPlaced
+        ), ~ czysc_skrajne(.x, percentage)
+      )
+    )
+
+  # Sprawdzenie wyniku
+  print(colSums(is.na(df)))
+
+  df <- na.omit(df)
+  return(df)
+}
+
+# OMÓWIENIE ZMIENNYCH:
+# a) to_draw_graphs przyjmuje wektor zmiennych True/False, gdzie:
+#   1) oznacza rysowanie histogramów, barplotow, boxplotów i piechartow
+#   2) oznacza rysowanie macierzy korelacji
+#   3) oznacza ryzowanie wykresów do analizy PCA
+# b) to_scale, zmienna True/False, oznaczająca, czy dopuszczamy skalowanie;
+#     brak skalowania oznacza brak pca
+# c) to_pca to_scale, zmienna True/False, oznaczająca, czy dopuszczamy analizę
+#     PCA
+# d) my_path pozwala przekazać ścieżkę do folderu, w którym pracujemy
+do_preliminary_analisys <- function(to_draw_graphs = c(F, F, F), to_scale = T,
+                                    to_pca = T, my_path = "") {
+  if (my_path != "") {
+    setwd(my_path)
+  }
+
+  df <- read.csv("lol.csv", header = T)
+
+  library(dplyr)
+  blueWins <- df |> select("blueWins")
+
+  # Odrzucamy jako cechę 'gameId' jako nieistotną i blueWins jako zbyteczna do wstępnej analizy
+  df <- df |>
+    select(!c("blueWins", "gameId"))
+
+  library(psych)
+  options(digits = 6)
+  describe(df)[, c("mean", "median", "min", "max", "sd", "skew")]
+
+  library(caret)
+  df <- delete_quasi_const(df)
+
+  if (!exists("draw_corr_matrix")) {
+    source("CorrelationWisualization.R")
+  }
+
+  df <- delete_correlated_draw_corr_matrixes(df, to_draw_graphs[2])
+
+  # Odrzucamy:
+  # eliteMonsters jako że ta cecha jest liniową kombinacją cech dragons i heralds
+  # goldPerMin jako że goldDiff jest różnicą wartości goldPerMin pomiędzy 2 drużynami
+  # totalExperience analogicznie do goldPerMin
+  df <- df |>
+    select(!c(ends_with("EliteMonsters"), ends_with("GoldPerMin"), ends_with("TotalExperience")))
+
+  if (to_draw_graphs[2]) {
+    draw_corr_matrix(cor(df), "WykresBezElite.png")
+  }
+
+  df <- df %>%
+    mutate(
+      blueKA = blueKills + blueAssists,
+      redKA  = redKills + redAssists
+    ) %>%
+    select(-blueKills, -blueAssists, -redKills, -redAssists)
+
+  if (to_draw_graphs[2]) {
+    draw_corr_matrix(cor(df), "WykresZ_KA.png")
+  }
+
+  # Za pomocą PCA łączymy goldDiff i experienceDiff w jedną zmienną
+  if (to_scale && to_pca) {
+    if (!exists("reduce_dim_pca")) {
+      source("PCA.R")
+    }
+    df <- reduce_dim_pca(df, c(ends_with("diff")), 1, "diff", to_draw_graphs[3])
+    if (to_draw_graphs[2]) {
+      draw_corr_matrix(cor(df), "WykresBezDiff.png")
+    }
+  }
+
+  # Usuwamy wszystkie rekordy, które zawierają
+  df <- cbind(df, blueWins)
+  df <- delete_outliers(df)
+
+  if (to_draw_graphs[2]) {
+    draw_corr_matrix(cor(df), "WykresZblueWins.png")
+  }
+
+  print(colnames(df))
+  print(dim(df))
+
+  if (to_draw_graphs[1]) {
+    if (!exists("draw_end_dataset_plots")) {
+      source("endDatasetWisualization.R")
+    }
+    draw_end_dataset_plots(df)
+  }
+  if (to_scale) {
+    df <- df %>%
+      mutate(across(where(~ is.numeric(.) && !all(. %in% c(0, 1))), scale))
+  }
+
+  return(df)
+}
+
+if (sys.nframe() == 0L) {
+  # histograms, corr_matrixes
+  do_preliminary_analisys(c(T, T, T))
+}
+
+# ----------  ROC.R  ----------
+
+draw_roc_plot <- function(real_classes, probabilities, name) {
+  if (!requireNamespace("pROC", quietly = TRUE)) {
+    stop("Package 'pROC' is required.")
+  }
+
+  roc_obj <- pROC::roc(real_classes, probabilities)
+
+  roc_df <- data.frame(
+    FPR = 1 - roc_obj$specificities,
+    TPR = roc_obj$sensitivities
+  )
+
+  auc_value <- round(as.numeric(pROC::auc(roc_obj)), 3)
+  paste("AUC: ", auc_value)
+
+  p <- ggplot(roc_df, aes(x = FPR, y = TPR)) +
+    geom_line(color = "#2166AC", linewidth = 1.5) +
+    geom_abline(
+      intercept = 0, slope = 1,
+      linetype = "dashed", color = "gray50"
+    ) +
+    ggtitle(paste("Krzywa ROC: ", name, " (AUC = ", auc_value, ")", sep = "")) +
+    labs(
+      x = "False Positive Rate",
+      y = "True Positive Rate"
+    ) +
+    coord_equal() +
+    theme(
+      plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+      axis.title = element_text(size = 18),
+      axis.text = element_text(size = 18)
+    )
+
+  ggsave(
+    paste0("Plots/roc_curves/roc_", name, ".png"),
+    plot = p,
+    width = 8,
+    height = 6,
+    dpi = 80,
+    create.dir = TRUE
+  )
+
+  return(p)
+}
+
+draw_averaged_roc_plot <- function(roc_runs, name) {
+  if (!requireNamespace("pROC", quietly = TRUE)) {
+    stop("Package 'pROC' is required.")
+  }
+
+  fpr_grid <- seq(0, 1, by = 0.01)
+  tpr_matrix <- matrix(NA_real_, nrow = length(roc_runs), ncol = length(fpr_grid))
+  auc_values <- numeric(length(roc_runs))
+
+  for (i in seq_along(roc_runs)) {
+    roc_obj <- pROC::roc(roc_runs[[i]]$real_classes, roc_runs[[i]]$probabilities, quiet = TRUE)
+    auc_values[i] <- as.numeric(pROC::auc(roc_obj))
+    tpr_matrix[i, ] <- stats::approx(
+      x = 1 - roc_obj$specificities,
+      y = roc_obj$sensitivities,
+      xout = fpr_grid,
+      yleft = 0,
+      yright = 1,
+      rule = 2
+    )$y
+  }
+
+  roc_df <- data.frame(
+    FPR = fpr_grid,
+    TPR = colMeans(tpr_matrix, na.rm = TRUE)
+  )
+
+  auc_value <- round(mean(auc_values), 3)
+
+  p <- ggplot(roc_df, aes(x = FPR, y = TPR)) +
+    geom_line(color = "#2166AC", linewidth = 1.5) +
+    geom_abline(
+      intercept = 0, slope = 1,
+      linetype = "dashed", color = "gray50"
+    ) +
+    ggtitle(paste("Krzywa ROC: ", name, " (śr. AUC = ", auc_value, ")", sep = "")) +
+    labs(
+      x = "False Positive Rate",
+      y = "True Positive Rate"
+    ) +
+    coord_equal() +
+    theme(
+      plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+      axis.title = element_text(size = 18),
+      axis.text = element_text(size = 18)
+    )
+
+  ggsave(
+    paste0("Plots/roc_curves/roc_", name, ".png"),
+    plot = p,
+    width = 8.5,
+    height = 6,
+    dpi = 80,
+    create.dir = TRUE
+  )
+
+  return(p)
+}
+
+# ----------  TableWisualization.R  ----------
+
+# ------------- Zdefiniuj parametry -----------------
+# TP - True Positive,   FN - False Negative,
+# TN - True Negative,   FP - False Positive,
+# name - nazwa bez rozszerzenia
+draw_confusion_matrix <- function(TP, FN, TN, FP, name, decimal_digits = 2) {
+  library(ggplot2)
+  library(dplyr)
+  library(ggtext)
+
+  # ============================================================
+  # PARAMETRY ROZMIARÓW - EDYTUJ TUTAJ
+  # ============================================================
+
+  # Szerokości kolumn
+  col_width_top_header <- 0.25 # Kolumna 1 (lewa scalona)
+  col_width_normal <- 1 # Kolumny 2-5 (zwykłe)
+
+  # Wysokości wierszy
+  row_height_top_header <- 0.25 # Wiersz 1 (górny scalony)
+  row_height_normal <- 0.5 # Wiersze 2-5 (zwykłe)
+
+  # ============================================================
+  # PARAMETRY PROCENTOWE
+  # ============================================================
+  precision <- round(TP / (TP + FP), decimal_digits)
+  negative_pred_val <- round(TN / (TN + FN), decimal_digits)
+  sensitivity <- round(TP / (TP + FN), decimal_digits)
+  specificity <- round(TN / (TN + FP), decimal_digits)
+  accuracy <- round((TP + TN) / (TP + TN + FP + FN), decimal_digits)
+
+  # ============================================================
+  # OBLICZANIE POZYCJI NA PODSTAWIE ROZMIARÓW (POPRAWIONE)
+  # ============================================================
+
+  # Szerokości i wysokości dla każdej kolumny/wiersza
+  col_widths <- c(col_width_top_header, col_width_normal, col_width_normal, col_width_normal, col_width_normal)
+  row_heights <- c(row_height_top_header, row_height_normal, row_height_normal, row_height_normal, row_height_normal)
+
+  # Krawędzie kolumn (kumulatywne)
+  x_edges <- cumsum(c(0, col_widths))
+  total_width <- sum(col_widths)
+
+  # Środki kolumn
+  x_positions <- x_edges[1:5] + col_widths / 2
+
+  # Krawędzie wierszy od góry (kumulatywne)
+  y_edges_from_top <- cumsum(c(0, row_heights))
+  total_height <- sum(row_heights)
+
+  # Środki wierszy (odwrócone, żeby wiersz 1 był na górze)
+  y_positions <- total_height - (y_edges_from_top[1:5] + row_heights / 2)
+
+  # ============================================================
+  # SIATKA KOMÓREK
+  # ============================================================
+
+  cells <- expand.grid(col = 1:5, row = 1:5) |>
+    mutate(
+      x = x_positions[col],
+      y = y_positions[row],
+      w = col_widths[col],
+      h = row_heights[row]
+    )
+
+  # Komórki do usunięcia
+  missing_cells <- data.frame(
+    row = c(1, 1, 1, 1, 1, 2, 3, 4, 5, 2, 2, 5),
+    col = c(1, 2, 3, 4, 5, 1, 1, 1, 1, 2, 5, 2)
+  )
+
+  # Tekst i style
+  cells <- cells |>
+    mutate(
+      label = case_when(
+        row == 2 & col == 3 ~ "**Blue Wins**",
+        row == 2 & col == 4 ~ "**Red Wins**",
+        row == 3 & col == 2 ~ "**Blue Wins**",
+        row == 4 & col == 2 ~ "**Red Wins**",
+        row == 3 & col == 3 ~ paste0("", TP),
+        row == 3 & col == 4 ~ paste0("", FP),
+        row == 4 & col == 3 ~ paste0("", FN),
+        row == 4 & col == 4 ~ paste0("", TN),
+        row == 5 & col == 3 ~ paste0("**Precision** <br>", precision * 100, "%"),
+        row == 5 & col == 4 ~ paste0("**Negative Predictive<br>Value**<br>", negative_pred_val * 100, "%"),
+        row == 3 & col == 5 ~ paste0("**Sensitivity** <br>", sensitivity * 100, "%"),
+        row == 4 & col == 5 ~ paste0("**Specificity** <br>", specificity * 100, "%"),
+        row == 5 & col == 5 ~ paste0("**Accuracy** <br>", accuracy * 100, "%"),
+        TRUE ~ ""
+      ),
+
+      # ------------------ TŁO KOMÓREK ------------------
+      fill = case_when(
+        # 1. Nagłówki klas (kolory marki Blue/Red)
+        # Nagłówek "Blue Wins" w kolumnie predykcji (wiersz 2, kol 3)
+        # oraz w wierszu actual (wiersz 3, kol 2) - dostosuj do swojej struktury!
+        (row == 2 & col == 3) | (row == 3 & col == 2) ~ "#dbeafe", # Blue Wins nagłówki
+        (row == 2 & col == 4) | (row == 4 & col == 2) ~ "#fee2e2", # Red Wins nagłówki
+
+        # 2. Główne wyróżnienie: Accuracy
+        row == 5 & col == 5 ~ "#fef3c7", # Złoty
+
+        # 3. Trafienia - poprawne predykcje (główna przekątna)
+        (row == 3 & col == 3) | (row == 4 & col == 4) ~ "#dcfce7", # Jasny zielony
+
+        # 4. Błędy - niepoprawne predykcje (poza przekątną)
+        (row == 3 & col == 4) | (row == 4 & col == 3) ~ "#ffedd5", # Jasny pomarańczowy
+
+        # 5. Pozostałe metryki (Sensitivity, Specificity, Precision, NPV)
+        row == 5 | col == 5 ~ "#f1f5f9", # Jasny slate
+
+        # Reszta (puste komórki, nagłówki "Predicted"/"Actual")
+        TRUE ~ "white"
+      ),
+
+      # ------------------ KOLOR TEKSTU ------------------
+      text_color = case_when(
+        # 1. Nagłówki klas
+        (row == 2 & col == 3) | (row == 3 & col == 2) ~ "#1d4ed8", # Blue Wins tekst
+        (row == 2 & col == 4) | (row == 4 & col == 2) ~ "#b91c1c", # Red Wins tekst
+
+        # 2. Accuracy
+        row == 5 & col == 5 ~ "#a16207", # Ciemny złoty
+
+        # 3. Trafienia
+        (row == 3 & col == 3) | (row == 4 & col == 4) ~ "#15803d", # Ciemny zielony
+
+        # 4. Błędy
+        (row == 3 & col == 4) | (row == 4 & col == 3) ~ "#c2410c", # Ciemny pomarańczowy
+
+        # 5. Pozostałe metryki
+        row == 5 | col == 5 ~ "#475569", # Ciemny slate
+
+        # Reszta
+        TRUE ~ "black"
+      ),
+      fontface = case_when(
+        row %in% 3:4 & col %in% 3:4 ~ "bold",
+        TRUE ~ "plain"
+      ),
+      font_size = case_when(
+        row %in% 3:4 & col %in% 3:4 ~ 5,
+        TRUE ~ 4
+      )
+    )
+
+  cells_to_draw <- anti_join(cells, missing_cells, by = c("row", "col"))
+
+  # ============================================================
+  # SCALONE KOMÓRKI
+  # ============================================================
+
+  merged_cells <- data.frame(
+    # Top Header: kolumny 3-4, wiersz 1
+    x = c(
+      (x_positions[3] + x_positions[4]) / 2, # Środek między kol 3 i 4
+      x_positions[1] # Kolumna 1
+    ),
+    y = c(
+      y_positions[1], # Wiersz 1
+      (y_positions[3] + y_positions[4]) / 2 # Środek między wierszem 3 i 4
+    ),
+    w = c(
+      col_width_normal * 2, # Szerokość = 2 kolumny
+      col_width_top_header # Szerokość = 1 kolumna header
+    ),
+    h = c(
+      row_height_top_header, # Wysokość = 1 wiersz header
+      row_height_normal * 2 # Wysokość = 2 wiersze
+    ),
+    label = c("Predicted", "Actual"),
+    fill = c("white", "white"),
+    text_color = c("black", "black"),
+    fontface = c("plain", "plain"),
+    angle = c(0, 90)
+  )
+
+  # ============================================================
+  # RYSOWANIE
+  # ============================================================
+
+  p <- ggplot() +
+    # Zwykłe komórki
+
+    geom_tile(
+      data = cells_to_draw,
+      aes(x = x, y = y, width = w, height = h, fill = fill),
+      color = "black", linewidth = 0.7
+    ) +
+    # Scalone komórki
+    geom_tile(
+      data = merged_cells,
+      aes(x = x, y = y, width = w, height = h, fill = fill),
+      color = "black", linewidth = 0.7
+    ) +
+    scale_fill_identity() +
+
+    # Tekst dla zwykłych komórek
+    geom_richtext(
+      data = cells_to_draw,
+      aes(x = x, y = y, label = label, color = text_color, size = font_size),
+      fill = NA, # Bez tła
+      label.color = NA, # Bez ramki wokół tekstu
+      size = 5
+    ) +
+    scale_size_identity() +
+    # Tekst dla scalonych komórek
+    geom_text(
+      data = merged_cells,
+      aes(x = x, y = y, label = label, color = text_color, fontface = fontface, angle = angle),
+      # size = 4, lineheight = 1.1
+      size = 6, lineheight = 1.1
+    ) +
+    scale_color_identity() +
+    coord_fixed() +
+    xlim(0, total_width) +
+    ylim(0, total_height) +
+    theme_void()
+
+  # Zapis
+  ggsave(paste0("./Plots/confusion_matrixes/", name, ".png"), p, width = 10, height = 10, dpi = 300, bg = "transparent", create.dir = TRUE)
+}
+
+if (sys.nframe() == 0L) {
+  draw_confusion_matrix(3891, 123, 253, 4000, "custom_table")
+}
+
+# ----------  tensorflow.R  ----------
+
+# keras i tensorflow nie wspierają najnowszych wersji py:
+library(keras3) # 3.11 działa i na tym testuje
+library(tensorflow)
+# install_tensorflow()       #<-obie poniższe instrukcje do utworzenia pakietów py
+# keras3::install_keras()    #(może zajęć im trochę czasu, tak kilka minut na jedną, może dosłownie wyglądać jakby padło)
+
+# ostatnia komenda wywołująca funkcję tym pliku jest zakomendowana atm.
+
+run_tf_once <- function(seed, use_synth_data = FALSE, split = NULL) {
+  if (!exists("do_preliminary_analisys")) {
+    source("PreliminaryAnalisys.R")
+  }
+  set.seed(seed)
+  library(keras3)
+  library(tensorflow)
+
+  df <- do_preliminary_analisys()
+  blueWins <- df |> select("blueWins")
+  df <- df |> select(!c("blueWins"))
+  df <- as.matrix(df)
+
+  if (is.null(split)) {
+    split <- sample(seq_len(nrow(df)), round(0.7 * nrow(df)))
+  }
+  train_df_data <- df[split, ]
+  train_df_class <- blueWins[split, ]
+  test_df_data <- df[-split, ]
+  test_df_class <- blueWins[-split, ]
+
+  model <- keras_model_sequential() %>% # 16 dla prelim, 38 dla raw
+    layer_dense(units = 128, activation = "elu", input_shape = c(16)) %>%
+    layer_dropout(rate = 0.5) %>%
+    layer_dense(units = 64, activation = "softplus") %>%
+    layer_dropout(rate = 0.5) %>%
+    layer_dense(units = 1, activation = "sigmoid") %>%
+    compile(
+      loss = "binary_crossentropy",
+      optimizer = "rmsprop",
+      metrics = c("BinaryAccuracy")
+    )
+
+  model %>% fit(train_df_data, train_df_class,
+    epochs = 100, batch_size = 100,
+    shuffle = TRUE, validation_split = 0.20
+  )
+
+  if (use_synth_data) {
+    df <- do_preliminary_analisys()
+    library(synthpop)
+    synth_data <- syn(df, method = "cart", cart.minbucket = 10, seed = 67)
+    test <- synth_data$syn
+
+    test_df_class <- test |> select("blueWins")
+    test <- test |> select(!c("blueWins"))
+    test <- as.matrix(test)
+    probability_vector_test <- predict_on_batch(model, test)
+    probability_vector_test <- as.data.frame(probability_vector_test)$V1
+  } else {
+    probability_vector_test <- predict_on_batch(model, test_df_data)
+    test_df_class <- as.data.frame(test_df_class)
+    if (!"blueWins" %in% names(test_df_class)) {
+      names(test_df_class) <- "blueWins"
+    }
+    probability_vector_test <- as.numeric(probability_vector_test)
+  }
+
+  pred_class <- ifelse(probability_vector_test > 0.5, 1, 0)
+  cm <- table(
+    Predicted = factor(pred_class, levels = c(0, 1)),
+    Actual = factor(test_df_class$blueWins, levels = c(0, 1))
+  )
+
+  TP <- ifelse(is.na(cm["1", "1"]), 0, as.numeric(cm["1", "1"]))
+  TN <- ifelse(is.na(cm["0", "0"]), 0, as.numeric(cm["0", "0"]))
+  FP <- ifelse(is.na(cm["1", "0"]), 0, as.numeric(cm["1", "0"]))
+  FN <- ifelse(is.na(cm["0", "1"]), 0, as.numeric(cm["0", "1"]))
+  accuracy <- (TP + TN) / (TP + TN + FP + FN)
+
+  list(
+    model = model,
+    probability_vector_test = probability_vector_test,
+    test_df_class = test_df_class,
+    TP = TP,
+    TN = TN,
+    
+    FP = FP,
+    FN = FN,
+    accuracy = accuracy
+  )
+}
+
+# kompiluje, trenuje i zwraca wektor probabilistyczny ze testowego datasetu.
+do_tensor_flow_neuralNet <- function(draw_plots = F, use_synth_data = F, seed = 23, split = NULL) {
+  n_runs <- if (draw_plots) 5 else 1
+  seeds <- if (draw_plots) c(23, 67, 69, 123, 98) else seed
+
+  runs <- lapply(seeds, function(s) {
+    run_tf_once(s, use_synth_data, split = if (n_runs == 1) split else NULL)
+  })
+
+  result <- runs[[1]]
+  summary(result$model)
+
+  if (draw_plots) {
+    TP <- mean(vapply(runs, `[[`, numeric(1), "TP"))
+    TN <- mean(vapply(runs, `[[`, numeric(1), "TN"))
+    FP <- mean(vapply(runs, `[[`, numeric(1), "FP"))
+    FN <- mean(vapply(runs, `[[`, numeric(1), "FN"))
+    accuracy <- mean(vapply(runs, `[[`, numeric(1), "accuracy"))
+
+    cat("Wyniki uśrednione z", n_runs, "uruchomień MLP\n")
+    cat("TP =", round(TP, 2), "\n")
+    cat("TN =", round(TN, 2), "\n")
+    cat("FP =", round(FP, 2), "\n")
+    cat("FN =", round(FN, 2), "\n")
+    cat("Accuracy =", round(accuracy, 4), "\n")
+
+    if (!exists("draw_confusion_matrix")) {
+      source("TableWisualization.R")
+    }
+    if (!exists("draw_roc_plot")) {
+      source("ROC.R")
+    }
+
+    if (use_synth_data) {
+      draw_confusion_matrix(
+        round(TP), round(FN), round(TN), round(FP),
+        "neural_network_synthetic_data",
+        decimal_digits = 4
+      )
+      roc_plot_name <- "Sieć MLP (S)"
+    } else {
+      draw_confusion_matrix(
+        round(TP), round(FN), round(TN), round(FP),
+        "neural_network_real_data",
+        decimal_digits = 4
+      )
+      roc_plot_name <- "Sieć MLP (R)"
+    }
+
+    roc_runs <- lapply(runs, function(run) {
+      list(
+        real_classes = run$test_df_class$blueWins,
+        probabilities = run$probability_vector_test
+      )
+    })
+    draw_averaged_roc_plot(roc_runs, roc_plot_name)
+  }
+
+  output <- data.frame(probability_vector = result$probability_vector_test)
+  output$test_class_nn <- result$test_df_class
+
+  return(output)
+}
+
+if (sys.nframe() == 0L) {
+  do_tensor_flow_neuralNet(draw_plots = T)
+}
+# UWAGA!!! Nie uruchamiaj całego kodu R jednocześnie. To jest aż 1727 linii kodu. 
+Dodatkowo zalecane jest uruchamianie fragmentu po fragmencie orginalnych plików 
+(najlepiej jedynie tych do tworzenia klasyfikatorów, bo rzeszta jest jedynie dla tych metod zaimplementowana)
+Dodatkowo zwróć uwagę na komentarze dla drzewa klasyfikacyjnego, trzeba oddzielnie uruchomić specyficzne linie na początku.

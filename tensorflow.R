@@ -82,6 +82,7 @@ run_tf_once <- function(seed, use_synth_data = FALSE, split = NULL) {
     test_df_class = test_df_class,
     TP = TP,
     TN = TN,
+    
     FP = FP,
     FN = FN,
     accuracy = accuracy
