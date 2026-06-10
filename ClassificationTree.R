@@ -134,9 +134,9 @@ do_classification_tree <- function(draw_plots = F, seed = 23, split = NULL, use_
   pred_large <- predict(tree_res2, newdata = test, type = "class")
 
   if (use_synth_data) {
-    t <- synth_data
-    t$PredictedBlueWins <= pred_small
-    write.csv(t)
+    t <- synth_data$syn
+    t$PredictedBlueWins <- pred_small
+    write.csv(t, file = "synth_data_tree.csv")
   }
 
   # 3. Liczymy Accuracy dla obu
@@ -177,5 +177,5 @@ do_classification_tree <- function(draw_plots = F, seed = 23, split = NULL, use_
 }
 
 if (sys.nframe() == 0L) {
-  t <- do_classification_tree(draw_plots = TRUE)
+  t <- do_classification_tree(draw_plots = TRUE, use_synth_data = TRUE)
 }
