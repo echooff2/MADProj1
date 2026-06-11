@@ -65,10 +65,10 @@ run_knn_once <- function(df, seed, use_synth_data = FALSE, split = NULL) {
     blueWins ~ .,
     data = train_data_cv,
     method = "knn",
-    tuneGrid = data.frame(k = seq(1, 101, by = 2)),
+    tuneGrid = data.frame(k = seq(71, 101, by = 2)),
     trControl = ctrl
   )
-
+  
   best_k <- knn_cv$bestTune$k
 
   train_labels <- train_data$blueWins
@@ -118,9 +118,14 @@ run_knn_once <- function(df, seed, use_synth_data = FALSE, split = NULL) {
   precision <- TP / (TP + FP)
   recall <- TP / (TP + FN)
   specificity <- TN / (TN + FP)
+  
+  print('Single KNN done!')
 
   list(
     best_k = best_k,
+    data_train = train_features,
+    train_labels = train_labels_factor,
+    knn_model = knn_cv,
     knn_cv_results = knn_cv$results,
     conf_matrix = conf_matrix,
     TP = TP,
@@ -149,8 +154,60 @@ average_knn_cv_results <- function(runs) {
   list(results = averaged, best_k = best_k)
 }
 
+predict_synth <- function(runs, synth_data){
+  acc <- vapply(runs, function(x) x$accuracy, numeric(1))
+  best_i <- which.max(acc)
+  
+  best_run   <- runs[[best_i]]
+  best_model <- best_run$knn_model
+  best_train <- best_run$data_train
+  train_labels <- best_run$train_labels
+  best_k <- best_run$best_k
+  
+  synth_data$blueWins <- as.factor(synth_data$blueWins)
+  
+  print(predict(best_model, newdata = synth_data))
+  
+  ctrl <- trainControl(
+    method = "cv",
+    number = 10,
+    classProbs = TRUE 
+  )
+  
+  print(dim(best_train))
+  print(dim(synth_data))
+  
+  synth_data <- synth_data |> select(!c('blueWins'))
+  
+  knn_pred <- knn(
+    train = best_train,
+    test = synth_data,
+    cl = train_labels,
+    k = best_k,
+    prob = TRUE
+  )
+  
+  # Przewidziane klasy
+  predicted_classes <- as.numeric(as.character(knn_pred))
+  
+  # Prawdopodobieństwa klasy 1
+  raw_prob <- attr(knn_pred, "prob")
+  
+  predicted_probabilities <- ifelse(
+    knn_pred == "1",
+    raw_prob,
+    1 - raw_prob
+  )
+  
+  dir.create("csv", showWarnings = FALSE, recursive = TRUE)
+  write.csv(predicted_classes, "csv/synth_data_knn.csv")
+  
+  output <- as.data.frame(predicted_probabilities)
+  output$test_class_knn <- synth_data$blueWins
+  return(output)
+}
 
-do_knn <- function(draw_plots = F, seed = 23, split = NULL, use_synth_data = FALSE) {
+do_knn <- function(draw_plots = F, seed = 23, split = NULL, use_synth_data = FALSE){
   if (!exists("do_preliminary_analisys")) {
     source("PreliminaryAnalisys.R")
   }
@@ -163,7 +220,15 @@ do_knn <- function(draw_plots = F, seed = 23, split = NULL, use_synth_data = FAL
     source("ROC.R")
   }
 
-  df <- do_preliminary_analisys(c(F, F, F))
+  if(use_synth_data){
+    res <- do_preliminary_analisys(c(F, F, F), generate_syntetic_data = T)
+    df  <- res$real
+    synth_data <- res$synth
+    synth_data$blueWins <- as.factor(synth_data$blueWins)
+  }
+  else{
+    df <- do_preliminary_analisys(c(F, F, F))
+  }
 
   library(caret)
   library(class)
@@ -172,8 +237,12 @@ do_knn <- function(draw_plots = F, seed = 23, split = NULL, use_synth_data = FAL
   seeds <- 23 + seq_len(n_runs) - 1
 
   runs <- lapply(seeds, function(seed) {
-    run_knn_once(df, seed, use_synth_data, split = if (n_runs == 1) split else NULL)
+    run_knn_once(df, seed, split = if (n_runs == 1) split else NULL)
   })
+  
+  if(use_synth_data){
+    return(predict_synth(runs, synth_data))
+  }
 
   result <- runs[[1]]
 
@@ -222,14 +291,6 @@ do_knn <- function(draw_plots = F, seed = 23, split = NULL, use_synth_data = FAL
     cat("Precision =", round(precision, 4), "\n")
     cat("Recall =", round(recall, 4), "\n")
     cat("Specificity =", round(specificity, 4), "\n")
-  }
-
-  if (use_synth_data) {
-    conf_mat_name <- "KNN_synth"
-    roc_plot_name <- "KNN synth"
-  } else {
-    conf_mat_name <- "KNN"
-    roc_plot_name <- "KNN"
   }
 
   if (draw_plots) {
