@@ -13,7 +13,7 @@ latex = r'''
   \centering
 \begin{tabular}{l *{5}{c}}
     \toprule
-    Seria Syntetycznych danych & 1 & 2 & 3 & 4 & 5 \\
+    \textbf{Seria Syntetycznych danych} & \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{5} \\
     \midrule'''
 
 feature_file_path = folder_path + feature_file_name
