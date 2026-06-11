@@ -1,14 +1,5 @@
-flatten_class_column <- function(x) {
-  if (is.data.frame(x)) {
-    as.numeric(x[[1]])
-  } else {
-    as.numeric(x)
-  }
-}
-
-
-run_mixed_avg_once <- function(seed, use_synth_data = FALSE) {
-  if (!exists("do_tensor_flow_neuralNet")) {
+run_mixed_avg_once <- function(seed, gen_synth_data = FALSE) {
+  if (!exists("do_tensor_flow_neuralNet")) {   #seed=23 #gen_synth_data = TRUE
     source("tensorflow.R")
   }
   if (!exists("do_classification_tree")) {
@@ -25,43 +16,26 @@ run_mixed_avg_once <- function(seed, use_synth_data = FALSE) {
   df <- do_preliminary_analisys()
   split <- sample(seq_len(nrow(df)), round(0.7 * nrow(df)))
 
-  Tensor_prob <- do_tensor_flow_neuralNet(seed = seed, split = split)
-  Classification_tree_prob <- do_classification_tree(seed = seed, split = split)
+  Tensor_prob <- do_tensor_flow_neuralNet(seed = seed, split = split, use_synth_data = gen_synth_data  )
+  Classification_tree_prob <- do_classification_tree(seed = seed, split = split, use_synth_data = gen_synth_data)
   Tensor_prob <- as.data.frame(Tensor_prob)
   Classification_tree_prob <- as.data.frame(Classification_tree_prob)
-  KNN_prob <- do_knn(seed = seed, split = split)
+  KNN_prob <- do_knn(seed = seed, split = split, use_synth_data = gen_synth_data)
   KNN_prob <- as.data.frame(KNN_prob)
 
   library(dplyr)
   Output <- cbind(Tensor_prob, KNN_prob)
   Output <- cbind(Output, Classification_tree_prob)
-  Output_class <- flatten_class_column(Output$test_class_knn)
+  Output_class <- as.numeric(Output$test_class_nn$blueWins)  
   Output <- Output |> select(!c("test_class_nn", "test_class_tree", "test_class_knn"))
   names(Output) <- c("probability_vector", "predicted_probabilities", "predict_probs")
 
   Output$Sum <- Output$probability_vector + Output$predicted_probabilities + Output$predict_probs
   Output$Sum <- Output$Sum / 3
 
-  if (use_synth_data) {
-    Output_for_synth <- cbind(Output |> select(!c("Sum")), test_class_knn = Output_class)
-
-    library(synthpop)
-    synth_data <- syn(Output_for_synth, method = "cart", cart.minbucket = 10, seed = 67)
-    test <- synth_data$syn
-    names(test) <- c("probability_vector", "predicted_probabilities", "predict_probs", "test_class_knn")
-    synthetic_class <- flatten_class_column(test$test_class_knn)
-    test <- test |> select(!c("test_class_knn"))
-    test$Sum <- test$probability_vector + test$predicted_probabilities + test$probability_vector
-    test$Sum <- test$Sum / 3
-
-    pred_class <- ifelse(test$Sum >= 0.5, 1, 0)
-    actual_class <- synthetic_class
-    probabilities <- test$Sum
-  } else {
     pred_class <- ifelse(Output$Sum >= 0.5, 1, 0)
     actual_class <- Output_class
     probabilities <- Output$Sum
-  }
 
   cm <- table(
     Predicted = factor(pred_class, levels = c(0, 1)),
@@ -86,7 +60,7 @@ run_mixed_avg_once <- function(seed, use_synth_data = FALSE) {
 }
 
 
-do_mixed_model_avg <- function(draw_plots = TRUE) {
+do_mixed_model_avg <- function(draw_plots = TRUE, test_on_synth_data = F) {
   if (!exists("do_preliminary_analisys")) {
     source("PreliminaryAnalisys.R")
   }
@@ -101,7 +75,7 @@ do_mixed_model_avg <- function(draw_plots = TRUE) {
   seeds <- if (draw_plots) c(23, 67, 69, 123, 98) else 23
 
   real_runs <- lapply(seeds, function(seed) {
-    run_mixed_avg_once(seed, use_synth_data = FALSE)
+    run_mixed_avg_once(seed, gen_synth_data = test_on_synth_data)
   })
 
   if (draw_plots) {
@@ -133,7 +107,7 @@ do_mixed_model_avg <- function(draw_plots = TRUE) {
     draw_averaged_roc_plot(roc_runs, "Model hybrydowy śr. (R)")
 
     synth_runs <- lapply(seeds, function(seed) {
-      run_mixed_avg_once(seed, use_synth_data = TRUE)
+      run_mixed_avg_once(seed, gen_synth_data = TRUE)
     })
 
     TP_synth <- mean(vapply(synth_runs, `[[`, numeric(1), "TP"))
@@ -182,5 +156,5 @@ do_mixed_model_avg <- function(draw_plots = TRUE) {
 
 
 if (sys.nframe() == 0L) {
-  do_mixed_model_avg(draw_plots = TRUE)
+  do_mixed_model_avg(draw_plots = TRUE, test_on_synth_data = TRUE )
 }
