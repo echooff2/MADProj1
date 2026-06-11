@@ -152,8 +152,17 @@ do_tensor_flow_neuralNet <- function(draw_plots = F, use_synth_data = F, seed = 
   }
 
   output <- data.frame(probability_vector = result$probability_vector_test)
+  if (use_synth_data) {
+    t <- data.frame(x=output$probability_vector)
+    t$x <- ifelse(t$x>0.5,1,0)
+    t$x<-as.factor(t$x)
+    dir.create("csv", recursive = TRUE, showWarnings = FALSE)
+    write.csv(t, file = "csv/synth_tensorflow_mlp.csv")
+  }
   output$test_class_nn <- result$test_df_class
+  
 
+  
   return(output)
 }
 
