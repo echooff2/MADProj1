@@ -177,6 +177,7 @@ predict_synth <- function(runs, synth_data){
   print(dim(best_train))
   print(dim(synth_data))
   
+  blueWins <- synth_data |> select(c('blueWins'))
   synth_data <- synth_data |> select(!c('blueWins'))
   
   knn_pred <- knn(
@@ -203,7 +204,7 @@ predict_synth <- function(runs, synth_data){
   write.csv(predicted_classes, "csv/synth_data_knn.csv")
   
   output <- as.data.frame(predicted_probabilities)
-  output$test_class_knn <- synth_data$blueWins
+  output$test_class_knn <- blueWins
   return(output)
 }
 
