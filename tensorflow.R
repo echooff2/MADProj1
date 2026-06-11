@@ -6,15 +6,22 @@ library(tensorflow)
 
 # ostatnia komenda wywołująca funkcję tym pliku jest zakomendowana atm.
 
-run_tf_once <- function(seed, use_synth_data = FALSE, split = NULL) {
+run_tf_once <- function(seed, use_synth_data = F, split = NULL) {
   if (!exists("do_preliminary_analisys")) {
     source("PreliminaryAnalisys.R")
   }
   set.seed(seed)
+  library(dplyr)
   library(keras3)
   library(tensorflow)
 
-  df <- do_preliminary_analisys()
+  dfnt <- do_preliminary_analisys(generate_syntetic_data = use_synth_data)
+  if(use_synth_data){
+  df <- dfnt$real
+  synth_data <- dfnt$synth
+  }
+  else
+  {df<-dfnt}
   blueWins <- df |> select("blueWins")
   df <- df |> select(!c("blueWins"))
   df <- as.matrix(df)
@@ -45,15 +52,10 @@ run_tf_once <- function(seed, use_synth_data = FALSE, split = NULL) {
   )
 
   if (use_synth_data) {
-    df <- do_preliminary_analisys()
-    library(synthpop)
-    synth_data <- syn(df, method = "cart", cart.minbucket = 10, seed = 67)
-    test <- synth_data$syn
-
-    test_df_class <- test |> select("blueWins")
-    test <- test |> select(!c("blueWins"))
-    test <- as.matrix(test)
-    probability_vector_test <- predict_on_batch(model, test)
+    test_df_class <- synth_data |> select("blueWins")
+    synth_data <- synth_data |> select(!c("blueWins"))
+    synth_data <- as.matrix(synth_data)
+    probability_vector_test <- predict_on_batch(model, synth_data)
     probability_vector_test <- as.data.frame(probability_vector_test)$V1
   } else {
     probability_vector_test <- predict_on_batch(model, test_df_data)
@@ -64,6 +66,8 @@ run_tf_once <- function(seed, use_synth_data = FALSE, split = NULL) {
     probability_vector_test <- as.numeric(probability_vector_test)
   }
 
+  
+  #plot_draw
   pred_class <- ifelse(probability_vector_test > 0.5, 1, 0)
   cm <- table(
     Predicted = factor(pred_class, levels = c(0, 1)),
@@ -90,14 +94,14 @@ run_tf_once <- function(seed, use_synth_data = FALSE, split = NULL) {
 }
 
 # kompiluje, trenuje i zwraca wektor probabilistyczny ze testowego datasetu.
-do_tensor_flow_neuralNet <- function(draw_plots = F, use_synth_data = F, seed = 23, split = NULL) {
-  n_runs <- if (draw_plots) 5 else 1
-  seeds <- if (draw_plots) c(23, 67, 69, 123, 98) else seed
+do_tensor_flow_neuralNet <- function(draw_plots = F, use_synth_data = F, seed = 23, split = NULL, cross_val=F) {
+  n_runs <- if (cross_val) 5 else 1                         #use_synth_data = T
+  seeds <- if (cross_val) c(23, 67, 69, 123, 98) else seed  #cross_val = T
 
   runs <- lapply(seeds, function(s) {
     run_tf_once(s, use_synth_data, split = if (n_runs == 1) split else NULL)
   })
-
+  
   result <- runs[[1]]
   summary(result$model)
 
@@ -148,8 +152,17 @@ do_tensor_flow_neuralNet <- function(draw_plots = F, use_synth_data = F, seed = 
   }
 
   output <- data.frame(probability_vector = result$probability_vector_test)
+  if (use_synth_data) {
+    t <- data.frame(x=output$probability_vector)
+    t$x <- ifelse(t$x>0.5,1,0)
+    t$x<-as.factor(t$x)
+    dir.create("csv", recursive = TRUE, showWarnings = FALSE)
+    write.csv(t, file = "csv/synth_tensorflow_mlp.csv")
+  }
   output$test_class_nn <- result$test_df_class
+  
 
+  
   return(output)
 }
 
