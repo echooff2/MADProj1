@@ -187,7 +187,7 @@ do_classification_tree <- function(draw_plots = F, seed = 23, split = NULL, use_
 
 
   if (draw_plots) {
-    draw_confusion_matrix(tp, fn, tn, fp, conf_mat_name, decimal_digits = 4)
+    draw_confusion_matrix(tp, fn, tn, fp, "ClassificationTree", decimal_digits = 4)
     draw_roc_plot(test$blueWins, predict_probs, roc_plot_name)
   }
 

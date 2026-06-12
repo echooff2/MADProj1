@@ -60,7 +60,7 @@ run_mixed_avg_once <- function(seed, gen_synth_data = FALSE) {
 }
 
 
-do_mixed_model_avg <- function(draw_plots = TRUE) {
+do_mixed_model_avg <- function(draw_plots = TRUE, test_on_synth_data = FALSE) {
   if (!exists("do_preliminary_analisys")) {
     source("PreliminaryAnalisys.R")
   }
@@ -70,7 +70,7 @@ do_mixed_model_avg <- function(draw_plots = TRUE) {
   if (!exists("draw_averaged_roc_plot")) {
     source("ROC.R")
   }
-
+  
   n_runs <- if (draw_plots) 5 else 1
   seeds <- if (draw_plots) c(23, 67, 69, 123, 98) else 23
 
@@ -107,8 +107,17 @@ do_mixed_model_avg <- function(draw_plots = TRUE) {
     draw_averaged_roc_plot(roc_runs, "Model hybrydowy śr. (R)")
 
     synth_runs <- lapply(seeds, function(seed) {
-      run_mixed_avg_once(seed, en_synth_data = T)
+      run_mixed_avg_once(seed, gen_synth_data = T)
     })
+    t <-synth_runs[[1]]
+    if (use_synth_data) {
+      t <- data.frame(x=t$probabilities)
+      t$x <- ifelse(t$x>0.5,1,0)
+      t$x<-as.factor(t$x)
+      dir.create("csv", recursive = TRUE, showWarnings = FALSE)
+      write.csv(t, file = "csv/synth_data_mix_avg.csv")
+    }
+    
 
     TP_synth <- mean(vapply(synth_runs, `[[`, numeric(1), "TP"))
     TN_synth <- mean(vapply(synth_runs, `[[`, numeric(1), "TN"))
@@ -156,5 +165,5 @@ do_mixed_model_avg <- function(draw_plots = TRUE) {
 
 
 if (sys.nframe() == 0L) {
-  do_mixed_model_avg(draw_plots = TRUE)
+  do_mixed_model_avg(draw_plots = TRUE, test_on_synth_data = FALSE )
 }

@@ -167,5 +167,5 @@ do_tensor_flow_neuralNet <- function(draw_plots = F, use_synth_data = F, seed = 
 }
 
 if (sys.nframe() == 0L) {
-  do_tensor_flow_neuralNet(draw_plots = T)
+  do_tensor_flow_neuralNet(draw_plots = T,cross_val=T)
 }

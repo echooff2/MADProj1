@@ -1,6 +1,6 @@
 draw_k_accuracy_plot <- function(df, best_k) {
   ver_line_name <- paste("k:", best_k)
-  p <- ggplot(df, aes(x = k, y = Accuracy)) +
+  p <- ggplot(df, aes(x = best_k, y = Accuracy)) +
     ggtitle("Zależność accuracy od parametru k") +
     geom_line(
       aes(color = "Accuracy", linetype = "Accuracy"),
@@ -65,7 +65,7 @@ run_knn_once <- function(df, seed, use_synth_data = FALSE, split = NULL) {
     blueWins ~ .,
     data = train_data_cv,
     method = "knn",
-    tuneGrid = data.frame(k = seq(71, 101, by = 2)),
+    tuneGrid = data.frame(k = seq(1, 101, by = 2)),
     trControl = ctrl
   )
   
@@ -297,7 +297,7 @@ do_knn <- function(draw_plots = F, seed = 23, split = NULL, use_synth_data = FAL
   if (draw_plots) {
     draw_confusion_matrix(
       round(TP), round(FN), round(TN), round(FP),
-      conf_mat_name,
+      "KNN",
       decimal_digits = 4
     )
 
@@ -307,7 +307,7 @@ do_knn <- function(draw_plots = F, seed = 23, split = NULL, use_synth_data = FAL
         probabilities = run$predicted_probabilities
       )
     })
-    draw_averaged_roc_plot(roc_runs, roc_plot_name)
+    draw_averaged_roc_plot(roc_runs, "roc_knn")
     draw_k_accuracy_plot(cv_avg$results, best_k)
   }
 
@@ -318,5 +318,5 @@ do_knn <- function(draw_plots = F, seed = 23, split = NULL, use_synth_data = FAL
 }
 
 if (sys.nframe() == 0L) {
-  do_knn(draw_plots = TRUE, use_synth_data = TRUE)
+  do_knn(draw_plots = TRUE, use_synth_data = FALSE)
 }
