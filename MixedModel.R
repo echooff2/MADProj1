@@ -156,5 +156,5 @@ do_mixed_model_avg <- function(draw_plots = TRUE) {
 
 
 if (sys.nframe() == 0L) {
-  do_mixed_model_avg(draw_plots = TRUE, test_on_synth_data = TRUE )
+  do_mixed_model_avg(draw_plots = TRUE)
 }

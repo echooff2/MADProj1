@@ -42,6 +42,7 @@ draw_tree_cv_plot <- function(tree_res.cv, tree_res) {
     size = tree_res.cv$size,
     deviance = tree_res.cv$dev
   )
+  print(df)
 
   p <- ggplot(df, aes(x = size, y = deviance)) +
     geom_line(color = "#2166AC", linewidth = 1) +
@@ -85,7 +86,12 @@ do_classification_tree <- function(draw_plots = F, seed = 23, split = NULL, use_
   }
 
   ########## uruchomic przed całym skryptem ##############
-  df <- do_preliminary_analisys()
+  synth_data <- NULL
+  if (use_synth_data) {
+    dfnt <- do_preliminary_analisys(generate_syntetic_data = use_synth_data)
+    df <- dfnt$real
+    synth_data <- dfnt$synth
+  }
   df$blueWins <- as.factor(df$blueWins)
 
   library(tree)
@@ -97,18 +103,22 @@ do_classification_tree <- function(draw_plots = F, seed = 23, split = NULL, use_
   train_data <- df[split, ]
   test <- df[-split, ]
   ########## uruchomic przed całym skryptem ##############
-  if (use_synth_data) {
-    library(synthpop)
-    synth_data <- syn(df, method = "cart", cart.minbucket = 10, seed = 67)
-    test <- synth_data$syn
-  }
+  # if (use_synth_data) {
+  #   # library(synthpop)
+  #   # synth_data <- syn(df, method = "cart", cart.minbucket = 10, seed = 67)
+  #   test <- synth_data$syn
+  # }
 
   summary(train_data)
   tree_res <- tree(blueWins ~ ., data = train_data, model = TRUE)
 
   tree_res2 <- tree(blueWins ~ ., data = train_data, model = TRUE)
   tree_res.cv <- cv.tree(tree_res2, FUN = prune.misclass, K = 10)
-  
+
+  for (i in 2:5) {
+    tree_res.cv$dev <- tree_res.cv$dev + cv.tree(tree_res2, FUN = prune.misclass, K = 10)$dev
+  }
+  print(tree_res.cv)
   tree_res.cv$dev <- tree_res.cv$dev / 5
   if (draw_plots) {
     draw_tree_cv_plot(tree_res.cv, tree_res)
@@ -116,6 +126,24 @@ do_classification_tree <- function(draw_plots = F, seed = 23, split = NULL, use_
   }
 
   summary(tree_res)
+
+  min_dev_indices <- which(tree_res.cv$dev == min(tree_res.cv$dev))
+  best_size <- min(tree_res.cv$size[min_dev_indices])
+  small_tree <- prune.tree(tree_res2, best = best_size)
+
+  if (use_synth_data) {
+    synth_data$blueWins <- as.factor(synth_data$blueWins)
+
+    predict_probs <- predict(tree_res, newdata = synth_data)[, 2]
+    predict_test <- predict(tree_res, newdata = synth_data, type = "class")
+
+    dir.create("csv", showWarnings = FALSE, recursive = TRUE)
+    write.csv(predict_test, "csv/synth_data_tree.csv")
+
+    output <- as.data.frame(predict_probs)
+    output$test_class_tree <- synth_data$blueWins
+    return(output)
+  }
 
   predict_probs <- predict(tree_res, newdata = test)[, 2]
   predict_test <- predict(tree_res, newdata = test, type = "class")
@@ -126,8 +154,6 @@ do_classification_tree <- function(draw_plots = F, seed = 23, split = NULL, use_
   library(caret)
   confusionMatrix(predict_test, test$blueWins)
 
-  best_size <- tree_res.cv$size[which.min(tree_res.cv$dev)]
-  small_tree <- prune.tree(tree_res2, best = best_size)
   cat(paste0("Wybrany rozmiar drzewa (min. CV deviance): ", best_size, " liści\n"))
   if (draw_plots) {
     draw_tree_plot(small_tree, "Przycięte drzewo klasyfikacyjne", "trimmed_classification_tree")
@@ -138,9 +164,10 @@ do_classification_tree <- function(draw_plots = F, seed = 23, split = NULL, use_
   pred_large <- predict(tree_res2, newdata = test, type = "class")
 
   if (use_synth_data) {
-    t <- synth_data
-    t$PredictedBlueWins <= pred_small
-    write.csv(t)
+    t <- synth_data$syn
+    t$PredictedBlueWins <- pred_small
+    dir.create("csv", recursive = TRUE, showWarnings = FALSE)
+    write.csv(t, file = "csv/synth_data_tree.csv")
   }
 
   # 3. Liczymy Accuracy dla obu
@@ -181,7 +208,7 @@ do_classification_tree <- function(draw_plots = F, seed = 23, split = NULL, use_
 }
 
 if (sys.nframe() == 0L) {
-  do_classification_tree(draw_plots = T)
+  t <- do_classification_tree(draw_plots = TRUE, use_synth_data = TRUE)
 }
 
 # ----------  CorrelationWisualization.R  ----------
@@ -439,10 +466,10 @@ run_knn_once <- function(df, seed, use_synth_data = FALSE, split = NULL) {
     blueWins ~ .,
     data = train_data_cv,
     method = "knn",
-    tuneGrid = data.frame(k = seq(1, 101, by = 2)),
+    tuneGrid = data.frame(k = seq(71, 101, by = 2)),
     trControl = ctrl
   )
-
+  
   best_k <- knn_cv$bestTune$k
 
   train_labels <- train_data$blueWins
@@ -462,6 +489,14 @@ run_knn_once <- function(df, seed, use_synth_data = FALSE, split = NULL) {
   )
 
   predicted_classes <- as.numeric(as.character(knn_pred))
+
+  if (use_synth_data) {
+    t <- test_data
+    t$PredictedBlueWins <- predicted_classes
+    dir.create("csv", recursive = TRUE, showWarnings = FALSE)
+    write.csv(t, file = "csv/synth_data_knn.csv")
+  }
+
   raw_prob <- attr(knn_pred, "prob")
 
   predicted_probabilities <- ifelse(
@@ -484,9 +519,14 @@ run_knn_once <- function(df, seed, use_synth_data = FALSE, split = NULL) {
   precision <- TP / (TP + FP)
   recall <- TP / (TP + FN)
   specificity <- TN / (TN + FP)
+  
+  print('Single KNN done!')
 
   list(
     best_k = best_k,
+    data_train = train_features,
+    train_labels = train_labels_factor,
+    knn_model = knn_cv,
     knn_cv_results = knn_cv$results,
     conf_matrix = conf_matrix,
     TP = TP,
@@ -515,8 +555,61 @@ average_knn_cv_results <- function(runs) {
   list(results = averaged, best_k = best_k)
 }
 
+predict_synth <- function(runs, synth_data){
+  acc <- vapply(runs, function(x) x$accuracy, numeric(1))
+  best_i <- which.max(acc)
+  
+  best_run   <- runs[[best_i]]
+  best_model <- best_run$knn_model
+  best_train <- best_run$data_train
+  train_labels <- best_run$train_labels
+  best_k <- best_run$best_k
+  
+  synth_data$blueWins <- as.factor(synth_data$blueWins)
+  
+  print(predict(best_model, newdata = synth_data))
+  
+  ctrl <- trainControl(
+    method = "cv",
+    number = 10,
+    classProbs = TRUE 
+  )
+  
+  print(dim(best_train))
+  print(dim(synth_data))
+  
+  blueWins <- synth_data |> select(c('blueWins'))
+  synth_data <- synth_data |> select(!c('blueWins'))
+  
+  knn_pred <- knn(
+    train = best_train,
+    test = synth_data,
+    cl = train_labels,
+    k = best_k,
+    prob = TRUE
+  )
+  
+  # Przewidziane klasy
+  predicted_classes <- as.numeric(as.character(knn_pred))
+  
+  # Prawdopodobieństwa klasy 1
+  raw_prob <- attr(knn_pred, "prob")
+  
+  predicted_probabilities <- ifelse(
+    knn_pred == "1",
+    raw_prob,
+    1 - raw_prob
+  )
+  
+  dir.create("csv", showWarnings = FALSE, recursive = TRUE)
+  write.csv(predicted_classes, "csv/synth_data_knn.csv")
+  
+  output <- as.data.frame(predicted_probabilities)
+  output$test_class_knn <- blueWins
+  return(output)
+}
 
-do_knn <- function(draw_plots = F, seed = 23, split = NULL) {
+do_knn <- function(draw_plots = F, seed = 23, split = NULL, use_synth_data = FALSE){
   if (!exists("do_preliminary_analisys")) {
     source("PreliminaryAnalisys.R")
   }
@@ -529,18 +622,29 @@ do_knn <- function(draw_plots = F, seed = 23, split = NULL) {
     source("ROC.R")
   }
 
-  df <- do_preliminary_analisys(c(F, F, F))
+  if(use_synth_data){
+    res <- do_preliminary_analisys(c(F, F, F), generate_syntetic_data = T)
+    df  <- res$real
+    synth_data <- res$synth
+    synth_data$blueWins <- as.factor(synth_data$blueWins)
+  }
+  else{
+    df <- do_preliminary_analisys(c(F, F, F))
+  }
 
   library(caret)
   library(class)
 
-  use_synth_data <- F
   n_runs <- if (draw_plots) 5 else 1
   seeds <- 23 + seq_len(n_runs) - 1
 
   runs <- lapply(seeds, function(seed) {
-    run_knn_once(df, seed, use_synth_data, split = if (n_runs == 1) split else NULL)
+    run_knn_once(df, seed, split = if (n_runs == 1) split else NULL)
   })
+  
+  if(use_synth_data){
+    return(predict_synth(runs, synth_data))
+  }
 
   result <- runs[[1]]
 
@@ -591,14 +695,6 @@ do_knn <- function(draw_plots = F, seed = 23, split = NULL) {
     cat("Specificity =", round(specificity, 4), "\n")
   }
 
-  if (use_synth_data) {
-    conf_mat_name <- "KNN_synth"
-    roc_plot_name <- "KNN synth"
-  } else {
-    conf_mat_name <- "KNN"
-    roc_plot_name <- "KNN"
-  }
-
   if (draw_plots) {
     draw_confusion_matrix(
       round(TP), round(FN), round(TN), round(FP),
@@ -623,7 +719,7 @@ do_knn <- function(draw_plots = F, seed = 23, split = NULL) {
 }
 
 if (sys.nframe() == 0L) {
-  do_knn(draw_plots = T)
+  do_knn(draw_plots = TRUE, use_synth_data = TRUE)
 }
 
 # ----------  MixedModel.R  ----------
@@ -1181,7 +1277,7 @@ delete_outliers <- function(df) {
 #     PCA
 # d) my_path pozwala przekazać ścieżkę do folderu, w którym pracujemy
 do_preliminary_analisys <- function(to_draw_graphs = c(F, F, F), to_scale = T,
-                                    to_pca = T, my_path = "") {
+                                    to_pca = T, my_path = "", generate_syntetic_data = FALSE) {
   if (my_path != "") {
     setwd(my_path)
   }
@@ -1258,9 +1354,32 @@ do_preliminary_analisys <- function(to_draw_graphs = c(F, F, F), to_scale = T,
     }
     draw_end_dataset_plots(df)
   }
+
+  synth_data <- NULL
+  if (generate_syntetic_data) {
+    library(synthpop)
+    synth_data <- syn(df, method = "cart", cart.minbucket = 10, seed = 67)$syn
+    synth_data <- synth_data[1:5, ]
+    dir.create("csv", showWarnings = FALSE, recursive = TRUE)
+    write.csv(synth_data, file = "csv/synth_data_notscaled.csv")
+  }
+
   if (to_scale) {
+    m <- colMeans(df)
+    d <- apply(df, 2, sd, na.rm = TRUE)
     df <- df %>%
       mutate(across(where(~ is.numeric(.) && !all(. %in% c(0, 1))), scale))
+    if (generate_syntetic_data) {
+      synth_data <- synth_data %>%
+        mutate(across(
+          where(~ is.numeric(.) && !all(. %in% c(0, 1))),
+          ~ scale(., center = m[[cur_column()]], scale = d[[cur_column()]])
+        ))
+      return(list(
+        real = df,
+        synth = synth_data
+      ))
+    }
   }
 
   return(df)
@@ -1615,15 +1734,22 @@ library(tensorflow)
 
 # ostatnia komenda wywołująca funkcję tym pliku jest zakomendowana atm.
 
-run_tf_once <- function(seed, use_synth_data = FALSE, split = NULL) {
+run_tf_once <- function(seed, use_synth_data = F, split = NULL) {
   if (!exists("do_preliminary_analisys")) {
     source("PreliminaryAnalisys.R")
   }
   set.seed(seed)
+  library(dplyr)
   library(keras3)
   library(tensorflow)
 
-  df <- do_preliminary_analisys()
+  dfnt <- do_preliminary_analisys(generate_syntetic_data = use_synth_data)
+  if(use_synth_data){
+  df <- dfnt$real
+  synth_data <- dfnt$synth
+  }
+  else
+  {df<-dfnt}
   blueWins <- df |> select("blueWins")
   df <- df |> select(!c("blueWins"))
   df <- as.matrix(df)
@@ -1654,15 +1780,10 @@ run_tf_once <- function(seed, use_synth_data = FALSE, split = NULL) {
   )
 
   if (use_synth_data) {
-    df <- do_preliminary_analisys()
-    library(synthpop)
-    synth_data <- syn(df, method = "cart", cart.minbucket = 10, seed = 67)
-    test <- synth_data$syn
-
-    test_df_class <- test |> select("blueWins")
-    test <- test |> select(!c("blueWins"))
-    test <- as.matrix(test)
-    probability_vector_test <- predict_on_batch(model, test)
+    test_df_class <- synth_data |> select("blueWins")
+    synth_data <- synth_data |> select(!c("blueWins"))
+    synth_data <- as.matrix(synth_data)
+    probability_vector_test <- predict_on_batch(model, synth_data)
     probability_vector_test <- as.data.frame(probability_vector_test)$V1
   } else {
     probability_vector_test <- predict_on_batch(model, test_df_data)
@@ -1673,6 +1794,8 @@ run_tf_once <- function(seed, use_synth_data = FALSE, split = NULL) {
     probability_vector_test <- as.numeric(probability_vector_test)
   }
 
+  
+  #plot_draw
   pred_class <- ifelse(probability_vector_test > 0.5, 1, 0)
   cm <- table(
     Predicted = factor(pred_class, levels = c(0, 1)),
@@ -1699,14 +1822,14 @@ run_tf_once <- function(seed, use_synth_data = FALSE, split = NULL) {
 }
 
 # kompiluje, trenuje i zwraca wektor probabilistyczny ze testowego datasetu.
-do_tensor_flow_neuralNet <- function(draw_plots = F, use_synth_data = F, seed = 23, split = NULL) {
-  n_runs <- if (draw_plots) 5 else 1
-  seeds <- if (draw_plots) c(23, 67, 69, 123, 98) else seed
+do_tensor_flow_neuralNet <- function(draw_plots = F, use_synth_data = F, seed = 23, split = NULL, cross_val=F) {
+  n_runs <- if (cross_val) 5 else 1                         #use_synth_data = T
+  seeds <- if (cross_val) c(23, 67, 69, 123, 98) else seed  #cross_val = T
 
   runs <- lapply(seeds, function(s) {
     run_tf_once(s, use_synth_data, split = if (n_runs == 1) split else NULL)
   })
-
+  
   result <- runs[[1]]
   summary(result$model)
 
@@ -1757,15 +1880,24 @@ do_tensor_flow_neuralNet <- function(draw_plots = F, use_synth_data = F, seed = 
   }
 
   output <- data.frame(probability_vector = result$probability_vector_test)
+  if (use_synth_data) {
+    t <- data.frame(x=output$probability_vector)
+    t$x <- ifelse(t$x>0.5,1,0)
+    t$x<-as.factor(t$x)
+    dir.create("csv", recursive = TRUE, showWarnings = FALSE)
+    write.csv(t, file = "csv/synth_tensorflow_mlp.csv")
+  }
   output$test_class_nn <- result$test_df_class
+  
 
+  
   return(output)
 }
 
 if (sys.nframe() == 0L) {
   do_tensor_flow_neuralNet(draw_plots = T)
 }
-# UWAGA!!! Nie uruchamiaj całego kodu R jednocześnie. To jest aż 1727 linii kodu. 
+# UWAGA!!! Nie uruchamiaj całego kodu R jednocześnie. To jest aż 1859 linii kodu. 
 Dodatkowo zalecane jest uruchamianie fragmentu po fragmencie orginalnych plików 
 (najlepiej jedynie tych do tworzenia klasyfikatorów, bo rzeszta jest jedynie dla tych metod zaimplementowana)
 Dodatkowo zwróć uwagę na komentarze dla drzewa klasyfikacyjnego, trzeba oddzielnie uruchomić specyficzne linie na początku.

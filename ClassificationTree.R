@@ -198,5 +198,9 @@ do_classification_tree <- function(draw_plots = F, seed = 23, split = NULL, use_
 }
 
 if (sys.nframe() == 0L) {
+  use_synth_data = F
+  dfnt <- do_preliminary_analisys(generate_syntetic_data = use_synth_data)
+  df <- dfnt
+  df$blueWins <- as.factor(df$blueWins)
   t <- do_classification_tree(draw_plots = TRUE, use_synth_data = TRUE)
 }
