@@ -38,6 +38,7 @@
 
 %% Spacing
 \RequirePackage{setspace}
+\RequirePackage[polish]{babel}
 
 %% Section heading formatting
 \RequirePackage{titlesec}
@@ -111,7 +112,7 @@
 %%  Figures : "Fig. 1. Caption text."   -- below figure, centered
 %%  Tables  : "Table 1. Caption text."  -- above table, centered
 %% ============================================================
-\DeclareCaptionLabelFormat{figlabel}{Fig.~#2}
+\DeclareCaptionLabelFormat{figlabel}{Rys.~#2}
 \captionsetup[figure]{
   labelformat  = figlabel,
   labelsep     = period,
@@ -121,7 +122,7 @@
   skip         = 6pt
 }
 \captionsetup[table]{
-  name         = Table,
+  name         = Tabela,
   labelsep     = period,
   font         = normalsize,
   justification= centering,
@@ -187,7 +188,7 @@
     \fi
     %% Received / Accepted dates: 10pt, italic, centered
     \ifx\@receiveddate\empty\else
-      {\normalsize\textit{Otrzymano: \@receiveddate\quad Zaakceptowano: \@accepteddate}\par}%
+      {\normalsize\textit{Otrzymano: \@receiveddate\quad  \@accepteddate}\par}%
     \fi
   \end{center}%
   \vspace{12pt}%

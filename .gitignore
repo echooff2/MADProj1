@@ -65,5 +65,6 @@ rsconnect/
 
 # other
 *.zip
+*.rar
 test.R
 

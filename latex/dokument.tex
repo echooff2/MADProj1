@@ -9,6 +9,8 @@
 \usepackage{hyperref}      % Clickable links in PDF (load last)
 \usepackage[polish]{babel}
 \usepackage{float}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
 
 \hypersetup{
   colorlinks = true,
@@ -19,17 +21,17 @@
 
 %% accuracy
 \newcommand{\getAccuracyKnn}{71,54}
-\newcommand{\getAccuracyTree}{72,69}
-\newcommand{\getAccuracyNn}{72,87}
-\newcommand{\getAccuracyMixednn}{72,48}
-\newcommand{\getaccuracyMixedsr}{72,65}
+\newcommand{\getAccuracyTree}{72.69}
+\newcommand{\getAccuracyNn}{72.93}
+\newcommand{\getAccuracyMixednn}{72,22}
+\newcommand{\getaccuracyMixedsr}{72.48}
 
 %% AUC
 \newcommand{\getAucKnn}{0,795}
 \newcommand{\getAucTree}{0,782}
-\newcommand{\getAucNn}{0,806}
-\newcommand{\getAucMixedNn}{0,80}
-\newcommand{\getAucMixedSr}{0,805}
+\newcommand{\getAucNn}{0,805}
+\newcommand{\getAucMixedNn}{0,802}
+\newcommand{\getAucMixedSr}{0,804}
 
 %% ============================================================
 %%  TITLE BLOCK INFORMATION
@@ -61,7 +63,7 @@
   s230998@sggw.edu.pl%
 }
 
-\receivedaccepted{09.06.2026}{---}
+\receivedaccepted{13.06.2026}{}
 
 %% ============================================================
 %%  RUNNING HEADER METADATA
@@ -89,10 +91,10 @@
 
 %% ---- Abstract (max 250 words, no citations) ----
 \begin{abstract}
-W pracy przeanalizowano możliwość przewidywania wyniku meczów rankingowych gry League of Legends na podstawie danych dostępnych po pierwszych 10 minutach rozgrywki. Wykorzystano publiczny zbiór danych zawierający 9879 meczów oraz statystyki opisujące m.in. ekonomię drużyn, kontrolę mapy i przebieg walk. Przeprowadzono proces przygotowania danych obejmujący usuwanie wartości odstających, standaryzację zmiennych, redukcję cech silnie skorelowanych oraz agregację wybranych zmiennych z wykorzystaniem analizy PCA. Następnie zastosowano pięć metod klasyfikacji: sieć neuronową MLP, drzewo klasyfikacyjne, algorytm k najbliższych sąsiadów (KNN) oraz dwa modele hybrydowe. Skuteczność modeli oceniono za pomocą miar Accuracy i AUC. Najlepsze wyniki uzyskała sieć neuronowa, osiągając dokładność 73,31\% oraz AUC równe 0,811. Otrzymane rezultaty wskazują, że informacje dostępne we wczesnej fazie meczu pozwalają z dobrą skutecznością przewidywać jego końcowy wynik.
+W pracy przeanalizowano możliwość przewidywania wyniku meczów rankingowych gry League of Legends na podstawie danych dostępnych po pierwszych 10 minutach rozgrywki. Wykorzystano publiczny zbiór danych zawierający 9879 meczów oraz statystyki opisujące m.in. ekonomię drużyn, kontrolę mapy i przebieg walk. Przeprowadzono proces przygotowania danych obejmujący usuwanie wartości odstających, standaryzację zmiennych, redukcję cech silnie skorelowanych oraz agregację wybranych zmiennych z wykorzystaniem analizy PCA. Następnie zastosowano pięć metod klasyfikacji: sieć neuronową MLP, drzewo klasyfikacyjne, algorytm k najbliższych sąsiadów (KNN) oraz dwa modele hybrydowe. Skuteczność modeli oceniono za pomocą miar Accuracy i AUC. Najlepsze wyniki uzyskała sieć neuronowa, osiągając dokładność \getAccuracyNn\% oraz AUC równe \getAucNn. Otrzymane rezultaty wskazują, że informacje dostępne we wczesnej fazie meczu pozwalają z dobrą skutecznością przewidywać jego końcowy wynik.
 
 \end{abstract}
-\keywords{League of Legends, LoL, klasyfikacja, predykcja wyniku meczu, sieci neuronowe, drzewo klasyfikacyjne, KNN, model hybrydowy}
+\keywords{League of Legends, LoL, klasyfikacja, predykcja wyniku meczu, sieci neuronowe, drzewo klasyfikacyjne, KNN, modele hybrydowe}
 \small
 \tableofcontents
 \normalsize
@@ -136,7 +138,7 @@ skuteczności tych metod w przewidywaniu rzeczywistego wyniku meczu, rozumianego
 jako wygrana lub przegrana drużyny niebieskiej.
 
 Istotnym elementem pracy jest porównanie wyników uzyskanych za pomocą trzech
-metod klasyfikacji: sieci neuronowych, drzewa klasyfikacyjnego oraz KNN,
+metod klasyfikacji: sieci neuronowej, drzewa klasyfikacyjnego oraz KNN,
 a także dwóch metod mieszanych, łączących cechy wybranych podejść.
 Celem analizy jest wskazanie, które z zastosowanych rozwiązań najlepiej przewiduje wynik
 meczu na podstawie danych dostępnych na wczesnym etapie gry.
@@ -245,11 +247,13 @@ redGoldPerMin & 1648.90 & 1637.8 & 1121.2 & 2273.2 & 149.09 & 0.41 \\
 W analizowanym zbiorze danych nie stwierdzono braków danych.
 
 \subsection{Wartości odstające}
-Badany zbiór danych z racji bycia pobranym przez API bezpośrednio z serwerów gry nie zawiera błędnych danych, aczkolwiek w celu ograniczenia wpływu wartości odstających na działanie modeli klasyfikacyjnych przeprowadzono proces oczyszczania danych. Za wartości odstające uznano jedynie 1\% najwyższych wartości zmiennych \cite{arancio_decisions_10min}:
+Badany zbiór danych z racji bycia pobranym przez API bezpośrednio z serwerów gry nie zawiera błędnych danych, aczkolwiek w celu ograniczenia wpływu wartości odstających na działanie modeli klasyfikacyjnych przeprowadzono proces oczyszczania danych. Za wartości odstające uznano jedynie 1\% najwyższych wartości zmiennych, wzorując się na pracy Pana Dr Arancio \cite{arancio_decisions_10min}:
+
 \begin{itemize}
 	\item blueWardsPlaced
 	\item redWardsPlaced
 \end{itemize}
+
 jako że te zmienne miały największą ilość skrajnie dużych wartości. Dodatkowo, takie wartości świadczą o braku poważnego traktowania gry ze strony drużyny charakteryzującej się wysoką wartości zmiennej $WardsPlaced$.
 
 Dlatego dla każdej wyżej wymienionej cechy wyznaczano górny próg odpowiadający wybranemu percentylowi:
@@ -279,25 +283,6 @@ Po oznaczeniu wartości odstających jako brakujące usuwano wszystkie rekordy z
 
 Zastosowana metoda pozwoliła ograniczyć wpływ skrajnych obserwacji na proces uczenia modeli oraz zmniejszyć ryzyko zaburzenia działania algorytmów przez nietypowe wartości.
 \newpage
-\subsection{Standaryzowanie danych}
-
-W celu ujednolicenia rozkładów oraz zakresów wartości poszczególnych cech zastosowano standaryzację danych z wykorzystaniem funkcji \texttt{scale()} dostępnej w języku R. Metoda ta polega na przekształceniu wartości zmiennych w taki sposób, aby każda cecha posiadała średnią równą 0 oraz odchylenie standardowe równe 1.
-
-Standaryzacja została wykonana zgodnie ze wzorem:
-
-\begin{equation}
-x' = \frac{x - \mu}{\sigma}
-\end{equation}
-
-gdzie:
-\begin{itemize}
-	\item $x$ --- wartość przed skalowaniem,
-	\item $\mu$ --- średnia wartość danej cechy,
-	\item $\sigma$ --- odchylenie standardowe danej cechy,
-	\item $x'$ --- wartość po standaryzacji.
-\end{itemize}
-
-W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zostały sprowadzone do wspólnej skali. Pozwoliło to ograniczyć wpływ różnic pomiędzy zakresami wartości poszczególnych zmiennych na działanie modeli klasyfikacyjnych oraz poprawić stabilność procesu uczenia.
 
 \subsection{Usuwanie cech}
 \indent Ta poddsekcja będzie poświęcona procesowi doboru cech poprzez usuwanie Quasi stałych oraz usuwanie lub łączenie względnie silnie skorelowanych.
@@ -341,20 +326,10 @@ W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zosta
 \end{tabular}
 \caption{Tabela korelacji silnie skorelowanych zmiennych 1.}
 \end{table}
-\indent Na podstawie powyższego możemy usunąć następujące cech;
-\begin{itemize}
-	\item blueFirstBlood
-	\item redDeaths
-	\item blueDeaths  
-	\item blueTotalGold  
-	\item blueAvgLevel  
-	\item blueTotalMinionsKilled  
-	\item blueGoldDiff 
-	\item blueExperienceDiff  
-	\item redTotalGold 
-	\item redAvgLevel 
-	\item redTotalMinionsKilled 
-\end{itemize}
+\indent Na podstawie powyższego możemy usunąć następujące cechy: 
+
+\textit{blueFirstBlood, redDeaths, blueDeaths, blueTotalGold, blueAvgLevel, blueTotalMinionsKilled, blueGoldDiff, blueExperienceDiff, redTotalGold, redAvgLevel, redTotalMinionsKilled}
+
 \begin{samepage}
 \subsubsection{Skorelowane wielokrotnie, liniowo}
 \indent \indent Dodatkowo, możemy, korzystając z definicji poszczególnych cech, zebrać korelacje wielokrotne, liniowe; innymi słowy takie korelacje, w których to jedna zmienna jest skorelowana liniowo z więcej niż jedną. Takich relacji mamy aż 6 i są one przedstawione poniżej:
@@ -477,6 +452,27 @@ W skrypcie będziemy bazować na wbudowanej funkcji "prcomp" i do wizualizacji r
 \indent \indent Jak na załączonym wyżej obrazku widać, nowa cecha, roboczo nazwana $Dim1$, odpowiada za aż około 94.7\% wariancji. Stąd też możemy uznać, że taka agregacja będzie dobrą formą wyeliminowania silnej korelacji. Od tego momentu zmienna robocza nazwana $Dim1$ będzie miała nazwę $dif$\_$PCA$\_$Component$\_$1$.
 
 \indent Po wykonaniu wszystkich kroków usuwania silnie i bardzo silnie skorelowanych cech możemy przedstawić jak ostatecznie wygląda macierz korelacji. Dodatkowo macierz uwzględnia cechę $blueWins$, aby dodatkowo ukazać jak silnie jest ona skorelowana ze zmiennymi, które ostatecznie zostały.
+
+\subsection{Standaryzowanie danych}
+
+W celu ujednolicenia rozkładów oraz zakresów wartości poszczególnych cech zastosowano standaryzację danych z wykorzystaniem funkcji \texttt{scale()} dostępnej w języku R. Metoda ta polega na przekształceniu wartości zmiennych w taki sposób, aby każda cecha posiadała średnią równą 0 oraz odchylenie standardowe równe 1.
+
+Standaryzacja została wykonana zgodnie ze wzorem:
+
+\begin{equation}
+x' = \frac{x - \mu}{\sigma}
+\end{equation}
+
+gdzie:
+\begin{itemize}
+	\item $x$ --- wartość przed skalowaniem,
+	\item $\mu$ --- średnia wartość danej cechy,
+	\item $\sigma$ --- odchylenie standardowe danej cechy,
+	\item $x'$ --- wartość po standaryzacji.
+\end{itemize}
+
+W wyniku zastosowania standaryzacji wszystkie analizowane cechy numeryczne zostały sprowadzone do wspólnej skali. Pozwoliło to ograniczyć wpływ różnic pomiędzy zakresami wartości poszczególnych zmiennych na działanie modeli klasyfikacyjnych oraz poprawić stabilność procesu uczenia.
+
 
 \section{Analiza końcowego zbioru danych}
 Po wstępnym przetworzeniu zbioru danych zostało nam 9689 rekordów oraz 16 zmiennych (nie licząc zmiennej przewidywanej).
@@ -709,70 +705,78 @@ Poniżej przedstawiono wizualizacje zmiennych po wstępnej analizie danych z pom
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Opisy metod}
+
+W niniejszym rozdziale przedstawiono metody wykorzystane do budowy modeli predykcyjnych oraz oceny ich skuteczności. Analizie poddano klasyczne algorytmy uczenia maszynowego, takie jak drzewo klasyfikacyjne i metoda k najbliższych sąsiadów, a także sieć neuronową oraz modele hybrydowe łączące predykcje kilku klasyfikatorów. Dla każdej metody omówiono podstawy teoretyczne, sposób konstrukcji modelu oraz procedurę uczenia i walidacji. Na końcu przedstawiono miary wykorzystane do oceny jakości otrzymanych klasyfikatorów.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Sieci neuronowe}
-
+\subsection{Sieć neuronowa}
 \subsubsection{Opis}
-
 Sieci neuronowe \cite{NN} są modelami uczenia maszynowego inspirowanymi działaniem biologicznych sieci neuronowych. Składają się z połączonych ze sobą neuronów tworzących kolejne warstwy przetwarzające dane wejściowe. Dzięki zastosowaniu nieliniowych funkcji aktywacji sieci neuronowe są zdolne do modelowania złożonych zależności pomiędzy zmiennymi.
+	
+	W analizie wykorzystano wielowarstwową sieć neuronową typu MLP (Multi-Layer Perceptron) zaimplementowaną przy użyciu bibliotek \texttt{keras3} oraz \texttt{tensorflow}. Zadaniem modelu było przewidywanie wartości zmiennej \texttt{blueWins}, określającej końcowy wynik meczu z perspektywy drużyny niebieskiej.
+	
+	Dla wektora wejściowego $\mathbf{x}$ predykcja modelu może zostać zapisana jako:
+	
+	\begin{equation}
+		\hat{y} = \sigma(f(\mathbf{x}, \Theta))
+	\end{equation}
+	
+	gdzie:
+	\begin{itemize}
+		\item $\mathbf{x}$ -- wektor cech wejściowych,
+		\item $\Theta$ -- zbiór wszystkich parametrów modelu (wag i obciążeń),
+		\item $f(\cdot)$ -- transformacja nieliniowa realizowana przez warstwy ukryte,
+		\item $\sigma(\cdot)$ -- funkcja sigmoidalna.
+	\end{itemize}
+	
+	Funkcja sigmoidalna przyjmuje postać:
+	\begin{equation}
+		\sigma(z) = \frac{1}{1+e^{-z}}
+	\end{equation}
+	i zwraca wartość z przedziału $(0,1)$, interpretowaną jako prawdopodobieństwo przynależności do klasy pozytywnej ($p$).
+	
+	Zgodnie ze specyfikacją danych, wektor wejściowy $\mathbf{x}$ składa się z $n=16$ cech należących do różnych dziedzin. Przestrzeń wejściową modelu można sformalizować jako:
+	\begin{equation}
+		\mathbf{x} \in \mathbb{Z}^2 \times \{0,1\}^2 \times \mathbb{Z} \times \mathbb{R} \times \mathbb{Z}^2 \times \{0,1\}^3 \times \mathbb{Z} \times \mathbb{R} \times \mathbb{Z}^2 \times \mathbb{R}
+	\end{equation}
+	co w zapisie wektorowym przyjmuje postać:
+	\begin{equation}
+		\mathbf{x} = [x_1, x_2, \dots, x_{16}]^T
+	\end{equation}
+	
+	Zastosowana architektura sieci składa się z następujących warstw:
+	\begin{itemize}
+		\item \textbf{Warstwa wejściowa:} przyjmująca wektor \textbf{x}.
+		\item \textbf{Pierwsza warstwa ukryta:} zawierająca 128 neuronów z funkcją aktywacji ELU (ang. \textit{Exponential Linear Unit}):
+		\begin{equation}
+			f_1(z) =
+			\begin{cases}
+				e^z - 1 & \text{dla } z \le 0 \\
+				z & \text{dla } z > 0
+			\end{cases}
+		\end{equation}
+		\item \textbf{Druga warstwa ukryta:} zawierająca 64 neurony z funkcją aktywacji Softplus:
+		\begin{equation}
+			f_2(z) = \ln(1 + e^z)
+		\end{equation}
+		\item \textbf{Warstwa wyjściowa:} zawierająca jeden neuron z funkcją sigmoidalną $\sigma(z)$.
+	\end{itemize}
+	
+	W celu ograniczenia zjawiska przeuczenia (ang. \textit{overfitting}), pomiędzy warstwami ukrytymi zastosowano mechanizm \textit{dropout} z prawdopodobieństwem zachowania neuronu $p_{drop}=0.5$. Polega on na losowym zerowaniu wyjść części neuronów podczas procesu uczenia.
+	
+	Podsumowując, pełne przejście w przód (ang. \textit{forward pass}) w fazie predykcji (przy wyłączonym mechanizmie \textit{dropout}) można zapisać jako złożenie funkcji. Ostateczne równanie na prawdopodobieństwo wygranej ($p$) przyjmuje postać:
+	
+	\begin{equation}
+		p = P(Y=1 \mid \mathbf{x}) = \sigma \Big( \mathbf{W}^{(3)} f_2 \big( \mathbf{W}^{(2)} f_1 (\mathbf{W}^{(1)} \mathbf{x} + \mathbf{b}^{(1)}) + \mathbf{b}^{(2)} \big) + \mathbf{b}^{(3)} \Big)
+	\end{equation}
 
-W analizie wykorzystano wielowarstwową sieć neuronową typu MLP (Multi-Layer Perceptron) zaimplementowaną przy użyciu bibliotek \texttt{keras3} oraz \texttt{tensorflow}. Zadaniem modelu było przewidywanie wartości zmiennej \texttt{blueWins}, określającej końcowy wynik meczu z perspektywy drużyny niebieskiej.
-
-Dla wektora wejściowego $\mathbf{x}$ predykcja modelu może zostać zapisana jako:
-
-\begin{equation}
-\hat{y} = \sigma(f(\mathbf{x}, \theta))
-\end{equation}
-
-gdzie:
-\begin{itemize}
-\item $\mathbf{x}$ -- wektor cech wejściowych,
-\item $\theta$ -- zbiór parametrów modelu,
-\item $f(\cdot)$ -- transformacja realizowana przez warstwy ukryte,
-\item $\sigma(\cdot)$ -- funkcja sigmoidalna.
-\end{itemize}
-
-Funkcja sigmoidalna przyjmuje postać:
-
-\begin{equation}
-    \sigma(x)=\frac{1}{1+e^{-x}}
-\end{equation}
-
-i zwraca wartość z przedziału $[0,1]$, interpretowaną jako prawdopodobieństwo przynależności do klasy pozytywnej.
-
-Nasza funkcja ostatecznie przyjmuje postać:
-\begin{equation}
-    \large p = P(Y \mid X_1 = x_1, ..., X_{n} = x_{n} ) 
-    = \frac{1}{1+e^{-(\theta_0 + \Sigma_{i=1}^{n} \theta_i x_i)}}
-\end{equation}
-
-Gdzie:
-\begin{itemize}
-    \item $p$ -- predykcja wygranej,
-    \item $n$ -- ilość cech.
-\end{itemize}
-
-Zastosowana architektura składała się z czterech warstw:
-\begin{itemize}
-    \item warstwy wejściowej zawierającej 16 cech,
-    \item pierwszej warstwy ukrytej zawierającej 128 neuronów z funkcją aktywacji ELU, \\
-    gdzie funkcja aktywacji ELU to:
-    \begin{equation}
-        f(x) =
-        \begin{cases}
-            e^x - 1 & x \le 0 \\
-            x & x > 0
-        \end{cases}
-    \end{equation}
-    \item drugiej warstwy ukrytej zawierającej 64 neurony z funkcją aktywacji Softplus, \\
-    gdzie funkcja aktywacji Softplus to:
-        \begin{equation}
-            f(x) = \text{ln}(1 + e^x)
-        \end{equation}
-    \item warstwy wyjściowej zawierającej jeden neuron z funkcją sigmoidalną.
-\end{itemize}
-
-W celu ograniczenia zjawiska przeuczenia pomiędzy warstwami zastosowano mechanizm \textit{dropout} z parametrem $p=0.5$, polegający na losowym wyłączaniu części neuronów podczas procesu uczenia.
+\newpage
+	gdzie poszczególne parametry modelu $\Theta$ to macierze wag $\mathbf{W}^{(k)}$ oraz wektory obciążeń (ang. \textit{bias}) $\mathbf{b}^{(k)}$ dla kolejnych warstw:
+	\begin{itemize}
+		\item $\mathbf{W}^{(1)} \in \mathbb{R}^{128 \times 16}, \quad \mathbf{b}^{(1)} \in \mathbb{R}^{128}$
+		\item $\mathbf{W}^{(2)} \in \mathbb{R}^{64 \times 128}, \quad \mathbf{b}^{(2)} \in \mathbb{R}^{64}$
+		\item $\mathbf{W}^{(3)} \in \mathbb{R}^{1 \times 64}, \quad \mathbf{b}^{(3)} \in \mathbb{R}^1$
+	\end{itemize}
 
 \subsubsection{Funkcja straty}
 
@@ -798,7 +802,7 @@ Minimalizacja funkcji straty była realizowana przy użyciu algorytmu RMSprop, k
 
 \subsubsection{Proces uczenia}
 
-Dane zostały losowo podzielone na zbiór treningowy (80\% obserwacji) oraz testowy (20\% obserwacji). Model trenowano przez 100 epok przy wielkości batcha wynoszącej 100 obserwacji. Co każdą epokę ponownie dzielimy zbiór na podzbiór testowy i uczący.
+Model sieci neuronowych działa  przy użyciu standardowej dla naszej pracy pięciokrotnej walidacji Monte Carlo (70\% - grupa ucząca, 30\% - grupa testowa). Sam model uczy się podczas 100 epok na zbiorze treningowym, gdzie każda epoka składa się z 55 iteracji z której każda ma rozmiar batch'a równy 100, dodatkowo przy każdej epoce model zostawia 20\% losowych rekordów na walidację.
 
 Po zakończeniu procesu uczenia wyznaczono prawdopodobieństwa przynależności do klasy pozytywnej dla obserwacji ze zbioru testowego. Otrzymane wartości zostały następnie wykorzystane do oceny jakości klasyfikacji przy użyciu miar opisanych w sekcji dotyczącej metod oceniania.
 
@@ -823,7 +827,7 @@ Algorytm budowy drzewa można przedstawić w postaci następujących kroków:
 
 W analizie wykorzystano drzewo klasyfikacyjne służące do przewidywania wartości zmiennej \texttt{blueWins}, określającej końcowy wynik meczu z perspektywy drużyny niebieskiej.
 
-Dane zostały losowo podzielone na zbiór treningowy (70\% obserwacji) oraz testowy (30\% obserwacji). Model został wytrenowany na zbiorze treningowym, natomiast jego skuteczność oceniono na niezależnym zbiorze testowym. Dodatkowo podczas procesu przycinania drzewa wykorzystano walidację krzyżową w celu wyznaczenia optymalnego rozmiaru modelu i ograniczenia zjawiska przeuczenia.
+Dane zostały losowo podzielone na zbiór treningowy (70\% obserwacji) oraz testowy (30\% obserwacji). Model został wytrenowany na zbiorze treningowym, natomiast jego skuteczność oceniono na niezależnym zbiorze testowym. Dodatkowo podczas procesu przycinania drzewa wykorzystano walidację krzyżową (k-folds dla k=10) w celu wyznaczenia optymalnego rozmiaru modelu i ograniczenia zjawiska przeuczenia.
 
 
 \subsubsection{Kryterium podziału}
@@ -858,7 +862,7 @@ Metoda k najbliższych sąsiadów (ang. \textit{k-Nearest Neighbours}, KNN)  \ci
 
 Dla każdej obserwacji testowej wyznaczani są jej najbliżsi sąsiedzi w przestrzeni cech, a następnie przypisywana jest klasa najczęściej występująca wśród znalezionych sąsiadów. Metoda nie tworzy jawnego modelu podczas etapu uczenia, dlatego zaliczana jest do grupy metod leniwych (ang. \textit{lazy learning}).
 
-W analizie wykorzystano algorytm KNN zaimplementowany w bibliotekach \texttt{caret} oraz \texttt{class}. 
+W analizie wykorzystano algorytm KNN zaimplementowany w bibliotekach \texttt{caret} oraz \texttt{class}. Model działa przy użyciu standardowej dla naszej pracy pięciokrotnej walidacji Monte Carlo (70\% - grupa ucząca, 30\% - grupa testowa).
 
 \subsubsection{Miara odległości}
 
@@ -946,13 +950,14 @@ Uzyskane wartości prawdopodobieństw zostały połączone w nowy zbiór cech, k
 Pod względem architektury model hybrydowy zachowuje taką samą strukturę jak bazowa sieć neuronowa, tj. dwie warstwy ukryte oraz warstwę wyjściową. Ze względu na mniejszą liczbę cech wejściowych zmodyfikowano jednak liczbę neuronów w warstwach ukrytych. W modelu bazowym zastosowano odpowiednio 128 i 64 neurony, natomiast w modelu hybrydowym liczby te zredukowano do 32 i 8 neuronów. Pozostawiono te same funkcje aktywacji, warstwy regularyzacyjne typu \texttt{Dropout}, funkcję kosztu \texttt{binary\_crossentropy} oraz optymalizator \texttt{RMSprop}.
 
 W porównaniu z bazową siecią neuronową model hybrydowy operuje na trzech cechach wejściowych odpowiadających predykcjom modeli bazowych, zamiast na pełnym zbiorze cech opisujących obserwacje. Celem takiej konstrukcji jest połączenie mocnych stron różnych algorytmów klasyfikacyjnych i uzyskanie lepszej jakości predykcji niż w przypadku pojedynczego modelu.
+
+Ten model wykorzystuje pięciokrotną walidacje Monte Carlo, dzieląc wektory probabilistyczne otrzymane z ewaluacji submodeli na testowym zbiorze danych z naszych oryginalnych danych, w proporcjach 70:30 (70\% - grupa ucząca, 30\% - grupa testowa), dodatkowo sam model ma wbudowaną walidację Monte Carlo na samym zbiorze treningowym, zostawiając 10\% na walidacje w każdej ze 150 epok.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%
 \subsection{Metody oceniania}
 
 Ocena jakości modeli klasyfikacyjnych stanowi istotny element analizy, ponieważ pozwala na porównanie skuteczności zastosowanych metod oraz określenie ich przydatności w kontekście rozważanego problemu predykcji wyniku meczu. 
-
-Pierwszym etapem oceny będzie walidacja medeli. W tym celu zastosujemy pięciokrotną walidację krzyżową Monte Carlo za każdym razem dzieląc zbiór na dwie grupy: 70\% - ucząca, 30\% - testowa. Następnie uśredniamy otrzymane wyniki i dla nich sporządzamy macierz pomyłek oraz krzywą ROC wraz z polem pod krzywą AUC.
 
 \subsubsection{Macierz pomyłek i miary klasyfikacji}
 
@@ -1026,37 +1031,63 @@ gdzie $TPR$ oznacza czułość modelu.
 Wartość AUC przyjmuje wartości z przedziału $[0,1]$, gdzie wartość 1 oznacza idealny klasyfikator, natomiast wartość 0,5 odpowiada klasyfikatorowi losowemu. W niniejszej pracy miara AUC została wykorzystana do porównania skuteczności analizowanych modeli klasyfikacyjnych.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage
 \section{Rezultaty}
-\subsection{Sieci neuronowe}
+\subsection{Sieć neuronowa}
     \begin{figure}[H]
         \centering
         \includegraphics[width=0.7\textwidth]{../Plots/confusion_matrixes/neural_network_real_data.png}
-	\caption{Macierz pomyłek dla metody sieci neuronowych.}
+	\caption{Macierz pomyłek dla metody sieci neuronowej.}
         \label{fig:both_images}
     \end{figure}
     \begin{figure}[H]
         \centering
         \includegraphics[width=0.6\textwidth]{../Plots/roc_curves/roc_Sieć MLP (R).png}
-	\caption{Wykres krzywej ROC dla metody sieci neuronowych.}
+	\caption{Wykres krzywej ROC dla metody sieci neuronowej.}
         \label{fig:both_images}
     \end{figure}
 
-\newpage
+
+Powyższe wyniki klasyfikatora MLP wskazują, że model osiąga umiarkowanie dobrą skuteczność w rozróżnianiu zwycięstwa drużyny niebieskiej i czerwonej. Dokładność na poziomie  oznacza, że prawie 3/4 wszystkich obserwacji została sklasyfikowana poprawnie. Jednocześnie około 27\% przypadków zostało zaklasyfikowanych błędnie, co wskazuje, że problem nie jest trywialny i model nie jest wolny od pomyłek. 
+
+Czułość (Sensitivity = 71,27\%) pokazuje, że model poprawnie identyfikuje ponad 71\% zwycięstw niebieskiej drużyny. 
+
+Swoistość (Specificity = 74,56\%) jest nieco wyższa od czułości, co wskazuje, że model lepiej rozpoznaje zwycięstwa
+drużyny czerwonej niż niebieskiej. Różnica jest jednak niewielka, dlatego można stwierdzić, że model zachowuje względnie zrównoważoną skuteczność dla obu klas i nie wykazuje wyraźnej tendencji do faworyzowania jednej z nich. 
+
+Precyzja (Precision = 73,36\%) świadczy to o stosunkowo dobrej wiarygodności pozytywnych predykcji. 
+
+Wartość NPV (Negative Predictive Value = 72,53\%) wskazuje, że przewidywania zwycięstwa drużyny czerwonej również są poprawne w ponad 72\% przypadków. Oznacza to, że jakość predykcji obu klas jest zbliżona.
+
+Krzywa ROC oraz średnia wartość AUC równa 0,805 świadczą o dobrej zdolności dyskryminacyjnej modelu. Model skutecznie odróżnia obserwacje należące do różnych klas i osiąga wynik wyraźnie lepszy od klasyfikatora losowego. Można więc stwierdzić, że klasyfikator jest dobrej jakości.
+
 \subsection{Drzewo klasyfikacyjne}
     \begin{figure}[H]
         \centering
-        \includegraphics[width=0.7\textwidth]{../Plots/confusion_matrixes/classification_tree_confusion_matrix.png}
+        \includegraphics[width=0.63\textwidth]{../Plots/confusion_matrixes/ClassificationTree.png}
 	\caption{Macierz pomyłek dla metody drzwa klasyfikacyjnego.}
         \label{fig:both_images}
     \end{figure}
 %%%%%%%%%%%%
     \begin{figure}[H]
         \centering
-        \includegraphics[width=0.6\textwidth]{../Plots/roc_curves/roc_Drzewo klasyfikacyjne.png}
+        \includegraphics[width=0.50\textwidth]{../Plots/roc_curves/roc_Drzewo klasyfikacyjne.png}
         \caption{Wykres krzywej ROC dla metody drzewa klasyfikacyjnego.}
         \label{fig:both_images}
     \end{figure}
+
+Powyższe wyniki klasyfikatora drzewa klasyfikacyjnego wskazują, że model osiąga umiarkowanie dobrą skuteczność w rozróżnianiu zwycięstwa drużyny niebieskiej i czerwonej. Dokładność na poziomie  oznacza, że prawie 3/4 wszystkich obserwacji została sklasyfikowana poprawnie. Jednocześnie około 27\% przypadków zostało zaklasyfikowanych błędnie, co wskazuje, że problem nie jest trywialny i model nie jest wolny od pomyłek. 
+
+Czułość (Sensitivity = 74,96\%) pokazuje, że model poprawnie identyfikuje poniżej 75\% zwycięstw niebieskiej drużyny. 
+
+Swoistość (Specificity = 70,83\%) jest nieco niższa od czułości, co wskazuje, że model gorzej rozpoznaje zwycięstwa
+drużyny czerwonej niż niebieskiej. Różnica jest jednak niewielka, dlatego można stwierdzić, że model zachowuje względnie zrównoważoną skuteczność dla obu klas i nie wykazuje wyraźnej tendencji do faworyzowania jednej z nich. 
+
+Precyzja (Precision = 67,70\%) świadczy to o względnie słabej wiarygodności pozytywnych predykcji. 
+
+Wartość NPV (Negative Predictive Value = 77,62\%) wskazuje, że przewidywania zwycięstwa drużyny czerwonej również są poprawne w ponad 77\% przypadków. Oznacza to, że jakość predykcji obu klas jest rozbieżna.
+
+Krzywa ROC oraz średnia wartość AUC równa 0,782 świadczą o względnie dobrej zdolności dyskryminacyjnej modelu. Model skutecznie odróżnia obserwacje należące do różnych klas i osiąga wynik wyraźnie lepszy od klasyfikatora losowego. Można więc stwierdzić, że klasyfikator jest dobrej jakości. Ze względu na małą ilość gałęzi krzywa ROC jest widocznie podzielona na 4 odcinki co odpowiada ilości gałęzi drzewa.
+
     \begin{figure}[H]
         \centering
         \includegraphics[width=0.45\textwidth]{../Plots/tree_plots/classification_tree.png}
@@ -1067,12 +1098,16 @@ Wartość AUC przyjmuje wartości z przedziału $[0,1]$, gdzie wartość 1 oznac
     \end{figure}
     \begin{figure}[H]
         \centering
-        \includegraphics[width=0.6\textwidth]{../Plots/tree_plots/tree_cv.png}
+        \includegraphics[width=0.50\textwidth]{../Plots/tree_plots/tree_cv.png}
         \caption{Wykres błędu walidacji krzyżowej w zależności od rozmiaru drzewa.}
         \label{fig:both_images}
     \end{figure}
+
+Na podstawie powyższych wykresów możemy stwierdzić, że najważniejszą cechą a zarazem jedyną szczególnie istotną jest zmienna \textit{diff\_PCA\_Conpontent\_1} czyli rezultat PCA  zmiennych opisujących różnice pomiędzy drużynami w złocie i doświadczeniu. Innymi słowy dla tego modelu najistotniejsze są złoto i doświadczenie.
+
+Dodatkowo zwiekszenie złożoności modelu ponad dwie gałęzie nie przynosi poprawy rezultatów co można wywnioskować z wykresu błędu CV dla różnych rozmiarów drzewa oraz z klasyfikacji na nieprzyciętym drzewie.
+
 %%%%%%%%%%%%
-\newpage
 \subsection{K najbliższych sąsiadów}
     \begin{figure}[H]
         \centering
@@ -1084,45 +1119,81 @@ Wartość AUC przyjmuje wartości z przedziału $[0,1]$, gdzie wartość 1 oznac
         \centering
         \includegraphics[width=0.50\textwidth]{../Plots/other/k_accuracy.png}
         \hfill
-        \includegraphics[width=0.47\textwidth]{../Plots/roc_curves/roc_KNN.png}
+        \includegraphics[width=0.47\textwidth]{../Plots/roc_curves/roc_roc_knn.png}
 	\caption{Wykres accuracy dla różnych wartości k oraz wykres krzywej ROC dla metody KNN.}
         \label{fig:both_images}
     \end{figure}
 
-\newpage
+Powyższe wyniki klasyfikatora KNN wskazują, że model osiąga umiarkowanie dobrą skuteczność w rozróżnianiu zwycięstwa drużyny niebieskiej i czerwonej. Dokładność na poziomie  oznacza, że prawie 3/4 wszystkich obserwacji została sklasyfikowana poprawnie. Jednocześnie około 27\% przypadków zostało zaklasyfikowanych błędnie, co wskazuje, że problem nie jest trywialny i model nie jest wolny od pomyłek. 
+
+Czułość (Sensitivity = 70,45\%) pokazuje, że model poprawnie identyfikuje ponad 70\% zwycięstw niebieskiej drużyny. 
+
+Swoistość (Specificity = 72,62\%) jest nieco wyższa od czułości, co wskazuje, że model lepiej rozpoznaje zwycięstwa drużyny czerwonej niż niebieskiej. Różnica jest jednak niewielka, dlatego można stwierdzić, że model zachowuje względnie zrównoważoną skuteczność dla obu klas i nie wykazuje wyraźnej tendencji do faworyzowania jednej z nich. 
+
+Precyzja (Precision = 71,59\%) świadczy to o stosunkowo dobrej wiarygodności pozytywnych predykcji. 
+
+Wartość NPV (Negative Predictive Value = 71,50\%) wskazuje, że przewidywania zwycięstwa drużyny czerwonej również są poprawne w ponad 71\% przypadków. Oznacza to, że jakość predykcji obu klas jest zbliżona.
+
+Z wykresu zależności celności od parametru k po walidacji modelu KNN możemy wywnioskować, że najlepsze k wynosi 83 i na takiej wartości będziemy opierali swój model.
+
+Krzywa ROC oraz średnia wartość AUC równa 0,795 świadczą o dobrej zdolności dyskryminacyjnej modelu. Model skutecznie odróżnia obserwacje należące do różnych klas i osiąga wynik wyraźnie lepszy od klasyfikatora losowego. Można więc stwierdzić, że klasyfikator jest dobrej jakości.
+
 \subsection{Metoda hybrydowa na bazie średniej arytmetycznej}
     \begin{figure}[H]
         \centering
-        \includegraphics[width=0.7\textwidth]{../Plots/confusion_matrixes/Mixed_AVG_real_data .png}
+        \includegraphics[width=0.65\textwidth]{../Plots/confusion_matrixes/Mixed_AVG_real_data.png}
 	\caption{Macierz pomyłek dla metody mieszanej na bazie średniej arytmetycznej.}
         \label{fig:both_images}
     \end{figure}
     \begin{figure}[H]
         \centering
-        \includegraphics[width=0.6\textwidth]{../Plots/roc_curves/roc_Model hybrydowy śr. (R).png}
+        \includegraphics[width=0.50\textwidth]{../Plots/roc_curves/roc_Model hybrydowy śr. (R).png}
 	\caption{Wykres krzywej ROC dla metody mieszanej na bazie średniej arytmetycznej.}
         \label{fig:both_images}
     \end{figure}
 
+Powyższe wyniki klasyfikatora hybrydowego na bazie średniej arytmetycznej wskazują, że model osiąga umiarkowanie dobrą skuteczność w rozróżnianiu zwycięstwa drużyny niebieskiej i czerwonej. Dokładność na poziomie  oznacza, że prawie 3/4 wszystkich obserwacji została sklasyfikowana poprawnie. Jednocześnie około 27\% przypadków zostało zaklasyfikowanych błędnie, co wskazuje, że problem nie jest trywialny i model nie jest wolny od pomyłek. 
 
-\newpage
+Czułość (Sensitivity = 71,91\%) pokazuje, że model poprawnie identyfikuje blisko 72\% zwycięstw niebieskiej drużyny. 
+
+Swoistość (Specificity = 73,04\%) jest nieco wyższa od czułości, co wskazuje, że model lepiej rozpoznaje zwycięstwa drużyny czerwonej niż niebieskiej. Różnica jest jednak niewielka, dlatego można stwierdzić, że model zachowuje względnie zrównoważoną skuteczność dla obu klas i nie wykazuje wyraźnej tendencji do faworyzowania jednej z nich. 
+
+Precyzja (Precision = 72,42\%) świadczy to o stosunkowo dobrej wiarygodności pozytywnych predykcji. 
+
+Wartość NPV (Negative Predictive Value = 72,54\%) wskazuje, że przewidywania zwycięstwa drużyny czerwonej również są poprawne w ponad 72\% przypadków. Oznacza to, że jakość predykcji obu klas jest zbliżona.
+
+Krzywa ROC oraz średnia wartość AUC równa 0,804 świadczą o dobrej zdolności dyskryminacyjnej modelu. Model skutecznie odróżnia obserwacje należące do różnych klas i osiąga wynik wyraźnie lepszy od klasyfikatora losowego. Można więc stwierdzić, że klasyfikator jest dobrej jakości.
+
 \subsection{Metoda hybrydowa na bazie sieci neuronowej}
     \begin{figure}[H]
         \centering
-        \includegraphics[width=0.7\textwidth]{../Plots/confusion_matrixes/Mixed_NN_real_data.png}
+        \includegraphics[width=0.60\textwidth]{../Plots/confusion_matrixes/Mixed_NN_real_data.png}
 	\caption{Macierz pomyłek dla metody mieszanej na bazie sieci neuronowej.}
         \label{fig:both_images}
     \end{figure}
     \begin{figure}[H]
         \centering
-        \includegraphics[width=0.6\textwidth]{../Plots/roc_curves/roc_Model hybrydowy MLP(R).png}
+        \includegraphics[width=0.50\textwidth]{../Plots/roc_curves/roc_Model hybrydowy MLP(R).png}
 	\caption{Wykres krzywej ROC dla metody mieszanej na bazie sieci neuronowej.}
         \label{fig:both_images}
     \end{figure}
 
+Powyższe wyniki klasyfikatora hybrydowego MLP wskazują, że model osiąga umiarkowanie dobrą skuteczność w rozróżnianiu zwycięstwa drużyny niebieskiej i czerwonej. Dokładność na poziomie  oznacza, że prawie 3/4 wszystkich obserwacji została sklasyfikowana poprawnie. Jednocześnie około 27\% przypadków zostało zaklasyfikowanych błędnie, co wskazuje, że problem nie jest trywialny i model nie jest wolny od pomyłek. 
 
-\newpage
+Czułość (Sensitivity = 70,09\%) pokazuje, że model poprawnie identyfikuje ponad 70\% zwycięstw niebieskiej drużyny. 
+
+Swoistość (Specificity = 74,36\%) jest nieco wyższa od czułości, co wskazuje, że model lepiej rozpoznaje zwycięstwa
+drużyny czerwonej niż niebieskiej. Różnica jest jednak niewielka, dlatego można stwierdzić, że model zachowuje względnie zrównoważoną skuteczność dla obu klas i nie wykazuje wyraźnej tendencji do faworyzowania jednej z nich. 
+
+Precyzja (Precision = 73,44\%) świadczy to o stosunkowo dobrej wiarygodności pozytywnych predykcji. 
+
+Wartość NPV (Negative Predictive Value = 71,08\%) wskazuje, że przewidywania zwycięstwa drużyny czerwonej również są poprawne w ponad 71\% przypadków. Oznacza to, że jakość predykcji obu klas jest zbliżona.
+
+Krzywa ROC oraz średnia wartość AUC równa 0,802 świadczą o dobrej zdolności dyskryminacyjnej modelu. Model skutecznie odróżnia obserwacje należące do różnych klas i osiąga wynik wyraźnie lepszy od klasyfikatora losowego. Można więc stwierdzić, że klasyfikator jest dobrej jakości.
+
 \subsection{Porównanie skuteczności metod}
+
+Powyżej przedstawione rezultaty zostały zebrane do poniższej tabeli. Uwzględniamy jedynie celność i miarę AUC.
 
 \begin{table}[H]
   \centering
@@ -1130,35 +1201,57 @@ Wartość AUC przyjmuje wartości z przedziału $[0,1]$, gdzie wartość 1 oznac
 	\toprule
 	\textbf{Model} & \textbf{Accuracy} &  \textbf{AUC}  \\
 	\midrule
-	Sieci Neuronowe & \getAccuracyNn\% & \getAucNn \\ 
-	Drzewo Klasyfikacyjne & \getAccuracyTree\% & \getAucTree \\
+	Sieć neuronowa & \getAccuracyNn\% & \getAucNn \\ 
+	Drzewo klasyfikacyjne & \getAccuracyTree\% & \getAucTree \\
 	KNN  & \getAccuracyKnn\% & \getAucKnn \\
-	hybr. - Sieć neuronowa  & \getAccuracyMixednn\% & \getAccuracyMixednn\\
-    hybr. Średnia & \getaccuracyMixedsr\% & \getAucMixedSr \\
+	hybr. sieć neuronowa  & \getAccuracyMixednn\% & \getAucMixedNn\\
+      hybr. średnia & \getaccuracyMixedsr\% & \getAucMixedSr \\
 	\bottomrule
 \end{tabular}
 \caption{Rezultaty modeli na danych testowych.}
 \end{table}
 
+Na podstawie powyższej tabeli możemy wywnioskować, że modele sa podobnie skuteczne pod względem celności jak i miary AUC. Jednakże możemy stwierdzić, że pod względem celności nalepszy model to sieć neuronowa a najgorszy to KNN; natomiast pod względem miary AUC najlepszy model to sieć neuronowa a najgorszy to drzewo decyzyjne. Z tego możemy wywnioskować, że wedle obu miar najskuteczniejszą metodą jest sieć neuronowa i najgorszej nie można jednoznacznie wytypować.
+
+\newpage
 \subsection{Użycie modeli na syntetycznych danych}
-W celu sprawdzenia działania modeli na nowych obserwacjach wygenerowano syntetyczny zbiór danych z wykorzystaniem pakietu \texttt{synthpop} w języku R. Do syntezy zastosowano metodę \texttt{CART} (\textit{Classification and Regression Trees}), która modeluje zależności między zmiennymi za pomocą drzew decyzyjnych i na ich podstawie generuje nowe rekordy. Wygenerowany zbiór zawierał 9689 syntetycznych obserwacji. Parametr \texttt{cart.minbucket = 10} ogranicza nadmierne dopasowanie modelu, natomiast \texttt{seed = 67} zapewnia powtarzalność wyników. Otrzymany zbiór syntetyczny został wykorzystany jako dane testowe dla opracowanych modeli predykcyjnych.
+W celu sprawdzenia działania modeli na nowych obserwacjach wygenerowano syntetyczny zbiór danych z wykorzystaniem pakietu \texttt{synthpop} w języku R. Do syntezy zastosowano metodę \texttt{CART} (\textit{Classification and Regression Trees}), która modeluje zależności między zmiennymi za pomocą drzew decyzyjnych i na ich podstawie generuje nowe rekordy. Wygenerowany zbiór zawierał 5 syntetycznych obserwacji. Parametr \texttt{cart.minbucket = 10} ogranicza nadmierne dopasowanie modelu, natomiast \texttt{seed = 67} zapewnia powtarzalność wyników. Otrzymany zbiór syntetyczny został wykorzystany jako dane testowe dla opracowanych modeli predykcyjnych.
 
 \begin{table}[H]
   \centering
-\begin{tabular}{l c c}
-	\toprule
-	\textbf{Model} & \textbf{Accuracy} &  \textbf{AUC}  \\
-	\midrule
-	Sieci Neuronowe & 72,82\% & 0,804 \\ 
-	Drzewo Klasyfikacyjne &  71,49\% & 0,769 \\
-	KNN  & 71,47\% & 0,789 \\
-	hybr. - Sieć neuronowa  & 72,48\% & 0,801 \\
-	hybr. - Średnia & 72,65\% & 0,800 \\
-	\bottomrule
+\begin{tabular}{l *{5}{c}}
+    \toprule
+    \textbf{Nazwa wiersza} & \textbf{Rekord 1} & \textbf{Rekord 2} & \textbf{Rekord 3} & \textbf{Rekord 4} & \textbf{Rekord 5} \\
+    \midrule
+	\texttt{Drzewo klasyfikacyjne} & 1 & 0 & 0 & 1 & 1 \\
+	\texttt{Sieć neuronowa} & 1 & 0 & 0 & 1 & 1 \\
+	\texttt{hybr. średnia} & 1 & 0 & 0 & 1 & 1 \\
+	\texttt{KNN} & 1 & 0 & 0 & 1 & 1 \\
+	\texttt{blueWins} & 1 & 0 & 0 & 1 & 1 \\
+	blueWardsPlaced & 52 & 16 & 13 & 17 & 13 \\
+	blueWardsDestroyed & 3 & 5 & 2 & 3 & 4 \\
+	blueDragons & 0 & 0 & 0 & 1 & 0 \\
+	blueHeralds & 1 & 0 & 0 & 0 & 0 \\
+	blueTotalJungleMinionsKilled & 33 & 40 & 36 & 46 & 68 \\
+	blueCSPerMin & 21.8 & 23.0 & 19.9 & 19.9 & 27.0 \\
+	redWardsPlaced & 21 & 19 & 35 & 18 & 94 \\
+	redWardsDestroyed & 2 & 3 & 1 & 3 & 2 \\
+	redFirstBlood & 0 & 0 & 1 & 0 & 1 \\
+	redDragons & 1 & 1 & 1 & 0 & 1 \\
+	redHeralds & 0 & 1 & 0 & 0 & 1 \\
+	redTotalJungleMinionsKilled & 52 & 60 & 75 & 40 & 44 \\
+	redCSPerMin & 22.0 & 24.2 & 19.6 & 20.9 & 20.9 \\
+	blueKA & 12 & 4 & 9 & 20 & 9 \\
+	redKA & 0 & 18 & 13 & 14 & 2 \\
+	diff\_PCA\_Component\_1 & -1.37 & 3.36 & 0.65 & -0.77 & -1.35 \\
+    \bottomrule
 \end{tabular}
-\caption{Rezultaty modeli na danych syntetycznych.}
+\caption{Pięć syntetycznych rekordów i ich wyniki predykcji.}
 \end{table}
 
+Na podstawie wyników przedstawionych w tabeli można stwierdzić, że wszystkie zastosowane modele wygenerowały identyczne predykcje dla każdego z pięciu syntetycznych rekordów. Otrzymane klasy były zgodne z wartością zmiennej docelowej \texttt{blueWins}, co wskazuje na wysoką spójność oraz poprawność działania modeli na danych syntetycznych. Wyniki sugerują, że opracowane modele skutecznie odwzorowują zależności występujące w danych i są zdolne do prawidłowej klasyfikacji nowych obserwacji wygenerowanych metodą syntezy danych.
+
+\newpage
 \section{Podsumowanie}
 
 Celem analizy było:
@@ -1170,9 +1263,9 @@ Celem analizy było:
 Uprzednio przedstawione wyniki skuteczności zastosowanych metod wskazują, że udało nam się osiągnąć dokładność na poziomach odpowiednio: 
 sieć neuronowa MLP = \getAccuracyNn\%, drzewo klasyfikacyjne = \getAccuracyTree\%, KNN = \getAccuracyKnn\%, model hybrydowy oparty na średniej arytmetycznej = \getaccuracyMixedsr\%
 oraz model hybrydowy oparty na sieci neuronowej = \getAccuracyMixednn\%. Najlepszy wynik uzyskała sieć neuronowa, osiągając dodatkowo wartość AUC równą \getAucNn.
-Stanowi to dobry rezultat, potwierdzający, że dane z wczesnej fazy meczu zawierają istotną informację predykcyjną.
+Stanowi to dobry rezultat, potwierdzający, że dane z wczesnej fazy meczu zawierają istotną informację predykcyjną, jednak do powiększenia skuteczności i poprawności predykcji niezbędnę są informacje późniejszym przebiegu rozgrywki. Potwierdza to istotność późniejszego etapu gry i, że pierwsze 10 minut jest ważne, ale nie determinuje jednoznacznie wyniku.
 
-Również w odniesieniu do innych prac na tym samym zbiorze danych, jak \textit{LoL: How to Win} \cite{wang_lol_win}, osiągnęliśmy porównywalnie dobry wynik, co autorzy korzystający z innych metod klasyfikacji. Dodatkowo nasza najskuteczniejsza metoda przewyższa wyniki uzyskane w analizie skupień na tym samym zbiorze danych, gdzie celność k-means wyniosła 72,46\%, a model mieszanin Gaussa estymowany algorytmem EM --- 70,88\%. Potwierdza to, że zastosowanie dedykowanych klasyfikatorów pozwala na skuteczniejsze przewidywanie wyniku meczu niż metody nienadzorowane.
+Również w odniesieniu do innych prac na tym samym zbiorze danych, jak \textit{LoL: How to Win} \cite{wang_lol_win}, osiągnęliśmy porównywalnie dobry wynik, co autorzy korzystający z innych metod klasyfikacji. Dodatkowo nasza najskuteczniejsza metoda, sieć neuronowa, przewyższa wyniki uzyskane w analizie skupień na tym samym zbiorze danych, gdzie celność k-means wyniosła 70,88\%, a model mieszanin Gaussa estymowany algorytmem EM --- 72,46\% \cite{projekt1}. Potwierdza to, że zastosowanie dedykowanych klasyfikatorów pozwala na skuteczniejsze przewidywanie wyniku meczu niż metody nienadzorowane.
 
 Wyniki przedstawione w formie tabelarycznej i graficznej, w tym macierz korelacji uwzględniająca zmienną \textit{blueWins}, potwierdzają, że zwycięstwo jest skorelowane znacząco z:
 \begin{itemize}
@@ -1183,8 +1276,11 @@ Wyniki przedstawione w formie tabelarycznej i graficznej, w tym macierz korelacj
 \item wyższą efektywnością farmienia, mierzoną m.in. liczbą zabitych minionów z dżungli oraz wartością \textit{CSPerMin}.
 \end{itemize}
 
-Nasza analiza klasyfikacyjna potwierdza ogólnie przyjęte założenie, że do wygranej potrzeba dużo zabójstw, mało śmierci i dużo asyst, co dodatkowo uzupełnia analizy dokonane w innych publikacjach co do głównych determinant wygranej bądź porażki na podstawie danych z początku rozgrywki \cite{gasmi_lol_first10, wang_lol_win, arancio_decisions_10min}. Dodatkowo pokazuje, że metody klasyfikacji zapewniają zadowalające odzwierciedlenie faktycznego rezultatu meczu. Stabilność uzyskanych wyników potwierdza również test na danych syntetycznych, gdzie sieć neuronowa osiągnęła dokładność 72,82\%, co jest wartością zbliżoną do wyniku uzyskanego na zbiorze testowym.
+Dodatkowo dla modelu drzewa decyzyjnego najistotniejszą zmienną było \textit{diff\_PCA\_Component\_1}, co wskazuje, że, abstachując od subtelniejszych powiązań danych cech ze zwycięstwem, jest jedyną skuteczną. 
 
+Nasza analiza klasyfikacyjna potwierdza ogólnie przyjęte założenie, że do wygranej potrzeba dużo zabójstw, mało śmierci i dużo asyst, co dodatkowo uzupełnia analizy dokonane w innych publikacjach co do głównych determinant wygranej bądź porażki na podstawie danych z początku rozgrywki \cite{gasmi_lol_first10, wang_lol_win, arancio_decisions_10min}. Dodatkowo pokazuje, że metody klasyfikacji zapewniają zadowalające odzwierciedlenie faktycznego rezultatu meczu. 
+
+\newpage
 \section*{Załączniki}
 Poniżej znajduje się lista załączonych plików do projektu wraz z ich opisami:
 \begin{itemize}
@@ -1225,6 +1321,13 @@ Jeremy Arancio,
 Kaggle Notebook, 2022.  
 Dostęp: \url{https://www.kaggle.com/code/jeremyarancio/which-decisions-before-10min-lead-to-win}
 
+% pierwszy projekt 
+\bibitem{projekt1}
+Michał Wojda, Sebastian Śmietański, Tomasz Teofilak, Tomasz Żołądek,
+\textit{Analiza skupień meczów League of Legends przy ograniczonych danych z pierwszych 10 minut meczu},
+GitHub 2026.  
+Dostęp: \url{https://github.com/echooff2/MADProj1/blob/main/latex/projekt1.pdf}
+
 % NN
 \bibitem{NN}
 Albina Jegorowa, Jarosław Kurek, Michał Kruk, Jarosław Górski,
@@ -1258,6 +1361,4 @@ Dostęp: \url{https://www.kaggle.com/datasets/bobbyscience/league-of-legends-dia
 %      Yi Lan Ma, \textit{League of Legends Diamond Ranked Games (10 min)}, Kaggle.
 %     Dostęp online: \url{} \\
 %     Data dostępu: 06.06.2026.
-
-
 \end{document}

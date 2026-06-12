@@ -13,7 +13,7 @@ latex = r'''
   \centering
 \begin{tabular}{l *{5}{c}}
     \toprule
-    \textbf{Seria Syntetycznych danych} & \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{5} \\
+    \textbf{Nazwa wiersza} & \textbf{Rekord 1} & \textbf{Rekord 2} & \textbf{Rekord 3} & \textbf{Rekord 4} & \textbf{Rekord 5} \\
     \midrule'''
 
 feature_file_path = folder_path + feature_file_name
@@ -30,14 +30,16 @@ for class_file_name in class_file_names:  # connect dataframes
 
 for col_name in df:
     latex_row = "\n"
-    latex_row += "\t" + col_name
+    latex_row += "\t" + col_name.replace("_", r"\_")
     for value in df[col_name]:
-        latex_row += " & " + str(value)
+        latex_row += " & " + str(round(value, 2))
+    latex_row += " \\\\"
     latex += latex_row
 
 latex += r'''
+    \bottomrule
 \end{tabular}
-\caption{5 danych syntetycznych i wyniki predykcji dla nich.}
+\caption{5 syntetycznych rekordów i ich wyniki predykcji.}
 \end{table}
 '''
 
