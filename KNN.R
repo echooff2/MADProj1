@@ -1,6 +1,7 @@
 draw_k_accuracy_plot <- function(df, best_k) {
-  ver_line_name <- paste("k:", best_k)
-  p <- ggplot(df, aes(x = best_k, y = Accuracy)) +
+  ver_line_name <- paste("k =", best_k)
+  
+  p <- ggplot(df, aes(x = k, y = Accuracy)) +
     ggtitle("Zależność accuracy od parametru k") +
     geom_line(
       aes(color = "Accuracy", linetype = "Accuracy"),
@@ -9,19 +10,22 @@ draw_k_accuracy_plot <- function(df, best_k) {
     geom_vline(
       aes(
         xintercept = best_k,
-        color = "k = 79",
-        linetype = "k = 79"
+        color = ver_line_name,   # Tutaj przekaże np. "k = 5"
+        linetype = ver_line_name
       ),
       linewidth = 1.1
     ) +
     scale_color_manual(
       name = "Legenda",
-      values = c("Accuracy" = "#2166AC", "k = 79" = "#B2182B")
+      # Używamy setNames, aby kluczem była wartość zmiennej ver_line_name
+      values = setNames(c("#2166AC", "#B2182B"), c("Accuracy", ver_line_name))
     ) +
     scale_linetype_manual(
-      values = c("Accuracy" = "solid", "k = 79" = "dashed")
+      name = "Legenda",
+      values = setNames(c("solid", "dashed"), c("Accuracy", ver_line_name))
     ) +
-    guides(linetype = "none") +
+    # Usunąłem guides(linetype = "none"), jeśli chcesz, aby linetype też był w legendzie
+    # Jeśli chcesz ukryć część legendy, upewnij się, że name w obu scale_ jest takie samo
     theme(
       plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
       axis.title = element_text(size = 18),
@@ -29,7 +33,7 @@ draw_k_accuracy_plot <- function(df, best_k) {
       legend.title = element_text(size = 18),
       legend.text = element_text(size = 18)
     )
-
+  
   print(p)
   ggsave("Plots/other/k_accuracy.png",
     plot = p,
